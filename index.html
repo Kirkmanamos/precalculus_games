@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precalculus Games</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #2c3e50;
+            color: #ffffff;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .game-card {
+            background: #ffffff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+        .game-card h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .game-card a {
+            display: inline-block;
+            text-decoration: none;
+            background: #3498db;
+            color: #ffffff;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .game-card a:hover {
+            background: #2980b9;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Precalculus Games</h1>
+        <p>Interactive tools and activities to master precalculus concepts.</p>
+    </header>
+
+    <div class="container">
+        <div class="game-grid">
+            
+            <div class="game-card">
+                <h2>Unit Circle Practice</h2>
+                <p>Test your knowledge of radians, degrees, and coordinates.</p>
+                <a href="unit-circle.html">Play Game</a>
+            </div>
+
+            <div class="game-card">
+                <h2>Trig Identities</h2>
+                <p>Match the fundamental trigonometric identities.</p>
+                <a href="trig-identities.html">Play Game</a>
+            </div>
+
+            <div class="game-card">
+                <h2>Function Transformations</h2>
+                <p>Visualize shifts, stretches, and reflections.</p>
+                <a href="transformations.html">Play Game</a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Kirkmanamos. Hosted on GitHub Pages.</p>
+    </footer>
+
+</body>
+</html>
