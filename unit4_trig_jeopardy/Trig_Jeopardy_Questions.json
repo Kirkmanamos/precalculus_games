@@ -1,0 +1,335 @@
+{
+  "title": "Unit 4 – Introduction to Trigonometry",
+  "subtitle": "Jeopardy Review Game — Question Bank",
+  "notes": "All LaTeX is written in plain text below for easy reading. The game file uses MathJax to render the notation.",
+
+  "categories": [
+
+    {
+      "name": "Evaluating Trig Functions",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Find the exact value of tan(π/4).",
+          "answer": "tan(π/4) = 1",
+          "notes": "Unit circle at 45°: (√2/2, √2/2), so tan = y/x = 1."
+        },
+        {
+          "points": 200,
+          "clue": "Find the exact value of csc(7π/6).",
+          "answer": "csc(7π/6) = −2",
+          "notes": "7π/6 is in Q III, reference angle π/6. sin(7π/6) = −1/2, so csc = −2."
+        },
+        {
+          "points": 300,
+          "clue": "Find the exact value of sec(5π/3).",
+          "answer": "sec(5π/3) = 2",
+          "notes": "5π/3 is in Q IV, reference angle π/3. cos(5π/3) = 1/2, so sec = 2."
+        },
+        {
+          "points": 400,
+          "clue": "Find the exact value of cos(31π/6).",
+          "answer": "cos(31π/6) = −√3/2",
+          "notes": "31π/6 − 4π = 31π/6 − 24π/6 = 7π/6. Q III, reference angle π/6. cos(7π/6) = −√3/2."
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE (Jedi Master) — Inverse trig expressions + Angle Subtraction Formula",
+          "clue": "Evaluate without a calculator:  sin[ arccos(−1/2) − arctan(√3) ]",
+          "answer": "√3/2",
+          "solution_steps": [
+            "Step 1: arccos(−1/2) = 2π/3  (range [0, π], Q II).",
+            "Step 2: arctan(√3) = π/3  (range (−π/2, π/2), Q I).",
+            "Step 3: 2π/3 − π/3 = π/3.",
+            "Step 4: sin(π/3) = √3/2."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Angles & the Coordinate Plane",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "What is the reference angle for 315°?",
+          "answer": "45°  (315° is in Q IV; reference angle = 360° − 315° = 45°)"
+        },
+        {
+          "points": 200,
+          "clue": "Convert 5π/3 radians to degrees.",
+          "answer": "300°  (5π/3 × 180°/π = 300°)"
+        },
+        {
+          "points": 300,
+          "clue": "In which quadrant does the terminal side of −23π/10 lie?",
+          "answer": "Quadrant IV",
+          "solution_steps": [
+            "Add 4π to get a positive coterminal angle: −23π/10 + 40π/10 = 17π/10.",
+            "17π/10 = 306°, which is between 270° and 360°, so it lies in Q IV."
+          ]
+        },
+        {
+          "points": 400,
+          "clue": "Find one positive and one negative coterminal angle for θ = −25π/3. Express answers in radians.",
+          "answer": "Positive: 5π/3.  Negative: −π/3.",
+          "solution_steps": [
+            "Add 10π (5 full rotations): −25π/3 + 30π/3 = 5π/3  (positive coterminal).",
+            "Add 8π (4 full rotations):  −25π/3 + 24π/3 = −π/3  (negative coterminal)."
+          ]
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE — Stacking sign rules + coterminal angles + reference angles",
+          "clue": "The angle θ satisfies BOTH: sin θ < 0 AND sec θ < 0.\n(a) In which quadrant must θ terminate?\n(b) If the reference angle is 2π/5, find all values of θ in [0, 4π].",
+          "answer": "(a) Quadrant III.\n(b) θ = π + 2π/5 = 7π/5  and  θ = 7π/5 + 2π = 17π/5.",
+          "solution_steps": [
+            "sin θ < 0  →  Q III or Q IV.",
+            "sec θ < 0  means  cos θ < 0  →  Q II or Q III.",
+            "Intersection: Q III only.",
+            "Q III angle with ref 2π/5: θ = π + 2π/5 = 7π/5.",
+            "Add one full period: 7π/5 + 2π = 17π/5."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Inverse Trig Functions",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Find the exact value of arcsin(√3/2).",
+          "answer": "π/3  (i.e., 60°)"
+        },
+        {
+          "points": 200,
+          "clue": "Find the exact value of arctan(−√3).",
+          "answer": "−π/3",
+          "notes": "Range of arctan is (−π/2, π/2), so the answer is −π/3."
+        },
+        {
+          "points": 300,
+          "clue": "Find the exact value of arccos[sin(7π/6)].",
+          "answer": "2π/3",
+          "solution_steps": [
+            "Step 1: 7π/6 is in Q III with reference angle π/6, so sin(7π/6) = −1/2.",
+            "Step 2: arccos(−1/2) = 2π/3  (range [0, π], Q II)."
+          ]
+        },
+        {
+          "points": 400,
+          "type": "Multiple Choice",
+          "clue": "Solve 2 sin x − 1 = 0 on [0, 2π].",
+          "choices": [
+            "A) x = π/3 only",
+            "B) x = π/6 and x = 5π/6  ← CORRECT",
+            "C) x = π/6 and x = 7π/6",
+            "D) x = π/3 and x = 2π/3"
+          ],
+          "answer": "B — x = π/6 and x = 5π/6",
+          "notes": "sin x = 1/2. Sine is positive in Q I and Q II: x = π/6 and x = π − π/6 = 5π/6."
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE (Jedi Master) — Inverse trig expressions + Angle Addition Formula",
+          "clue": "Evaluate without a calculator:  cos[ arcsin(−√3/2) + arccos(−1/2) ]",
+          "answer": "1/2",
+          "solution_steps": [
+            "Step 1: arcsin(−√3/2) = −π/3  (range [−π/2, π/2]).",
+            "Step 2: arccos(−1/2) = 2π/3  (range [0, π], Q II).",
+            "Step 3: −π/3 + 2π/3 = π/3.",
+            "Step 4: cos(π/3) = 1/2."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Graphing Trig Functions",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "State the vertical shift of:  f(x) = −3 sin(πx + 2) − 5",
+          "answer": "Vertical shift = −5  (shifted 5 units DOWN)"
+        },
+        {
+          "points": 200,
+          "clue": "State the range of:  g(x) = 4 cos(x/2) + 3",
+          "answer": "[−1, 7]",
+          "notes": "Amplitude = 4, midline = 3.  Min = 3 − 4 = −1,  Max = 3 + 4 = 7."
+        },
+        {
+          "points": 300,
+          "clue": "Find the phase shift of:  y = 2 sin(2x − π/6) − 1\nCAUTION: you must factor out the coefficient of x first.",
+          "answer": "Phase shift = π/12 to the RIGHT.",
+          "notes": "Factor: y = 2 sin(2(x − π/12)) − 1.  Common mistake: students say π/6 without dividing by b = 2."
+        },
+        {
+          "points": 400,
+          "type": "Graph + Multiple Choice — answers in factored form y = a·sin(b(x−c)) + d",
+          "graph_function": "y = −3 sin(2(x − π/4)) + 1",
+          "graph_parameters": {
+            "a": -3,
+            "b": 2,
+            "c": "π/4  (phase shift RIGHT)",
+            "d": 1,
+            "amplitude": 3,
+            "period": "π",
+            "phase_shift": "π/4 to the right",
+            "vertical_shift": "+1",
+            "reflection": "yes — graph goes DOWN from midline at left endpoint"
+          },
+          "graph_key_points": [
+            "(π/4,  1)  — LEFT endpoint of period, midline, going DOWN  ← period starts here",
+            "(π/2, −2)  — minimum",
+            "(3π/4, 1)  — midline (ascending)",
+            "(π,    4)  — maximum",
+            "(5π/4, 1)  — RIGHT endpoint of period, midline  ← period ends here"
+          ],
+          "clue": "The graph of f is shown (plotted points mark both endpoints of one period). Which equation matches?",
+          "choices": [
+            "A) y = 3 sin(2(x − π/4)) + 1      — NOT reflected (goes up first)",
+            "B) y = −3 sin(2(x − π/4)) + 1  ← CORRECT",
+            "C) y = −3 sin(2(x + π/4)) + 1     — phase shift is LEFT, not right",
+            "D) y = −3 sin(2(x − π/4)) − 1     — midline at y=−1, not y=1"
+          ],
+          "answer": "B — y = −3 sin(2(x − π/4)) + 1",
+          "how_to_eliminate": {
+            "A": "At x=π/2 this gives +4 (max), but the graph shows −2 (min) there.",
+            "C": "Phase shift is left — the period would start at x=−π/4, not x=π/4.",
+            "D": "Midline = d = −1, but plotted points show midline y=1."
+          }
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE — Graph + Multiple Choice — answers in factored form y = a·cos(b(x−c)) + d",
+          "graph_function": "y = 2 cos(π/2 · (x − 1)) + 1",
+          "graph_parameters": {
+            "a": 2,
+            "b": "π/2",
+            "c": "1  (phase shift RIGHT)",
+            "d": 1,
+            "amplitude": 2,
+            "period": 4,
+            "phase_shift": "1 unit to the right",
+            "vertical_shift": "+1",
+            "reflection": "no — starts at maximum"
+          },
+          "graph_key_points": [
+            "(1,  3)  — LEFT endpoint of period, maximum  ← period starts here",
+            "(2,  1)  — midline (descending)",
+            "(3, −1)  — minimum",
+            "(4,  1)  — midline (ascending)",
+            "(5,  3)  — RIGHT endpoint of period, maximum  ← period ends here"
+          ],
+          "clue": "The graph of f is shown (plotted points at both period endpoints). Match the equation — written in y = a·cos(b(x−c)) + d form.",
+          "choices": [
+            "A) y = 2 cos(π/2 · (x − 1)) + 1  ← CORRECT",
+            "B) y = 2 cos(π/2 · (x + 1)) + 1  — phase shift is LEFT (max at x=−1)",
+            "C) y = 2 cos(π/2 · (x − 1)) − 1  — midline at y=−1, not y=1",
+            "D) y = −2 cos(π/2 · (x − 1)) + 1 — reflected (starts at minimum, not max)"
+          ],
+          "answer": "A — y = 2 cos(π/2 · (x − 1)) + 1",
+          "how_to_eliminate": {
+            "B": "At x=1 this gives 2cos(π)+1 = −1 (minimum), but graph shows maximum (y=3) there.",
+            "C": "Midline = d = −1; plotted points show midline y=1.",
+            "D": "At x=1 this gives −2cos(0)+1 = −1 (minimum), but graph shows maximum."
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Real-World Modeling",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "A Ferris wheel has a radius of 20 m and its center is 25 m above the ground. What are the maximum and minimum heights of a passenger?",
+          "answer": "Maximum = 25 + 20 = 45 m.  Minimum = 25 − 20 = 5 m."
+        },
+        {
+          "points": 200,
+          "clue": "A passenger's height (feet) on a Ferris wheel is modeled by  h(t) = 50 + 45 sin(πt/10),  where t is seconds. What is the period and what does it represent?",
+          "answer": "Period = 2π ÷ (π/10) = 20 seconds — the time for one complete revolution of the Ferris wheel."
+        },
+        {
+          "points": 300,
+          "clue": "A city's average monthly temperature follows a sinusoidal pattern with a maximum of 88°F and a minimum of 28°F. State the midline and the amplitude of the model.",
+          "answer": "Midline = (88 + 28)/2 = 58°F.  Amplitude = (88 − 28)/2 = 30°F."
+        },
+        {
+          "points": 400,
+          "clue": "Using h(t) = 50 + 45 sin(πt/10):\n(a) At what time t does the passenger first reach maximum height?\n(b) What is the minimum height?",
+          "answer": "(a) sin(πt/10) = 1  →  πt/10 = π/2  →  t = 5 seconds.\n(b) Minimum = 50 − 45 = 5 feet."
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE (Jedi Master) — Build model + Solve equation + Filter by direction",
+          "clue": "A buoy bobs in the ocean. At t = 0 it is at its midpoint and moving UPWARD. Amplitude = 4 ft, period = 8 seconds.\n(a) Write h(t) for the buoy's height above its midpoint.\n(b) During the first 16 seconds, at what times is the buoy exactly 2 ft above the midpoint AND moving downward?",
+          "answer": "(a) h(t) = 4 sin(πt/4)\n(b) t = 10/3 ≈ 3.33 s  and  t = 34/3 ≈ 11.33 s",
+          "solution_steps": [
+            "Model: starts at 0 moving up → sine.  b = 2π/8 = π/4.  So h(t) = 4 sin(πt/4).",
+            "Solve h(t) = 2:  sin(πt/4) = 1/2.",
+            "General solutions: πt/4 = π/6  →  t = 2/3  and  πt/4 = 5π/6  →  t = 10/3  (first cycle).",
+            "Second cycle (add 8): t = 2/3 + 8 = 26/3  and  t = 10/3 + 8 = 34/3.",
+            "Filter — MOVING DOWNWARD means past the maximum (t = 2 s).  t = 2/3 is BEFORE the max (moving up). t = 10/3 is after the max (moving down). ✓",
+            "Answer: t = 10/3 s and t = 34/3 s."
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Linear & Angular Speed",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Convert 120 RPM to radians per second.",
+          "answer": "120 × (2π/60) = 4π ≈ 12.57 rad/s"
+        },
+        {
+          "points": 200,
+          "clue": "A wheel of radius 0.4 m spins at 5 rad/s. What is the linear speed of a point on its rim?",
+          "answer": "v = ωr = 5 × 0.4 = 2 m/s"
+        },
+        {
+          "points": 300,
+          "clue": "A bicycle wheel has a radius of 35 cm and rolls at 8 m/s. Find the angular speed in rad/s.",
+          "answer": "ω = v/r = 8 ÷ 0.35 = 160/7 ≈ 22.9 rad/s"
+        },
+        {
+          "points": 400,
+          "clue": "A satellite orbits Earth at radius 6800 km with a period of 90 minutes.\n(a) Angular speed in rad/min.\n(b) Linear speed in km/min.",
+          "answer": "(a) ω = 2π/90 = π/45 rad/min ≈ 0.0698 rad/min\n(b) v = ωr = (π/45)(6800) = 6800π/45 ≈ 475 km/min"
+        },
+        {
+          "points": 500,
+          "type": "CHALLENGE (Jedi Master) — Gear train (3 parts, stacking v = ωr)",
+          "clue": "A large gear (r = 18 cm) meshes with a small gear (r = 6 cm). The large gear turns at 40 RPM.\n(a) Angular speed of large gear in rad/s.\n(b) Angular speed of small gear in RPM.  (Meshing gears share linear speed at contact point.)\n(c) A wheel of radius 4 cm is fixed to the small gear's axle. Linear speed of a point on its rim?",
+          "answer": "(a) ω_large = 40 × (2π/60) = 4π/3 rad/s\n(b) v_contact = (4π/3)(0.18) = 0.24π m/s.  ω_small = 0.24π ÷ 0.06 = 4π rad/s = 120 RPM\n(c) v_wheel = 4π × 0.04 = 0.16π ≈ 0.503 m/s",
+          "solution_steps": [
+            "Convert large gear: 40 RPM × 2π/60 = 4π/3 rad/s.",
+            "Linear speed at contact: v = (4π/3)(0.18) = 0.24π m/s.",
+            "Small gear shares same linear contact speed: ω_small = v/r = 0.24π/0.06 = 4π rad/s.",
+            "Convert back to RPM: 4π × 60/(2π) = 120 RPM.",
+            "Wheel on small gear's axle — same ω as small gear: v = 4π × 0.04 = 0.16π ≈ 0.503 m/s."
+          ]
+        }
+      ]
+    }
+
+  ],
+
+  "final_jeopardy": {
+    "category": "Stacking Skills — Periodic Functions",
+    "clue": "A function f is periodic with period c, so f(t + c) = f(t) for all t. Which of the following are ALWAYS true? Justify each.\n  I.  f(t − 2c) = f(t)\n  II. f( (1/2)(t + c) ) = f( (1/2)t )\n  III. f(t + 3c) = f(t)\n  IV. f( (1/2)(t − 4c) ) = f( (1/2)t )",
+    "answer": "TRUE: I, III, IV.   FALSE: II.",
+    "solution_steps": [
+      "I.  f(t − 2c) = f((t − c) − c) = f(t − c) = f(t)  ✓  (apply period rule twice).",
+      "II. The argument (1/2)(t + c) differs from (1/2)t by c/2, which is NOT a full period. FALSE ✗.",
+      "III. f(t + 3c) = f(t + 2c) = f(t + c) = f(t)  ✓  (apply three times).",
+      "IV. Let g(t) = f(t/2). Then g has period 2c.  g(t − 4c) = f((t − 4c)/2) = f(t/2 − 2c) = f(t/2) = g(t)  ✓."
+    ]
+  }
+}
