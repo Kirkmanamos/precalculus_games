@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit Circle Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --bg-card: #1a2035;
+      --border: rgba(99, 122, 170, 0.25);
+      --accent: #4da6ff;
+      --correct: #10b981;
+      --wrong: #f43f5e;
+      --text-primary: #e2e8f0;
+      --text-muted: #64748b;
+      --font-ui: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --stats-h: 60px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body, #root {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+    }
+
+    /* ── Flash overlay ── */
+    .flash-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .flash-correct { animation: flash-correct 0.6s ease-out forwards; }
+    .flash-wrong   { animation: flash-wrong   0.6s ease-out forwards; }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--stats-h);
+      background: rgba(26, 32, 53, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 50;
+      gap: 12px;
+    }
+    .stats-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .stats-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      line-height: 1;
+    }
+    .stats-label {
+      font-size: 0.62rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stats-correct { color: var(--correct); }
+    .stats-wrong   { color: var(--wrong); }
+    .stats-time    { color: var(--text-muted); }
+    .quit-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 1rem;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .quit-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+
+    /* ── Study/Quiz toggle ── */
+    .difficulty-toggle {
+      display: flex;
+      gap: 0;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .diff-btn {
+      flex: 1;
+      padding: 9px 20px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .diff-btn:first-child { border-right: 1px solid var(--border); }
+    .diff-btn:hover { color: var(--text-primary); background: rgba(99,122,170,0.08); }
+    .diff-btn.active {
+      background: rgba(77,166,255,0.15);
+      color: var(--accent);
+    }
+    .stats-progress {
+      flex: 1;
+      height: 6px;
+      background: rgba(99, 122, 170, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+      max-width: 180px;
+    }
+    .stats-progress-inner {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      transition: width 0.35s ease;
+    }
+
+    /* ── Screens ── */
+    .screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .quiz-screen {
+      padding-top: calc(var(--stats-h) + 20px);
+      padding-bottom: 110px;
+    }
+
+    /* ── Start screen ── */
+    .start-title {
+      font-size: 2.4rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .start-subtitle {
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 28px;
+      font-size: 0.95rem;
+    }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      max-width: 420px;
+      margin-bottom: 22px;
+    }
+    .mode-btn {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .mode-btn:hover {
+      border-color: var(--accent);
+      background: rgba(77, 166, 255, 0.08);
+    }
+    .mode-btn.active {
+      border-color: var(--accent);
+      background: rgba(77, 166, 255, 0.15);
+      color: var(--accent);
+    }
+    .high-score {
+      text-align: center;
+      margin-bottom: 22px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+    .high-score span {
+      color: #f59e0b;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+    .start-btn {
+      padding: 14px 52px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.02em;
+    }
+    .start-btn:hover {
+      background: #3b95f0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(77, 166, 255, 0.3);
+    }
+    .start-btn:active { transform: translateY(0); }
+
+    /* ── Quiz layout ── */
+    .quiz-layout {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      width: 100%;
+      max-width: 620px;
+    }
+
+    /* ── Question card ── */
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 22px;
+      width: 100%;
+    }
+    .question-prompt {
+      font-size: 0.97rem;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+    .type-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .answer-input {
+      flex: 1;
+      background: rgba(15, 17, 23, 0.7);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 1rem;
+      padding: 9px 13px;
+      outline: none;
+      transition: border-color 0.15s;
+      min-width: 0;
+    }
+    .answer-input:focus { border-color: var(--accent); }
+    .answer-input::placeholder { color: var(--text-muted); opacity: 0.55; }
+    .submit-btn, .skip-btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      border: none;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .submit-btn { background: var(--accent); color: #fff; }
+    .submit-btn:hover { background: #3b95f0; }
+    .skip-btn { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+    .skip-btn:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .input-hint {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 7px;
+      opacity: 0.7;
+    }
+    .click-prompt {
+      color: var(--accent);
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .click-prompt-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* ── SVG container ── */
+    .svg-container {
+      width: 100%;
+      max-width: 580px;
+    }
+    .svg-container svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* ── Emoji indicator ── */
+    .emoji-indicator {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      z-index: 40;
+      pointer-events: none;
+    }
+    .emoji-wrapper {
+      font-size: 2rem;
+      line-height: 1;
+      border-radius: 50%;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .emoji-fire-glow { animation: pulse-fire 1.5s ease-in-out infinite; }
+    .emoji-bounce    { animation: bounce-in 0.4s ease; }
+    .emoji-shake     { animation: shake 0.5s ease; }
+    .streak-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── End screen ── */
+    .end-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 38px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    .end-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .end-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      font-size: 0.92rem;
+    }
+    .end-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .end-stat {
+      background: rgba(15, 17, 23, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+    }
+    .end-stat-value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--accent);
+    }
+    .end-stat-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 3px;
+    }
+    .new-best-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 18px;
+      letter-spacing: 0.05em;
+    }
+    .play-again-btn {
+      padding: 13px 40px;
+      border-radius: 12px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 4px;
+    }
+    .play-again-btn:hover {
+      background: #3b95f0;
+      transform: translateY(-2px);
+    }
+    .back-link {
+      margin-top: 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-block;
+      transition: color 0.15s;
+    }
+    .back-link:hover { color: var(--text-primary); }
+
+    /* ── SVG-specific ── */
+    .pulse-dot {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pulse-blue 1.5s ease-in-out infinite;
+    }
+    .clickable-dot {
+      cursor: pointer;
+      transition: r 0.1s;
+    }
+    .clickable-dot:hover { filter: brightness(1.4); }
+
+    /* ── Keyframes ── */
+    @keyframes pulse-blue {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(1.45); opacity: 0.65; }
+    }
+    @keyframes pulse-fire {
+      0%, 100% { box-shadow: 0 0 8px 2px rgba(245,158,11,0.5); }
+      50%       { box-shadow: 0 0 22px 8px rgba(239,68,68,0.55); }
+    }
+    @keyframes bounce-in {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.55); }
+      60%  { transform: scale(0.88); }
+      100% { transform: scale(1); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-9px); }
+      40%       { transform: translateX(9px); }
+      60%       { transform: translateX(-6px); }
+      80%       { transform: translateX(6px); }
+    }
+    @keyframes flash-correct {
+      0%   { background: rgba(16, 185, 129, 0.38); }
+      100% { background: rgba(16, 185, 129, 0); }
+    }
+    @keyframes flash-wrong {
+      0%   { background: rgba(244, 63, 94, 0.38); }
+      100% { background: rgba(244, 63, 94, 0); }
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 480px) {
+      .stats-bar   { padding: 0 10px; gap: 6px; }
+      .stats-value { font-size: 1rem; }
+      .stats-label { font-size: 0.58rem; }
+      .start-title { font-size: 1.8rem; }
+      .end-card    { padding: 24px 18px; }
+      .question-card { padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    /* ══════════════════════════════════
+       DATA
+    ══════════════════════════════════ */
+    const EMOJIS = ['🥶','🤮','😵‍💫','😢','😣','😬','🧐','🥹','😄','🤩','🥳','🫠','🔥','🍳'];
+
+    const POINTS = [
+      { deg: 0,   rad: '0',      coords: '(1, 0)',          rx: '1',     ry: '0'      },
+      { deg: 30,  rad: 'π/6',    coords: '(√3/2, 1/2)',    rx: '√3/2',  ry: '1/2'   },
+      { deg: 45,  rad: 'π/4',    coords: '(√2/2, √2/2)',   rx: '√2/2',  ry: '√2/2'  },
+      { deg: 60,  rad: 'π/3',    coords: '(1/2, √3/2)',    rx: '1/2',   ry: '√3/2'  },
+      { deg: 90,  rad: 'π/2',    coords: '(0, 1)',          rx: '0',     ry: '1'      },
+      { deg: 120, rad: '2π/3',   coords: '(-1/2, √3/2)',   rx: '-1/2',  ry: '√3/2'  },
+      { deg: 135, rad: '3π/4',   coords: '(-√2/2, √2/2)',  rx: '-√2/2', ry: '√2/2'  },
+      { deg: 150, rad: '5π/6',   coords: '(-√3/2, 1/2)',   rx: '-√3/2', ry: '1/2'   },
+      { deg: 180, rad: 'π',      coords: '(-1, 0)',         rx: '-1',    ry: '0'      },
+      { deg: 210, rad: '7π/6',   coords: '(-√3/2, -1/2)',  rx: '-√3/2', ry: '-1/2'  },
+      { deg: 225, rad: '5π/4',   coords: '(-√2/2, -√2/2)', rx: '-√2/2', ry: '-√2/2' },
+      { deg: 240, rad: '4π/3',   coords: '(-1/2, -√3/2)',  rx: '-1/2',  ry: '-√3/2' },
+      { deg: 270, rad: '3π/2',   coords: '(0, -1)',         rx: '0',     ry: '-1'     },
+      { deg: 300, rad: '5π/3',   coords: '(1/2, -√3/2)',   rx: '1/2',   ry: '-√3/2' },
+      { deg: 315, rad: '7π/4',   coords: '(√2/2, -√2/2)',  rx: '√2/2',  ry: '-√2/2' },
+      { deg: 330, rad: '11π/6',  coords: '(√3/2, -1/2)',   rx: '√3/2',  ry: '-1/2'  },
+    ];
+
+    /* ══════════════════════════════════
+       UTILITIES
+    ══════════════════════════════════ */
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function buildQueue(mode) {
+      const types =
+        mode === 'all'         ? ['degree', 'radian', 'coordinates', 'click-point'] :
+        mode === 'degrees'     ? ['degree'] :
+        mode === 'radians'     ? ['radian'] :
+        /* coordinates */        ['coordinates'];
+
+      const qs = [];
+      POINTS.forEach(p => {
+        types.forEach(type => {
+          if (type === 'click-point') {
+            const useDeg = Math.random() < 0.5;
+            qs.push({
+              type,
+              pointDeg: p.deg,
+              answer: String(p.deg),
+              prompt: useDeg
+                ? `Click the point at ${p.deg}°`
+                : `Click the point at ${p.rad}`,
+            });
+          } else if (type === 'degree') {
+            qs.push({ type, pointDeg: p.deg, answer: String(p.deg),
+              prompt: 'What is the degree measure of the highlighted point?' });
+          } else if (type === 'radian') {
+            qs.push({ type, pointDeg: p.deg, answer: p.rad,
+              prompt: 'What is the radian measure of the highlighted point?' });
+          } else {
+            qs.push({ type, pointDeg: p.deg, answer: p.coords,
+              prompt: 'What are the coordinates of the highlighted point?' });
+          }
+        });
+      });
+      return shuffle(qs);
+    }
+
+    function normalize(raw) {
+      return String(raw).trim().toLowerCase()
+        .replace(/pi/g, 'π')
+        .replace(/sqrt\(([23])\)/g, '√$1')
+        .replace(/sqrt([23])/g, '√$1')
+        .replace(/root([23])/g, '√$1')
+        .replace(/°/g, '')
+        .replace(/\bdegrees?\b/g, '')
+        .replace(/\s+/g, '');
+    }
+
+    function validate(input, q) {
+      const n = normalize(input);
+      const a = normalize(q.answer);
+      if (q.type === 'coordinates') {
+        return n === a ||
+          n.replace(/^\(|\)$/g, '') === a.replace(/^\(|\)$/g, '');
+      }
+      return n === a;
+    }
+
+    function formatTime(s) {
+      const m = Math.floor(s / 60);
+      return `${m}:${String(s % 60).padStart(2, '0')}`;
+    }
+
+    /* ══════════════════════════════════
+       STATSBAR
+    ══════════════════════════════════ */
+    function StatsBar({ correct, wrong, qIndex, total, elapsed, onQuit }) {
+      const pct = total > 0 ? (qIndex / total) * 100 : 0;
+      return (
+        <div className="stats-bar">
+          <button className="quit-btn" onClick={onQuit} title="Back to menu">⟵</button>
+          <div className="stats-item">
+            <span className="stats-value stats-correct">{correct}</span>
+            <span className="stats-label">Correct</span>
+          </div>
+          <div className="stats-item">
+            <span className="stats-value stats-wrong">{wrong}</span>
+            <span className="stats-label">Wrong</span>
+          </div>
+          <div className="stats-progress">
+            <div className="stats-progress-inner" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="stats-item">
+            <span className="stats-value" style={{ color: 'var(--accent)' }}>
+              {qIndex}/{total}
+            </span>
+            <span className="stats-label">Progress</span>
+          </div>
+          <div className="stats-item">
+            <span className="stats-value stats-time">{formatTime(elapsed)}</span>
+            <span className="stats-label">Time</span>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       UNIT CIRCLE SVG
+    ══════════════════════════════════ */
+    function UnitCircleSVG({ activePointDeg, questionType, showLabels, onPointClick }) {
+      const CX = 350, CY = 350, R = 220;
+      const LABEL_R = 268;
+      const COORD_R = 328;
+      const isClickQ = questionType === 'click-point';
+
+      return (
+        <div className="svg-container">
+          <svg viewBox="0 0 700 700" overflow="visible">
+            {/* Axes */}
+            <line x1="75" y1="350" x2="625" y2="350"
+              stroke="rgba(99,122,170,0.28)" strokeWidth="1.5" />
+            <line x1="350" y1="75" x2="350" y2="625"
+              stroke="rgba(99,122,170,0.28)" strokeWidth="1.5" />
+            <text x="632" y="356" fill="rgba(99,122,170,0.55)"
+              fontSize="14" fontFamily="DM Sans,sans-serif">x</text>
+            <text x="350" y="68" fill="rgba(99,122,170,0.55)"
+              fontSize="14" fontFamily="DM Sans,sans-serif" textAnchor="middle">y</text>
+
+            {/* Unit circle */}
+            <circle cx={CX} cy={CY} r={R}
+              fill="none"
+              stroke="rgba(99,122,170,0.4)"
+              strokeWidth="2" />
+
+            {/* Origin */}
+            <circle cx={CX} cy={CY} r="3" fill="rgba(99,122,170,0.45)" />
+            <text x={CX + 6} y={CY - 6}
+              fill="rgba(99,122,170,0.45)" fontSize="11"
+              fontFamily="DM Sans,sans-serif">O</text>
+
+            {POINTS.map(p => {
+              const rad   = p.deg * Math.PI / 180;
+              const cosA  = Math.cos(rad);
+              const sinA  = Math.sin(rad);
+
+              const px = CX + R * cosA;
+              const py = CY - R * sinA;
+
+              const lx = CX + LABEL_R * cosA;
+              const ly = CY - LABEL_R * sinA;
+
+              const cx2 = CX + COORD_R * cosA;
+              const cy2 = CY - COORD_R * sinA;
+
+              const anchor  = cosA > 0.1 ? 'start' : cosA < -0.1 ? 'end' : 'middle';
+              const isActive = activePointDeg === p.deg;
+              const showGlow = isActive && !isClickQ;
+
+              return (
+                <g key={p.deg}>
+                  {/* Angle + radian label — only in study mode */}
+                  {showLabels && (
+                    <text
+                      x={lx} y={ly}
+                      fill={showGlow ? '#e2e8f0' : 'rgba(148,163,184,0.85)'}
+                      fontSize="11.5"
+                      fontFamily="DM Mono,monospace"
+                      textAnchor={anchor}
+                      fontWeight={showGlow ? '500' : '400'}
+                      opacity={showGlow ? 1 : 0.65}
+                    >
+                      <tspan dy="-7">{p.deg}°</tspan>
+                      <tspan x={lx} dy="15">{p.rad}</tspan>
+                    </text>
+                  )}
+
+                  {/* Coordinate label — only in study mode */}
+                  {showLabels && (
+                    <text
+                      x={cx2} y={cy2}
+                      fill="rgba(100,116,139,0.8)"
+                      fontSize="10"
+                      fontFamily="DM Mono,monospace"
+                      textAnchor={anchor}
+                      opacity={showGlow ? 0.9 : 0.42}
+                    >{p.coords}</text>
+                  )}
+
+                  {/* Invisible hit target for click questions */}
+                  {isClickQ && (
+                    <circle
+                      cx={px} cy={py} r="22"
+                      fill="transparent"
+                      className="clickable-dot"
+                      onClick={() => onPointClick(p.deg)}
+                    />
+                  )}
+
+                  {/* Active glow ring */}
+                  {showGlow && (
+                    <circle
+                      cx={px} cy={py} r="14"
+                      fill="rgba(77,166,255,0.18)"
+                      stroke="rgba(77,166,255,0.4)"
+                      strokeWidth="1"
+                      className="pulse-dot"
+                    />
+                  )}
+
+                  {/* Point dot */}
+                  {showGlow ? (
+                    <circle
+                      cx={px} cy={py} r="6"
+                      fill="var(--accent)"
+                      stroke="rgba(255,255,255,0.5)"
+                      strokeWidth="1"
+                    />
+                  ) : (
+                    <circle
+                      cx={px} cy={py} r={isClickQ ? 6 : 4.5}
+                      fill={isClickQ ? 'rgba(77,166,255,0.55)' : 'rgba(77,166,255,0.35)'}
+                      stroke={isClickQ ? 'rgba(77,166,255,0.85)' : 'rgba(77,166,255,0.6)'}
+                      strokeWidth="1.5"
+                      className={isClickQ ? 'clickable-dot' : ''}
+                      onClick={isClickQ ? () => onPointClick(p.deg) : undefined}
+                    />
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       QUESTION CARD
+    ══════════════════════════════════ */
+    function QuestionCard({ question, onAnswer, onSkip }) {
+      const [inputVal, setInputVal] = useState('');
+      const inputRef = useRef(null);
+
+      useEffect(() => {
+        setInputVal('');
+        if (question.type !== 'click-point') {
+          setTimeout(() => inputRef.current?.focus(), 60);
+        }
+      }, [question]);
+
+      const handleSubmit = () => {
+        const v = inputVal.trim();
+        if (!v) return;
+        onAnswer(v);
+        setInputVal('');
+      };
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Enter')  handleSubmit();
+        if (e.key === 'Escape') onSkip();
+      };
+
+      const placeholder =
+        question.type === 'degree'
+          ? 'e.g. 45'
+          : question.type === 'radian'
+          ? 'e.g. π/4  or  pi/4'
+          : 'e.g. (√2/2, √2/2)  or  (sqrt(2)/2, sqrt(2)/2)';
+
+      return (
+        <div className="question-card">
+          <div className="question-prompt">{question.prompt}</div>
+
+          {question.type !== 'click-point' ? (
+            <>
+              <div className="type-input-row">
+                <input
+                  ref={inputRef}
+                  className="answer-input"
+                  value={inputVal}
+                  onChange={e => setInputVal(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={placeholder}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  spellCheck={false}
+                />
+                <button className="submit-btn" onClick={handleSubmit}>Check</button>
+                <button className="skip-btn"   onClick={onSkip}>Skip</button>
+              </div>
+              <div className="input-hint">Enter to submit · Esc to skip</div>
+            </>
+          ) : (
+            <>
+              <div className="click-prompt">
+                <span>👆</span>
+                <span>Click the correct point on the circle</span>
+              </div>
+              <div className="click-prompt-hint">Esc to skip</div>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       EMOJI INDICATOR
+    ══════════════════════════════════ */
+    function EmojiIndicator({ moodLevel, animKey, animType, streak }) {
+      const emoji  = EMOJIS[moodLevel];
+      const isFire = moodLevel >= 12;
+
+      const cls = [
+        'emoji-wrapper',
+        isFire                     ? 'emoji-fire-glow' : '',
+        animType === 'bounce'      ? 'emoji-bounce'    : '',
+        animType === 'shake'       ? 'emoji-shake'     : '',
+      ].filter(Boolean).join(' ');
+
+      const streakLabel =
+        streak >= 3  ? `🔥 ${streak} streak` :
+        streak <= -3 ? `${streak} streak`      : '';
+
+      return (
+        <div className="emoji-indicator">
+          <div key={animKey} className={cls}>{emoji}</div>
+          {streakLabel && <span className="streak-label">{streakLabel}</span>}
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       START SCREEN
+    ══════════════════════════════════ */
+    function StartScreen({ mode, setMode, studyMode, setStudyMode, highScore, onStart }) {
+      const MODES = [
+        { id: 'all',         label: 'All Types',   desc: '64 questions' },
+        { id: 'degrees',     label: 'Degrees',      desc: '16 questions' },
+        { id: 'radians',     label: 'Radians',      desc: '16 questions' },
+        { id: 'coordinates', label: 'Coordinates',  desc: '16 questions' },
+      ];
+
+      return (
+        <div className="screen">
+          <div className="start-title">Unit Circle Quiz</div>
+          <div className="start-subtitle">Master the 16 standard points</div>
+
+          <div className="mode-grid">
+            {MODES.map(m => (
+              <button
+                key={m.id}
+                className={`mode-btn ${mode === m.id ? 'active' : ''}`}
+                onClick={() => setMode(m.id)}
+              >
+                <div style={{ fontWeight: 600 }}>{m.label}</div>
+                <div style={{ fontSize: '0.73rem', opacity: 0.65, marginTop: '2px' }}>{m.desc}</div>
+              </button>
+            ))}
+          </div>
+
+          <div className="difficulty-toggle">
+            <button
+              className={`diff-btn ${!studyMode ? 'active' : ''}`}
+              onClick={() => setStudyMode(false)}
+            >🧠 Quiz — labels hidden</button>
+            <button
+              className={`diff-btn ${studyMode ? 'active' : ''}`}
+              onClick={() => setStudyMode(true)}
+            >📖 Study — labels visible</button>
+          </div>
+
+          <div className="high-score">
+            Best Score: <span>{highScore > 0 ? highScore : '—'}</span>
+          </div>
+
+          <button className="start-btn" onClick={onStart}>Start Quiz</button>
+
+          <a href="../index.html" className="back-link" style={{ marginTop: '20px' }}>
+            ← Back to Games
+          </a>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       END SCREEN
+    ══════════════════════════════════ */
+    function EndScreen({ correct, wrong, elapsed, highScore, isNewBest, onPlayAgain }) {
+      const total    = correct + wrong;
+      const accuracy = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+      const trophy =
+        accuracy >= 90 ? '🏆' :
+        accuracy >= 70 ? '😄' :
+        accuracy >= 50 ? '😬' : '😵‍💫';
+
+      const message =
+        accuracy >= 90 ? 'Outstanding!' :
+        accuracy >= 70 ? 'Great work!'  :
+        accuracy >= 50 ? 'Keep going!'  : 'Keep at it!';
+
+      return (
+        <div className="screen">
+          <div className="end-card">
+            <div style={{ fontSize: '3rem', marginBottom: '8px' }}>{trophy}</div>
+            <div className="end-title">Quiz Complete!</div>
+            <div className="end-subtitle">{message}</div>
+
+            {isNewBest && <div className="new-best-badge">⭐ NEW BEST SCORE</div>}
+
+            <div className="end-stats-grid">
+              <div className="end-stat">
+                <div className="end-stat-value" style={{ color: 'var(--correct)' }}>{correct}</div>
+                <div className="end-stat-label">Correct</div>
+              </div>
+              <div className="end-stat">
+                <div className="end-stat-value" style={{ color: 'var(--wrong)' }}>{wrong}</div>
+                <div className="end-stat-label">Wrong</div>
+              </div>
+              <div className="end-stat">
+                <div className="end-stat-value">{accuracy}%</div>
+                <div className="end-stat-label">Accuracy</div>
+              </div>
+              <div className="end-stat">
+                <div className="end-stat-value" style={{ color: 'var(--text-muted)' }}>
+                  {formatTime(elapsed)}
+                </div>
+                <div className="end-stat-label">Time</div>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '14px', color: 'var(--text-muted)', fontSize: '0.83rem' }}>
+              High Score:{' '}
+              <span style={{ color: '#f59e0b', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                {highScore}
+              </span>
+            </div>
+
+            <button className="play-again-btn" onClick={onPlayAgain}>Play Again</button>
+            <br />
+            <a href="../index.html" className="back-link">← Back to Games</a>
+          </div>
+        </div>
+      );
+    }
+
+    /* ══════════════════════════════════
+       APP  (all state lives here)
+    ══════════════════════════════════ */
+    function App() {
+      const [gamePhase,  setGamePhase]  = useState('start');
+      const [mode,       setMode]       = useState('all');
+      const [studyMode,  setStudyMode]  = useState(false);
+      const [queue,      setQueue]      = useState([]);
+      const [qIndex,     setQIndex]     = useState(0);
+      const [correct,    setCorrect]    = useState(0);
+      const [wrong,      setWrong]      = useState(0);
+      const [moodLevel,  setMoodLevel]  = useState(3);
+      const [streak,     setStreak]     = useState(0);
+      const [emojiAnim,  setEmojiAnim]  = useState(null);
+      const [emojiKey,   setEmojiKey]   = useState(0);
+      const [flashState, setFlashState] = useState(null);
+      const [flashKey,   setFlashKey]   = useState(0);
+      const [elapsed,    setElapsed]    = useState(0);
+      const [isNewBest,  setIsNewBest]  = useState(false);
+      const [highScore,  setHighScore]  = useState(() => {
+        try { return parseInt(localStorage.getItem('ucq_highscore') || '0', 10); }
+        catch { return 0; }
+      });
+
+      const timerRef    = useRef(null);
+      const correctRef  = useRef(0);
+      const wrongRef    = useRef(0);
+      const elapsedRef  = useRef(0);
+      const highScoreRef = useRef(highScore);
+
+      // Keep refs in sync
+      useEffect(() => { correctRef.current  = correct;  }, [correct]);
+      useEffect(() => { wrongRef.current    = wrong;    }, [wrong]);
+      useEffect(() => { elapsedRef.current  = elapsed;  }, [elapsed]);
+      useEffect(() => { highScoreRef.current = highScore; }, [highScore]);
+
+      const currentQuestion = queue[qIndex] || null;
+
+      // ── Timer ──
+      useEffect(() => {
+        if (gamePhase === 'quiz') {
+          timerRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
+        }
+        return () => clearInterval(timerRef.current);
+      }, [gamePhase]);
+
+      // ── Global Escape key ──
+      useEffect(() => {
+        const onKey = (e) => {
+          if (e.key === 'Escape' && gamePhase === 'quiz') triggerSkip();
+        };
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+      }, [gamePhase, qIndex]); // eslint-disable-line
+
+      // ── startGame ──
+      const startGame = () => {
+        const q = buildQueue(mode);
+        setQueue(q);
+        setQIndex(0);
+        setCorrect(0);
+        setWrong(0);
+        setMoodLevel(3);
+        setStreak(0);
+        setEmojiAnim(null);
+        setFlashState(null);
+        setElapsed(0);
+        setIsNewBest(false);
+        correctRef.current  = 0;
+        wrongRef.current    = 0;
+        elapsedRef.current  = 0;
+        setGamePhase('quiz');
+      };
+
+      // ── endGame ──
+      const endGame = (finalCorrect) => {
+        clearInterval(timerRef.current);
+        let newBest = false;
+        try {
+          if (finalCorrect > highScoreRef.current) {
+            localStorage.setItem('ucq_highscore', String(finalCorrect));
+            setHighScore(finalCorrect);
+            highScoreRef.current = finalCorrect;
+            newBest = true;
+          }
+        } catch {}
+        setIsNewBest(newBest);
+        setGamePhase('end');
+      };
+
+      // ── shared feedback animation ──
+      const triggerFeedback = (isCorrect) => {
+        setFlashState(isCorrect ? 'correct' : 'wrong');
+        setFlashKey(k => k + 1);
+        setEmojiAnim(null);
+        setEmojiKey(k => k + 1);
+        setTimeout(() => setEmojiAnim(isCorrect ? 'bounce' : 'shake'), 10);
+      };
+
+      // ── handleAnswer ──
+      const handleAnswer = (input) => {
+        if (!currentQuestion) return;
+        const isCorrect = validate(input, currentQuestion);
+
+        const newCorrect = isCorrect ? correctRef.current + 1 : correctRef.current;
+        const newWrong   = isCorrect ? wrongRef.current       : wrongRef.current + 1;
+        if (isCorrect) setCorrect(newCorrect); else setWrong(newWrong);
+
+        setMoodLevel(prev => isCorrect ? Math.min(13, prev + 1) : Math.max(0, prev - 3));
+        setStreak(prev =>
+          isCorrect ? (prev >= 0 ? prev + 1 : 1) : (prev <= 0 ? prev - 1 : -1)
+        );
+        triggerFeedback(isCorrect);
+
+        const nextIdx = qIndex + 1;
+        if (nextIdx >= queue.length) {
+          setTimeout(() => endGame(newCorrect), 700);
+        } else {
+          setQIndex(nextIdx);
+        }
+      };
+
+      // ── handleSkip (treats as wrong) ──
+      const triggerSkip = () => {
+        if (!currentQuestion) return;
+        const newWrong = wrongRef.current + 1;
+        setWrong(newWrong);
+        setMoodLevel(prev => Math.max(0, prev - 3));
+        setStreak(prev => prev <= 0 ? prev - 1 : -1);
+        triggerFeedback(false);
+
+        const nextIdx = qIndex + 1;
+        if (nextIdx >= queue.length) {
+          setTimeout(() => endGame(correctRef.current), 700);
+        } else {
+          setQIndex(nextIdx);
+        }
+      };
+
+      return (
+        <div>
+          {/* Flash overlay */}
+          {flashState && (
+            <div
+              key={flashKey}
+              className={`flash-overlay ${flashState === 'correct' ? 'flash-correct' : 'flash-wrong'}`}
+            />
+          )}
+
+          {/* Stats bar */}
+          {gamePhase === 'quiz' && (
+            <StatsBar
+              correct={correct}
+              wrong={wrong}
+              qIndex={qIndex}
+              total={queue.length}
+              elapsed={elapsed}
+              onQuit={() => { clearInterval(timerRef.current); setGamePhase('start'); }}
+            />
+          )}
+
+          {/* Start */}
+          {gamePhase === 'start' && (
+            <StartScreen
+              mode={mode}
+              setMode={setMode}
+              studyMode={studyMode}
+              setStudyMode={setStudyMode}
+              highScore={highScore}
+              onStart={startGame}
+            />
+          )}
+
+          {/* Quiz */}
+          {gamePhase === 'quiz' && currentQuestion && (
+            <div className="screen quiz-screen">
+              <div className="quiz-layout">
+                <QuestionCard
+                  question={currentQuestion}
+                  onAnswer={handleAnswer}
+                  onSkip={triggerSkip}
+                />
+                <UnitCircleSVG
+                  activePointDeg={currentQuestion.pointDeg}
+                  questionType={currentQuestion.type}
+                  showLabels={studyMode}
+                  onPointClick={(deg) => handleAnswer(String(deg))}
+                />
+              </div>
+              <EmojiIndicator
+                moodLevel={moodLevel}
+                animKey={emojiKey}
+                animType={emojiAnim}
+                streak={streak}
+              />
+            </div>
+          )}
+
+          {/* End */}
+          {gamePhase === 'end' && (
+            <EndScreen
+              correct={correct}
+              wrong={wrong}
+              elapsed={elapsed}
+              highScore={highScore}
+              isNewBest={isNewBest}
+              onPlayAgain={() => setGamePhase('start')}
+            />
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
