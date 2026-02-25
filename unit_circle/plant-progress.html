@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plant Growth Progress</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Crimson+Pro:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --soil: #5c3d1e;
+    --soil-light: #7a5230;
+    --stem: #3d7a4a;
+    --stem-dark: #2a5634;
+    --leaf: #4a9e5c;
+    --leaf-dark: #2d6b3a;
+    --petal-1: #f4a261;
+    --petal-2: #e76f51;
+    --petal-3: #f9c784;
+    --center: #ffbe0b;
+    --bg: #0f1a12;
+    --card: #121f15;
+    --text: #c8e6c9;
+    --text-dim: #6a9b70;
+  }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Crimson Pro', serif;
+    color: var(--text);
+    overflow: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, #1a3320 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, #1a2e15 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  /* Floating particles */
+  .particle {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--leaf);
+    opacity: 0;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 0.3; }
+    90% { opacity: 0.1; }
+    100% { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid #1e3a22;
+    border-radius: 24px;
+    padding: 48px 52px;
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    position: relative;
+    box-shadow: 0 0 80px rgba(74, 158, 92, 0.08), 0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 30px; right: 30px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #3d7a4a, transparent);
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--text);
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+
+  .stage-label {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    height: 20px;
+    transition: opacity 0.4s;
+  }
+
+  /* SVG Plant */
+  .plant-container {
+    width: 200px;
+    height: 240px;
+    position: relative;
+  }
+
+  #plant-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  /* Stem */
+  #stem {
+    stroke: var(--stem);
+    stroke-width: 4;
+    stroke-linecap: round;
+    fill: none;
+    filter: drop-shadow(0 0 4px rgba(61,122,74,0.4));
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Leaves */
+  .leaf {
+    transform-box: fill-box;
+    transform-origin: right center;
+    transform: scale(0);
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .leaf-right {
+    transform-origin: left center;
+  }
+
+  /* Petals */
+  .petal {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    transform: scale(0) rotate(0deg);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    opacity: 0;
+  }
+
+  .flower-center {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1) 0.3s;
+  }
+
+  /* Glow when bloomed */
+  .bloom-glow {
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  /* Progress controls */
+  .controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 4px;
+    background: #1e3a22;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--stem);
+    border: 2px solid var(--leaf);
+    box-shadow: 0 0 8px rgba(74,158,92,0.5);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 16px rgba(74,158,92,0.8);
+  }
+
+  .pct {
+    font-size: 1.1rem;
+    color: var(--text);
+    width: 44px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  button {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #2a4d2e;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: #1a3a1e;
+    color: var(--text);
+    border-color: var(--stem);
+  }
+
+  button.primary {
+    background: var(--stem-dark);
+    color: var(--text);
+    border-color: var(--stem);
+  }
+  button.primary:hover {
+    background: var(--stem);
+  }
+
+  /* Pollen sparkles */
+  .sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--center);
+    pointer-events: none;
+    opacity: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Floating bg particles -->
+<script>
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = (Math.random() * 10) + 's';
+    p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+    p.style.opacity = 0;
+    document.body.appendChild(p);
+  }
+</script>
+
+<div class="card">
+  <h1>Growing Progress</h1>
+
+  <div class="plant-container" id="plant-wrap">
+    <svg id="plant-svg" viewBox="0 0 200 240">
+      <!-- Soil -->
+      <ellipse cx="100" cy="228" rx="70" ry="12" fill="var(--soil)"/>
+      <ellipse cx="100" cy="224" rx="70" ry="10" fill="var(--soil-light)"/>
+      <!-- tiny soil detail -->
+      <circle cx="75" cy="222" r="2" fill="var(--soil)" opacity="0.6"/>
+      <circle cx="115" cy="221" r="1.5" fill="var(--soil)" opacity="0.6"/>
+      <circle cx="130" cy="223" r="2" fill="var(--soil)" opacity="0.5"/>
+
+      <!-- Seed -->
+      <ellipse id="seed" cx="100" cy="215" rx="6" ry="4" fill="#8B6914" opacity="1"/>
+
+      <!-- Stem -->
+      <path id="stem" d="M100,218 C97,200 103,180 99,160 C96,140 102,120 100,95"/>
+
+      <!-- Leaf Left (bottom) -->
+      <g id="leaf-l1" class="leaf">
+        <path d="M97,178 C80,165 68,158 65,148 C75,148 90,155 97,168" fill="var(--leaf-dark)"/>
+        <path d="M97,178 C82,167 72,160 68,151 C78,150 91,157 97,170" fill="var(--leaf)"/>
+        <line x1="97" y1="178" x2="70" y2="152" stroke="var(--leaf-dark)" stroke-width="0.8" opacity="0.6"/>
+      </g>
+
+      <!-- Leaf Right (bottom) -->
+      <g id="leaf-r1" class="leaf leaf-right">
+        <path d="M101,165 C118,152 130,145 133,135 C123,135 108,142 101,155" fill="var(--leaf-dark)"/>
+        <path d="M101,165 C116,154 126,147 130,138 C120,137 107,144 101,157" fill="var(--leaf)"/>
+        <line x1="101" y1="165" x2="128" y2="139" stroke="var(--leaf-dark)" stroke-width="0.8" opacity="0.6"/>
+      </g>
+
+      <!-- Leaf Left (top) -->
+      <g id="leaf-l2" class="leaf">
+        <path d="M99,135 C84,124 74,118 70,109 C80,108 93,115 99,128" fill="var(--leaf-dark)"/>
+        <path d="M99,135 C86,126 77,120 73,112 C83,110 94,117 99,130" fill="var(--leaf)"/>
+        <line x1="99" y1="135" x2="74" y2="111" stroke="var(--leaf-dark)" stroke-width="0.8" opacity="0.6"/>
+      </g>
+
+      <!-- Flower glow -->
+      <circle id="bloom-glow" class="bloom-glow" cx="100" cy="90" r="22" fill="var(--petal-3)" filter="url(#glow)"/>
+
+      <!-- Petals (8 petals rotated around center) -->
+      <g id="flower" transform="translate(100,90)">
+        <ellipse class="petal" id="p0" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-1)" transform="rotate(0)"/>
+        <ellipse class="petal" id="p1" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-2)" transform="rotate(45)"/>
+        <ellipse class="petal" id="p2" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-1)" transform="rotate(90)"/>
+        <ellipse class="petal" id="p3" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-2)" transform="rotate(135)"/>
+        <ellipse class="petal" id="p4" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-1)" transform="rotate(180)"/>
+        <ellipse class="petal" id="p5" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-2)" transform="rotate(225)"/>
+        <ellipse class="petal" id="p6" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-1)" transform="rotate(270)"/>
+        <ellipse class="petal" id="p7" cx="0" cy="-16" rx="7" ry="12" fill="var(--petal-2)" transform="rotate(315)"/>
+        <!-- Inner petals -->
+        <ellipse class="petal" id="p8"  cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(22)"/>
+        <ellipse class="petal" id="p9"  cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(67)"/>
+        <ellipse class="petal" id="p10" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(112)"/>
+        <ellipse class="petal" id="p11" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(157)"/>
+        <ellipse class="petal" id="p12" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(202)"/>
+        <ellipse class="petal" id="p13" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(247)"/>
+        <ellipse class="petal" id="p14" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(292)"/>
+        <ellipse class="petal" id="p15" cx="0" cy="-10" rx="5" ry="8" fill="var(--petal-3)" transform="rotate(337)"/>
+
+        <!-- Flower center -->
+        <circle class="flower-center" id="flower-center" cx="0" cy="0" r="9" fill="var(--center)" filter="url(#glow2)"/>
+        <circle class="flower-center" id="flower-center2" cx="0" cy="0" r="6" fill="#f4a800"/>
+        <!-- Stamens -->
+        <circle class="flower-center" cx="3" cy="-3" r="1.5" fill="#fff" opacity="0.8" id="s1"/>
+        <circle class="flower-center" cx="-3" cy="2" r="1.5" fill="#fff" opacity="0.8" id="s2"/>
+        <circle class="flower-center" cx="1" cy="4" r="1.2" fill="#fff" opacity="0.8" id="s3"/>
+      </g>
+
+      <defs>
+        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+    </svg>
+  </div>
+
+  <div class="stage-label" id="stage-label">Waiting to plant...</div>
+
+  <div class="controls">
+    <div class="slider-row">
+      <input type="range" id="slider" min="0" max="100" value="0">
+      <span class="pct" id="pct-display">0%</span>
+    </div>
+    <div class="btn-row">
+      <button onclick="resetPlant()">Reset</button>
+      <button class="primary" onclick="animateGrow()">Watch it Grow</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const slider = document.getElementById('slider');
+const pctDisplay = document.getElementById('pct-display');
+const stageLabel = document.getElementById('stage-label');
+
+const stem = document.getElementById('stem');
+const seed = document.getElementById('seed');
+const bloomGlow = document.getElementById('bloom-glow');
+
+const STEM_LENGTH = 132;
+
+const stages = [
+  { min: 0,  max: 5,  label: 'Waiting to plant...' },
+  { min: 5,  max: 20, label: 'A seed awakens...' },
+  { min: 20, max: 40, label: 'Reaching for the light' },
+  { min: 40, max: 60, label: 'Leaves unfurling' },
+  { min: 60, max: 75, label: 'Growing stronger' },
+  { min: 75, max: 90, label: 'A bud is forming...' },
+  { min: 90, max: 99, label: 'Almost in bloom!' },
+  { min: 99, max: 101,label: '🌸 In full bloom!' },
+];
+
+function ease(t) {
+  return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+
+function updatePlant(progress) {
+  pctDisplay.textContent = Math.round(progress) + '%';
+  slider.value = progress;
+
+  // Stage label
+  const stage = stages.find(s => progress >= s.min && progress < s.max) || stages[stages.length-1];
+  stageLabel.textContent = stage.label;
+
+  // --- Seed ---
+  const seedOpacity = clamp01(1 - (progress - 5) / 10);
+  seed.setAttribute('opacity', seedOpacity);
+
+  // --- Stem ---
+  // Grows from 10% to 70%
+  const stemT = clamp01((progress - 10) / 60);
+  stem.style.strokeDashoffset = STEM_LENGTH * (1 - stemT);
+
+  // --- Leaf L1 (appears at 35%) ---
+  const l1t = clamp01((progress - 35) / 12);
+  document.getElementById('leaf-l1').style.transform = `scale(${l1t})`;
+
+  // --- Leaf R1 (appears at 45%) ---
+  const r1t = clamp01((progress - 45) / 12);
+  document.getElementById('leaf-r1').style.transform = `scale(${r1t})`;
+
+  // --- Leaf L2 (appears at 55%) ---
+  const l2t = clamp01((progress - 55) / 12);
+  document.getElementById('leaf-l2').style.transform = `scale(${l2t})`;
+
+  // --- Petals (80% to 95%) ---
+  for (let i = 0; i < 8; i++) {
+    const t = clamp01((progress - (80 + i * 0.5)) / 10);
+    const el = document.getElementById('p' + i);
+    el.style.transform = el.getAttribute('transform') + ` scale(${t})`;
+    el.style.opacity = t;
+  }
+  // Inner petals (85-95)
+  for (let i = 8; i < 16; i++) {
+    const t = clamp01((progress - (85 + (i-8) * 0.3)) / 8);
+    const el = document.getElementById('p' + i);
+    el.style.transform = el.getAttribute('transform') + ` scale(${t})`;
+    el.style.opacity = t;
+  }
+
+  // --- Flower center (90%) ---
+  const centerT = clamp01((progress - 90) / 8);
+  ['flower-center','flower-center2','s1','s2','s3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.transform = `scale(${centerT})`;
+  });
+
+  // --- Bloom glow (95%+) ---
+  const glowT = clamp01((progress - 95) / 5);
+  bloomGlow.style.opacity = glowT * 0.5;
+
+  // Sparkles at 100
+  if (progress >= 99.5) spawnSparkles();
+}
+
+let sparkleInterval = null;
+function spawnSparkles() {
+  if (sparkleInterval) return;
+  sparkleInterval = setInterval(() => {
+    const wrap = document.getElementById('plant-wrap');
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    const angle = Math.random() * Math.PI * 2;
+    const r = 15 + Math.random() * 20;
+    s.style.left = (100 + Math.cos(angle) * r - 2) + 'px';
+    s.style.top = (60 + Math.sin(angle) * r - 2) + 'px';
+    s.style.background = Math.random() > 0.5 ? 'var(--center)' : 'var(--petal-3)';
+    wrap.appendChild(s);
+    s.animate([
+      { opacity: 0, transform: 'scale(0)' },
+      { opacity: 1, transform: 'scale(1)', offset: 0.3 },
+      { opacity: 0, transform: 'scale(0) translate(' + (Math.random()*30-15) + 'px,' + (-20-Math.random()*20) + 'px)' }
+    ], { duration: 800 + Math.random()*400, easing: 'ease-out' }).onfinish = () => s.remove();
+  }, 180);
+
+  setTimeout(() => {
+    clearInterval(sparkleInterval);
+    sparkleInterval = null;
+  }, 3000);
+}
+
+slider.addEventListener('input', () => {
+  clearInterval(growInterval);
+  updatePlant(parseFloat(slider.value));
+});
+
+let growInterval = null;
+function animateGrow() {
+  clearInterval(growInterval);
+  sparkleInterval && clearInterval(sparkleInterval);
+  sparkleInterval = null;
+  let p = 0;
+  slider.value = 0;
+  updatePlant(0);
+  growInterval = setInterval(() => {
+    p += 0.4;
+    if (p >= 100) { p = 100; clearInterval(growInterval); }
+    updatePlant(p);
+  }, 30);
+}
+
+function resetPlant() {
+  clearInterval(growInterval);
+  clearInterval(sparkleInterval);
+  sparkleInterval = null;
+  document.querySelectorAll('.sparkle').forEach(s => s.remove());
+  updatePlant(0);
+}
+
+updatePlant(0);
+</script>
+</body>
+</html>
