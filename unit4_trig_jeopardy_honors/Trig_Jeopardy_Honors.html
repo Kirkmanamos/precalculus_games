@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 4 Trig — Jeopardy Review (Honors)</title>
+<title>Unit 4 Trig — Jeopardy Review</title>
 <script>
 MathJax = {
   tex: { inlineMath: [['\\(','\\)'],['$','$']], displayMath: [['\\[','\\]']] },
@@ -133,7 +133,7 @@ h1{font-family:'Oswald',sans-serif;font-size:clamp(1.1rem,2.5vw,1.8rem);color:#F
 <div id="setup-overlay">
   <div id="setup-card">
     <div class="setup-logo-title">Jeopardy!</div>
-    <div class="setup-logo-sub">Unit 4 · Introduction to Trigonometry (Honors)</div>
+    <div class="setup-logo-sub">Unit 4 · Introduction to Trigonometry</div>
 
     <div class="setup-section">
       <label>Number of Teams</label>
@@ -159,8 +159,8 @@ h1{font-family:'Oswald',sans-serif;font-size:clamp(1.1rem,2.5vw,1.8rem);color:#F
      GAME AREA (hidden until setup)
 ══════════════════════════════════ -->
 <div id="game-area" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:1200px;">
-  <h1>Unit 4 · Introduction to Trigonometry (Honors)</h1>
-  <p class="subtitle">Jeopardy Review (Honors)</p>
+  <h1>Unit 4 · Introduction to Trigonometry</h1>
+  <p class="subtitle">Jeopardy Review</p>
   <div id="scoreboard"></div>
   <div id="board"></div>
   <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
@@ -288,15 +288,12 @@ const QUESTIONS = [
     answer:`\\(-\\dfrac{\\sqrt{3}}{2}\\)<br><small style="color:#aad4ff">Subtract \\(4\\pi\\): \\(\\dfrac{31\\pi}{6} - \\dfrac{24\\pi}{6} = \\dfrac{7\\pi}{6}\\). Q III, ref. angle \\(\\dfrac{\\pi}{6}\\): \\(\\cos\\!\\left(\\dfrac{7\\pi}{6}\\right) = -\\dfrac{\\sqrt{3}}{2}\\).</small>`
   },
   { pts:500, type:'text',
-    clue:`<p style="line-height:1.9">🎓 <strong>Challenge (Jedi Master):</strong> Evaluate without a calculator:
-    \\[\\sin\\!\\left[\\arccos\\!\\left(-\\dfrac{1}{2}\\right) - \\arctan\\!\\left(\\sqrt{3}\\right)\\right]\\]</p>
-    <p style="margin-top:8px;font-size:.9rem;color:#aad4ff"><em>Hint: Evaluate each inverse trig expression using the unit circle, then apply \\(\\sin(\\alpha - \\beta) = \\sin\\alpha\\cos\\beta - \\cos\\alpha\\sin\\beta\\).</em></p>`,
-    answer:`\\(\\dfrac{\\sqrt{3}}{2}\\)<br>
+    clue:`<p>If \\(\\sin\\theta = -\\dfrac{5}{13}\\) and \\(\\theta\\) is in <strong>Quadrant III</strong>, find the exact value of \\(\\sec\\theta\\).</p>`,
+    answer:`\\(\\sec\\theta = -\\dfrac{13}{12}\\)<br>
     <small style="color:#aad4ff">
-    Step 1: \\(\\arccos\\!\\left(-\\tfrac{1}{2}\\right) = \\dfrac{2\\pi}{3}\\) (range \\([0,\\pi]\\), Q II).<br>
-    Step 2: \\(\\arctan\\!\\left(\\sqrt{3}\\right) = \\dfrac{\\pi}{3}\\) (range \\((-\\tfrac{\\pi}{2},\\tfrac{\\pi}{2})\\), Q I).<br>
-    Step 3: \\(\\dfrac{2\\pi}{3} - \\dfrac{\\pi}{3} = \\dfrac{\\pi}{3}\\).<br>
-    Step 4: \\(\\sin\\!\\left(\\dfrac{\\pi}{3}\\right) = \\dfrac{\\sqrt{3}}{2}\\).
+    In Q III, both sin and cos are negative. Using \\(\\sin^2\\theta + \\cos^2\\theta = 1\\):<br>
+    \\(\\cos^2\\theta = 1 - \\dfrac{25}{169} = \\dfrac{144}{169}\\), so \\(\\cos\\theta = -\\dfrac{12}{13}\\) (negative in Q III).<br>
+    \\(\\sec\\theta = \\dfrac{1}{\\cos\\theta} = -\\dfrac{13}{12}\\).
     </small>`
   }
 ],
@@ -316,13 +313,17 @@ const QUESTIONS = [
     answer:`<strong>Quadrant IV</strong><br><small style="color:#aad4ff">Add \\(4\\pi\\): \\(-\\dfrac{23\\pi}{10} + \\dfrac{40\\pi}{10} = \\dfrac{17\\pi}{10}\\). Since \\(\\dfrac{3\\pi}{2} = \\dfrac{15\\pi}{10} < \\dfrac{17\\pi}{10} < \\dfrac{20\\pi}{10} = 2\\pi\\), the angle is in Q IV.</small>`
   },
   { pts:400, type:'text',
-    clue:`<p>Find one <strong>positive</strong> and one <strong>negative</strong> coterminal angle for \\(\\theta = -\\dfrac{25\\pi}{3}\\).<br><span style="font-size:.88rem;color:#aad4ff">Express answers in radians.</span></p>`,
-    answer:`Positive: \\(\\dfrac{5\\pi}{3}\\) &nbsp; Negative: \\(-\\dfrac{\\pi}{3}\\)<br><small style="color:#aad4ff">\\(-\\dfrac{25\\pi}{3} + 10\\pi = -\\dfrac{25\\pi}{3} + \\dfrac{30\\pi}{3} = \\dfrac{5\\pi}{3}\\) (positive).<br>\\(-\\dfrac{25\\pi}{3} + 8\\pi = -\\dfrac{25\\pi}{3} + \\dfrac{24\\pi}{3} = -\\dfrac{\\pi}{3}\\) (negative).</small>`
+    clue:`<p>Find the <strong>smallest positive</strong> coterminal angle for \\(\\theta = -\\dfrac{25\\pi}{3}\\).<br><span style="font-size:.88rem;color:#aad4ff">Express your answer in radians.</span></p>`,
+    answer:`\\(\\dfrac{5\\pi}{3}\\)<br><small style="color:#aad4ff">Add full rotations: \\(-\\dfrac{25\\pi}{3} + 10\\pi = -\\dfrac{25\\pi}{3} + \\dfrac{30\\pi}{3} = \\dfrac{5\\pi}{3}\\). Since \\(0 \\le \\dfrac{5\\pi}{3} < 2\\pi\\), this is the smallest positive coterminal angle.</small>`
   },
   { pts:500, type:'text',
-    clue:`<p>🎓 <strong>Challenge:</strong> The angle \\(\\theta\\) satisfies <strong>both</strong> conditions:<br>\\(\\sin\\theta < 0\\) &nbsp;and&nbsp; \\(\\sec\\theta < 0\\).</p>
-    <p style="margin-top:8px">(a) In which quadrant must \\(\\theta\\) terminate?<br>(b) If the reference angle is \\(\\dfrac{2\\pi}{5}\\), find all values of \\(\\theta\\) in \\([0, 4\\pi]\\).</p>`,
-    answer:`(a) <strong>Quadrant III</strong> — \\(\\sin\\theta < 0\\) → QIII or QIV; \\(\\sec\\theta < 0 \\Rightarrow \\cos\\theta < 0\\) → QII or QIII. Only QIII satisfies both.<br>(b) In \\([0,4\\pi]\\): \\(\\theta = \\pi + \\dfrac{2\\pi}{5} = \\dfrac{7\\pi}{5}\\) and \\(\\theta = \\dfrac{7\\pi}{5} + 2\\pi = \\dfrac{17\\pi}{5}\\).`
+    clue:`<p>The angle \\(\\theta\\) satisfies <strong>both</strong>: \\(\\sin\\theta < 0\\) and \\(\\sec\\theta < 0\\). If the reference angle is \\(\\dfrac{2\\pi}{5}\\), find \\(\\theta\\) in \\([0, 2\\pi]\\).</p>`,
+    answer:`\\(\\theta = \\dfrac{7\\pi}{5}\\)<br>
+    <small style="color:#aad4ff">
+    \\(\\sin\\theta < 0\\) → Q III or Q IV. &nbsp; \\(\\sec\\theta < 0 \\Rightarrow \\cos\\theta < 0\\) → Q II or Q III.<br>
+    Intersection: <strong>Q III</strong> only.<br>
+    Q III angle with reference angle \\(\\dfrac{2\\pi}{5}\\): \\(\\theta = \\pi + \\dfrac{2\\pi}{5} = \\dfrac{7\\pi}{5}\\).
+    </small>`
   }
 ],
 
@@ -352,15 +353,12 @@ const QUESTIONS = [
     answer:`Choice B — \\(x = \\dfrac{\\pi}{6}\\) and \\(x = \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">\\(\\sin x = \\dfrac{1}{2}\\). Sine is positive in Q I and Q II, giving \\(\\dfrac{\\pi}{6}\\) and \\(\\pi - \\dfrac{\\pi}{6} = \\dfrac{5\\pi}{6}\\).</small>`
   },
   { pts:500, type:'text',
-    clue:`<p>🎓 <strong>Challenge (Jedi Master):</strong> Evaluate without a calculator:
-    \\[\\cos\\!\\left[\\arcsin\\!\\left(-\\dfrac{\\sqrt{3}}{2}\\right) + \\arccos\\!\\left(-\\dfrac{1}{2}\\right)\\right]\\]</p>
-    <p style="margin-top:6px;font-size:.88rem;color:#aad4ff"><em>Hint: Evaluate each inverse trig expression using the unit circle, then apply \\(\\cos(\\alpha+\\beta) = \\cos\\alpha\\cos\\beta - \\sin\\alpha\\sin\\beta\\).</em></p>`,
-    answer:`\\(\\dfrac{1}{2}\\)<br>
+    clue:`<p>Find the exact value of \\(\\tan\\!\\left(\\arccos\\!\\left(-\\dfrac{4}{5}\\right)\\right)\\).</p>`,
+    answer:`\\(-\\dfrac{3}{4}\\)<br>
     <small style="color:#aad4ff">
-    Step 1: \\(\\arcsin\\!\\left(-\\dfrac{\\sqrt{3}}{2}\\right) = -\\dfrac{\\pi}{3}\\) (range \\([-\\tfrac{\\pi}{2},\\tfrac{\\pi}{2}]\\)).<br>
-    Step 2: \\(\\arccos\\!\\left(-\\dfrac{1}{2}\\right) = \\dfrac{2\\pi}{3}\\) (range \\([0,\\pi]\\)).<br>
-    Step 3: \\(-\\dfrac{\\pi}{3} + \\dfrac{2\\pi}{3} = \\dfrac{\\pi}{3}\\).<br>
-    Step 4: \\(\\cos\\!\\left(\\dfrac{\\pi}{3}\\right) = \\dfrac{1}{2}\\).
+    Let \\(\\theta = \\arccos\\!\\left(-\\dfrac{4}{5}\\right)\\). Range of arccos is \\([0,\\pi]\\), and cosine is negative, so \\(\\theta\\) is in Q II.<br>
+    Adjacent \\(= -4\\), hypotenuse \\(= 5\\), so opposite \\(= 3\\) (positive in Q II).<br>
+    \\(\\tan\\theta = \\dfrac{3}{-4} = -\\dfrac{3}{4}\\).
     </small>`
   }
 ],
@@ -400,7 +398,7 @@ const QUESTIONS = [
     </small>`
   },
   { pts:500, type:'mc', drawFn:'drawCosGraph',
-    clue:`<p>🎓 <strong>Challenge:</strong> The graph shown includes plotted points at both endpoints of one full period and all key values. Match the equation — pay close attention to the phase shift.<br><span style="font-size:.88rem;color:#aad4ff">Answers are written in the form \\(y = a\\cos\\bigl(b(x-c)\\bigr) + d\\).</span></p>`,
+    clue:`<p>The graph shown includes plotted points at both endpoints of one full period and all key values. Match the equation — pay close attention to the phase shift.<br><span style="font-size:.88rem;color:#aad4ff">Answers are written in the form \\(y = a\\cos\\bigl(b(x-c)\\bigr) + d\\).</span></p>`,
     choices:[
       '\\(y = 2\\cos\\bigl(\\tfrac{\\pi}{2}(x - 1)\\bigr) + 1\\)',
       '\\(y = 2\\cos\\bigl(\\tfrac{\\pi}{2}(x + 1)\\bigr) + 1\\)',
@@ -434,17 +432,17 @@ const QUESTIONS = [
     answer:`Midline \\(= \\dfrac{88+28}{2} = 58°\\!F\\)<br>Amplitude \\(= \\dfrac{88-28}{2} = 30°\\!F\\)`
   },
   { pts:400, type:'text',
-    clue:`<p>Using \\(h(t) = 50 + 45\\sin\\!\\left(\\dfrac{\\pi}{10}\\,t\\right)\\) from before:</p>
-    <p style="margin-top:8px">(a) At what time \\(t\\) does the passenger <strong>first reach maximum height</strong>?<br>(b) What is the <strong>minimum height</strong>?</p>`,
-    answer:`(a) \\(\\sin\\!\\left(\\dfrac{\\pi}{10}t\\right)=1 \\Rightarrow \\dfrac{\\pi}{10}t=\\dfrac{\\pi}{2} \\Rightarrow t = 5\\) seconds.<br>(b) Minimum \\(= 50 - 45 = \\mathbf{5}\\) feet.`
+    clue:`<p>Using \\(h(t) = 50 + 45\\sin\\!\\left(\\dfrac{\\pi}{10}\\,t\\right)\\):<br>At what time \\(t\\) does the passenger <strong>first reach maximum height</strong>?</p>`,
+    answer:`\\(t = 5\\) seconds.<br><small style="color:#aad4ff">Maximum occurs when \\(\\sin\\!\\left(\\dfrac{\\pi}{10}t\\right)=1\\), so \\(\\dfrac{\\pi}{10}t=\\dfrac{\\pi}{2}\\), giving \\(t = 5\\) s.</small>`
   },
   { pts:500, type:'text',
-    clue:`<p>🎓 <strong>Challenge (Jedi Master):</strong> A buoy bobs in the ocean. At \\(t=0\\) it is at its midpoint and moving <em>upward</em>. Its amplitude is <strong>4 ft</strong> and it completes one cycle every <strong>8 seconds</strong>.</p>
-    <p style="margin-top:8px">(a) Write a sinusoidal function \\(h(t)\\) for the buoy's height above its midpoint.<br>(b) During the <strong>first 16 seconds</strong>, at what times is the buoy exactly <strong>2 ft above</strong> its midpoint AND <strong>moving downward</strong>?</p>`,
-    answer:`(a) \\(h(t) = 4\\sin\\!\\left(\\dfrac{\\pi}{4}\\,t\\right)\\) &nbsp; (amplitude 4, period \\(=\\tfrac{2\\pi}{\\pi/4}=8\\) ✓, starts at 0 moving up ✓)<br>
-    (b) Set \\(4\\sin\\!\\left(\\tfrac{\\pi}{4}t\\right)=2 \\Rightarrow \\sin\\!\\left(\\tfrac{\\pi}{4}t\\right)=\\tfrac{1}{2}\\).<br>
-    &nbsp; \\(\\tfrac{\\pi}{4}t = \\tfrac{\\pi}{6}\\) or \\(\\tfrac{5\\pi}{6}\\), giving \\(t = \\tfrac{2}{3}\\) or \\(\\tfrac{10}{3}\\) s (first cycle).<br>
-    Moving <strong>downward</strong> ⟹ past the maximum: \\(t = \\dfrac{10}{3} \\approx 3.33\\) s and \\(t = \\dfrac{10}{3}+8 = \\dfrac{34}{3} \\approx 11.33\\) s.`
+    clue:`<p>A buoy bobs in the ocean. At \\(t=0\\) it is at its midpoint and moving <em>upward</em>. Its amplitude is <strong>4 ft</strong> and it completes one cycle every <strong>8 seconds</strong>. Write a sinusoidal function \\(h(t)\\) for the buoy's height above its midpoint.</p>`,
+    answer:`\\(h(t) = 4\\sin\\!\\left(\\dfrac{\\pi}{4}\\,t\\right)\\)<br>
+    <small style="color:#aad4ff">
+    Starts at 0 and moves upward → use sine (not cosine).<br>
+    Amplitude \\(= 4\\). Period \\(= 8\\), so \\(b = \\dfrac{2\\pi}{8} = \\dfrac{\\pi}{4}\\).<br>
+    Check: \\(h(0) = 4\\sin(0) = 0\\) ✓, and \\(h'(0) > 0\\) (moving up) ✓.
+    </small>`
   }
 ],
 
@@ -463,17 +461,18 @@ const QUESTIONS = [
     answer:`\\(\\omega = \\dfrac{v}{r} = \\dfrac{8}{0.35} = \\dfrac{160}{7} \\approx 22.9\\) rad/s`
   },
   { pts:400, type:'text',
-    clue:`<p>A satellite orbits Earth at a radius of <strong>6800 km</strong> with a period of <strong>90 minutes</strong>.</p>
-    <p style="margin-top:8px">(a) Find the angular speed in <strong>rad/min</strong>.<br>(b) Find the linear speed in <strong>km/min</strong>.</p>`,
-    answer:`(a) \\(\\omega = \\dfrac{2\\pi}{90} = \\dfrac{\\pi}{45}\\) rad/min \\(\\approx 0.0698\\) rad/min<br>(b) \\(v = \\omega r = \\dfrac{\\pi}{45}\\cdot 6800 = \\dfrac{6800\\pi}{45} \\approx 475\\) km/min`
+    clue:`<p>A satellite orbits Earth at a radius of <strong>6800 km</strong> with a period of <strong>90 minutes</strong>. Find the satellite's <strong>linear speed</strong> in km/min.</p>`,
+    answer:`\\(\\approx 475\\) km/min<br><small style="color:#aad4ff">First find angular speed: \\(\\omega = \\dfrac{2\\pi}{90} = \\dfrac{\\pi}{45}\\) rad/min.<br>Then \\(v = \\omega r = \\dfrac{\\pi}{45}\\cdot 6800 = \\dfrac{6800\\pi}{45} \\approx 475\\) km/min.</small>`
   },
   { pts:500, type:'text',
-    clue:`<p>🎓 <strong>Challenge (Jedi Master):</strong> A large gear (radius <strong>18 cm</strong>) meshes with a small gear (radius <strong>6 cm</strong>). The large gear turns at <strong>40 RPM</strong>.</p>
-    <p style="margin-top:8px">(a) Find the angular speed of the large gear in rad/s.<br>(b) Find the angular speed of the small gear in RPM. <em>(Hint: meshing gears share the same linear speed at their contact point.)</em><br>(c) A wheel of radius <strong>4 cm</strong> is fixed to the small gear's axle. Find the linear speed of a point on its rim in m/s.</p>`,
-    answer:`(a) \\(\\omega_\\text{large}=40\\cdot\\dfrac{2\\pi}{60}=\\dfrac{4\\pi}{3}\\) rad/s<br>
-    (b) \\(v_\\text{contact}=\\omega_\\text{large}\\cdot r_\\text{large}=\\dfrac{4\\pi}{3}\\cdot 0.18=0.24\\pi\\) m/s.<br>
-    &nbsp; \\(\\omega_\\text{small}=\\dfrac{v}{r_\\text{small}}=\\dfrac{0.24\\pi}{0.06}=4\\pi\\) rad/s \\(=4\\pi\\cdot\\dfrac{60}{2\\pi}=\\mathbf{120}\\) RPM.<br>
-    (c) \\(v_\\text{wheel}=\\omega_\\text{small}\\cdot r_\\text{wheel}=4\\pi\\cdot 0.04=0.16\\pi \\approx 0.503\\) m/s`
+    clue:`<p>A large gear (radius <strong>18 cm</strong>) meshes with a small gear (radius <strong>6 cm</strong>). The large gear turns at <strong>40 RPM</strong>. Find the angular speed of the <strong>small gear</strong> in RPM.</p>
+    <p style="margin-top:8px;font-size:.88rem;color:#aad4ff"><em>Hint: meshing gears share the same linear speed at their contact point.</em></p>`,
+    answer:`\\(\\mathbf{120}\\) RPM<br>
+    <small style="color:#aad4ff">
+    Large gear angular speed: \\(\\omega_\\text{large} = 40 \\cdot \\dfrac{2\\pi}{60} = \\dfrac{4\\pi}{3}\\) rad/s.<br>
+    Linear speed at contact: \\(v = \\omega_\\text{large} \\cdot r_\\text{large} = \\dfrac{4\\pi}{3} \\cdot 0.18 = 0.24\\pi\\) m/s.<br>
+    Small gear shares this speed: \\(\\omega_\\text{small} = \\dfrac{v}{r_\\text{small}} = \\dfrac{0.24\\pi}{0.06} = 4\\pi\\) rad/s \\(= 120\\) RPM.
+    </small>`
   }
 ]
 
@@ -482,19 +481,13 @@ const QUESTIONS = [
 // Final Jeopardy question
 const FINAL_JEOPARDY = {
   clue:`<p>A function \\(f\\) is periodic with period \\(c\\), meaning \\(f(t+c) = f(t)\\) for all \\(t\\).</p>
-  <p style="margin-top:10px">Which of the following statements are <strong>always true</strong>? Justify each answer.</p>
-  <p style="margin-top:10px;line-height:2.3">
-    <b>I.</b> \\(f(t - 2c) = f(t)\\)<br>
-    <b>II.</b> \\(f\\!\\left(\\tfrac{1}{2}(t+c)\\right) = f\\!\\left(\\tfrac{1}{2}t\\right)\\)<br>
-    <b>III.</b> \\(f(t + 3c) = f(t)\\)<br>
-    <b>IV.</b> \\(f\\!\\left(\\tfrac{1}{2}(t - 4c)\\right) = f\\!\\left(\\tfrac{1}{2}t\\right)\\)
-  </p>`,
-  answer:`<strong>True: I, III, IV &nbsp; False: II</strong><br>
+  <p style="margin-top:10px">True or False: &nbsp; \\(f\\!\\left(\\tfrac{1}{2}(t+c)\\right) = f\\!\\left(\\tfrac{1}{2}t\\right)\\) for all \\(t\\).</p>
+  <p style="margin-top:10px;font-size:.92rem;color:#aad4ff">Justify your answer.</p>`,
+  answer:`<strong>False.</strong><br>
   <small style="color:#aad4ff">
-  <b>I.</b> \\(f(t-2c)=f((t-c)-c)=f(t-c)=f(t)\\) ✓ (apply period rule twice).<br>
-  <b>II.</b> The argument \\(\\tfrac{1}{2}(t+c)\\) differs from \\(\\tfrac{1}{2}t\\) by \\(\\tfrac{c}{2}\\), NOT a full period \\(c\\), so this is <strong>not</strong> generally true ✗.<br>
-  <b>III.</b> \\(f(t+3c)=f(t+2c)=f(t+c)=f(t)\\) ✓.<br>
-  <b>IV.</b> \\(g(t)=f\\!\\left(\\tfrac{t}{2}\\right)\\) has period \\(2c\\). \\(g(t-4c)=f\\!\\left(\\tfrac{t-4c}{2}\\right)=f\\!\\left(\\tfrac{t}{2}-2c\\right)=f\\!\\left(\\tfrac{t}{2}\\right)=g(t)\\) ✓.
+  The argument \\(\\tfrac{1}{2}(t+c) = \\tfrac{1}{2}t + \\tfrac{c}{2}\\) differs from \\(\\tfrac{1}{2}t\\) by \\(\\tfrac{c}{2}\\), which is only <em>half</em> a period — <strong>not</strong> a full period \\(c\\).<br>
+  Since the shift is not a multiple of the period, the two expressions are not generally equal.<br><br>
+  <em>Counterexample:</em> Let \\(f(t) = \\sin(t)\\), which has period \\(c = 2\\pi\\). Then \\(f\\!\\left(\\tfrac{1}{2}(t+2\\pi)\\right) = \\sin\\!\\left(\\tfrac{t}{2}+\\pi\\right) = -\\sin\\!\\left(\\tfrac{t}{2}\\right) \\neq \\sin\\!\\left(\\tfrac{t}{2}\\right) = f\\!\\left(\\tfrac{t}{2}\\right)\\).
   </small>`
 };
 
