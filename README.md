@@ -11,6 +11,8 @@ Each game is a self-contained folder — play online using the link above, or op
 
 | Folder | Game | Unit | Status |
 |---|---|---|---|
+| [`unit5_grudgeball/`](unit5_grudgeball/) | Grudgeball — Identities & Trig Equations | Unit 5 | New |
+| [`unit5_trashketball/`](unit5_trashketball/) | Trashketball — Identities & Trig Equations | Unit 5 | New |
 | [`unit4_trig_jeopardy/`](unit4_trig_jeopardy/) | Jeopardy — Introduction to Trigonometry | Unit 4 | Live |
 | [`unit_circle/`](unit_circle/) | Unit Circle Quiz | Unit 4 | Live |
 
@@ -37,6 +39,16 @@ Practice all 16 standard unit circle points across four question types:
 
 Run all four types together (64 questions) or focus on one type at a time (16 questions).
 Answers accept common alternate forms — `π` or `pi`, `√` or `sqrt()`, `°` optional.
+
+## Unit 5 Trashketball
+
+A five-category Trashketball board for sections 5.1-5.3.
+It stays in non-honors scope and keeps solving questions on exact unit-circle values.
+
+## Unit 5 Grudgeball
+
+A Grudgeball variant of the same Unit 5 board.
+It uses standard X-based Grudgeball scoring while keeping nearly the same question set as Trashketball.
 
 ## Unit 4 Trig Jeopardy
 

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Unit 5 Assessment Reviewer"
+  short_description: "Review Unit 5 trig assessments."
+  default_prompt: "Use $unit5-assessment-reviewer to review the Unit 5 trig assessments for non-honors scope and Trashketball alignment."
+
+policy:
+  allow_implicit_invocation: true

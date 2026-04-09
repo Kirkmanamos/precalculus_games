@@ -1,0 +1,7 @@
+interface:
+  display_name: "Trashketball Builder"
+  short_description: "Build Unit 5 Trashketball games."
+  default_prompt: "Use $trashketball-builder to build or revise the Unit 5 Trashketball game from the slide deck and assessment sources."
+
+policy:
+  allow_implicit_invocation: true

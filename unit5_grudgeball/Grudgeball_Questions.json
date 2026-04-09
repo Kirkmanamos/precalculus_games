@@ -1,0 +1,158 @@
+{
+  "title": "Unit 5 Grudgeball",
+  "subtitle": "Sections 5.1-5.3 Standard Variation",
+  "notes": "This question bank mirrors the Grudgeball board. Scoring uses Xs instead of question-value points, but the question content stays aligned to the Trashketball version.",
+  "categories": [
+    {
+      "name": "Simplifying Trig Expressions with Fundamental ID's",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Simplify: sin x * csc x",
+          "answer": "1"
+        },
+        {
+          "points": 200,
+          "clue": "Simplify: (sin x * cos x) / tan x",
+          "answer": "cos^2 x"
+        },
+        {
+          "points": 300,
+          "clue": "Simplify: 1 / (1 + cot^2 x)",
+          "answer": "sin^2 x"
+        },
+        {
+          "points": 400,
+          "clue": "Simplify: csc x - cos x cot x",
+          "answer": "sin x"
+        },
+        {
+          "points": 500,
+          "clue": "Rewrite without a fraction: sin^2 x / (1 + cos x)",
+          "answer": "1 - cos x"
+        }
+      ]
+    },
+    {
+      "name": "Verifying Trig Identities",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Verify: (sec^2 theta - 1) / sec^2 theta = sin^2 theta",
+          "answer": "Use sec^2 theta - 1 = tan^2 theta, then rewrite in sine and cosine."
+        },
+        {
+          "points": 200,
+          "clue": "Verify: tan x + cot x = sec x csc x",
+          "answer": "Convert to sine and cosine, combine over a common denominator, and use sin^2 x + cos^2 x = 1."
+        },
+        {
+          "points": 300,
+          "clue": "Verify: (1 + sin x) / cos x = cos x / (1 - sin x)",
+          "answer": "Start on the right and multiply by (1 + sin x) / (1 + sin x)."
+        },
+        {
+          "points": 400,
+          "clue": "Verify: cot^2 theta / (1 + csc theta) = (1 - sin theta) / sin theta",
+          "answer": "Replace cot^2 theta with csc^2 theta - 1, factor, cancel, and rewrite csc theta."
+        },
+        {
+          "points": 500,
+          "clue": "Verify: sin^3 x cos^4 x = (cos^4 x - cos^6 x) sin x",
+          "answer": "Factor the right side as cos^4 x (1 - cos^2 x) sin x and use 1 - cos^2 x = sin^2 x."
+        }
+      ]
+    },
+    {
+      "name": "Solving Trig Equations",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Solve on [0, 2pi): sin x = 1/2",
+          "answer": "x = pi/6, 5pi/6"
+        },
+        {
+          "points": 200,
+          "clue": "Solve on [0, 2pi): cos x = -sqrt(2)/2",
+          "answer": "x = 3pi/4, 5pi/4"
+        },
+        {
+          "points": 300,
+          "clue": "Solve on [0, 2pi): 2cos^2 x - 1 = 0",
+          "answer": "x = pi/4, 3pi/4, 5pi/4, 7pi/4"
+        },
+        {
+          "points": 400,
+          "clue": "Find all solutions: sec beta csc beta = 2 csc beta",
+          "answer": "beta = pi/3 + 2pi k or 5pi/3 + 2pi k"
+        },
+        {
+          "points": 500,
+          "clue": "Find all solutions: cot x cos^2 x = 2 cot x",
+          "answer": "x = pi/2 + pi k"
+        }
+      ]
+    },
+    {
+      "name": "Solving Trig Equations with Quadratic Forms",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Solve on [0, 2pi): 2sin^2 theta + sin theta - 1 = 0",
+          "answer": "theta = pi/6, 5pi/6, 3pi/2"
+        },
+        {
+          "points": 200,
+          "clue": "Solve on [0, 2pi): 2sin^2 x - 5sin x + 2 = 0",
+          "answer": "x = pi/6, 5pi/6"
+        },
+        {
+          "points": 300,
+          "clue": "Solve on [0, 2pi): 2cos^2 theta - 7cos theta + 3 = 0",
+          "answer": "theta = pi/3, 5pi/3"
+        },
+        {
+          "points": 400,
+          "clue": "Solve on [0, 2pi): 2cos^2 x + cos x - 1 = 0",
+          "answer": "x = pi/3, pi, 5pi/3"
+        },
+        {
+          "points": 500,
+          "clue": "Solve on [0, 2pi): tan^2 theta - 1 = 0",
+          "answer": "theta = pi/4, 3pi/4, 5pi/4, 7pi/4"
+        }
+      ]
+    },
+    {
+      "name": "Solving Trig Equations with Quadratics / Square Roots / Fundamental ID's",
+      "questions": [
+        {
+          "points": 100,
+          "clue": "Find all solutions: sin^2 x + cos x = -1",
+          "answer": "x = pi + 2pi k"
+        },
+        {
+          "points": 200,
+          "clue": "Find all solutions: 2sin^2 x + 3cos x - 3 = 0",
+          "answer": "x = 2pi k, pi/3 + 2pi k, 5pi/3 + 2pi k"
+        },
+        {
+          "points": 300,
+          "clue": "Solve on [0, 2pi): 2cos^2 x - 5sin x + 1 = 0",
+          "answer": "x = pi/6, 5pi/6"
+        },
+        {
+          "points": 400,
+          "clue": "Solve on [0, 2pi): sqrt(1 + sin x) = cos x",
+          "answer": "x = 0, 3pi/2"
+        },
+        {
+          "points": 500,
+          "clue": "Solve on [0, 2pi): cos x + 1 = sin x",
+          "answer": "x = pi/2, pi"
+        }
+      ]
+    }
+  ],
+  "endgame_rule": "The winner is the team with the most Xs after the board is exhausted."
+}

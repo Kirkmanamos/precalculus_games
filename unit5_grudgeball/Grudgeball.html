@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 5 Grudgeball — Identities and Equations</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)'],['$','$']], displayMath: [['\\[','\\]']] },
+  startup: { typeset: false }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#020203;
+  --bg-base:#050506;
+  --surface:rgba(255,255,255,0.05);
+  --surface-hover:rgba(255,255,255,0.08);
+  --fg-main:#EDEDEF;
+  --fg-muted:#8A8F98;
+  --accent:#5E6AD2;
+  --accent-glow:rgba(94,106,210,0.3);
+  --border-subtle:rgba(255,255,255,0.06);
+  --shadow-elevated:0 2px 20px rgba(0,0,0,0.4),0 0 40px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.05);
+  --radius-lg:16px;
+  --radius-md:12px;
+  --transition-fast:200ms ease-out;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{min-height:100%;}
+body{
+  font-family:'Inter','Geist Sans',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 50% -12%, rgba(94,106,210,0.16), transparent 38%),
+    radial-gradient(circle at 50% 12%, rgba(255,255,255,0.03), transparent 54%),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-base) 42%, #040406 100%);
+  color:var(--fg-main);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 14px 40px;
+  position:relative;
+  overflow-x:hidden;
+  isolation:isolate;
+}
+body::before{
+  content:"";
+  position:fixed;
+  width:800px;
+  height:800px;
+  top:-180px;
+  right:-180px;
+  background:var(--accent-glow);
+  border-radius:999px;
+  filter:blur(120px);
+  opacity:0.9;
+  pointer-events:none;
+  z-index:-2;
+  animation:ambientFloat 22s ease-in-out infinite alternate;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.025), transparent 28%),
+    linear-gradient(180deg, rgba(255,255,255,0.015), transparent 24%, rgba(0,0,0,0.18) 100%);
+  pointer-events:none;
+  z-index:-3;
+}
+
+button,input,textarea,select{font:inherit;}
+button{
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+}
+button:active{transform:scale(0.98);}
+button:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none;}
+input{
+  background:#0F0F12;
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--fg-main);
+  border-radius:12px;
+  padding:11px 14px;
+  outline:none;
+  transition:border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+input::placeholder{color:var(--fg-muted);}
+input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(94,106,210,0.16), 0 0 28px rgba(94,106,210,0.18);
+}
+mjx-container{color:var(--fg-main);}
+
+@keyframes ambientFloat{
+  0%{transform:translate3d(0,0,0) scale(1);}
+  50%{transform:translate3d(-80px,50px,0) scale(1.06);}
+  100%{transform:translate3d(-10px,120px,0) scale(0.94);}
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.28;}}
+
+/* ── SHARED SURFACES ── */
+#setup-card,
+#modal,
+#fj-card,
+.team-card,
+.cell{
+  box-shadow:var(--shadow-elevated);
+}
+
+#setup-overlay,
+#overlay,
+#fj-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(2,2,4,0.72);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+/* ── SETUP OVERLAY ── */
+#setup-overlay{
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+#setup-card{
+  width:min(100%, 560px);
+  background:linear-gradient(180deg, rgba(17,17,22,0.98), rgba(10,10,12,0.98));
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);
+  padding:34px 34px 30px;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+}
+#setup-card::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+}
+.setup-logo-title{
+  font-size:clamp(2.4rem, 6vw, 4rem);
+  font-weight:800;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--fg-main);
+  line-height:0.95;
+}
+.setup-logo-sub{
+  font-size:0.78rem;
+  color:var(--fg-muted);
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  margin:0.7rem 0 2rem;
+}
+.setup-section{margin-bottom:20px;}
+.setup-section>label,
+.subtitle,
+.team-name-lbl,
+.team-score-unit,
+.team-meta,
+.cat-header,
+#modal-cat,
+.answer-label,
+.grudge-panel-title,
+.team-select-row>span,
+#fj-subtitle{
+  text-transform:uppercase;
+  letter-spacing:0.18em;
+}
+.setup-section>label{
+  display:block;
+  font-size:0.72rem;
+  font-weight:700;
+  color:var(--fg-muted);
+  margin-bottom:10px;
+}
+.count-row{
+  display:grid;
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+  gap:10px;
+}
+.count-btn,
+.btn,
+#reset-btn,
+#fj-btn,
+.start-btn{
+  appearance:none;
+  border-radius:12px;
+  border:1px solid var(--border-subtle);
+  cursor:pointer;
+}
+.count-btn,
+#reset-btn,
+.btn-skip,
+.btn-pause{
+  background:var(--surface);
+  color:var(--fg-main);
+}
+.count-btn{
+  padding:12px 10px;
+  min-height:50px;
+  font-size:1rem;
+  font-weight:700;
+}
+.count-btn:hover,
+.count-btn.active{
+  background:rgba(94,106,210,0.16);
+  border-color:rgba(94,106,210,0.44);
+  color:var(--fg-main);
+  box-shadow:0 0 0 1px rgba(94,106,210,0.18), 0 0 28px rgba(94,106,210,0.14);
+}
+#name-fields{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.name-input-row{
+  display:grid;
+  grid-template-columns:72px minmax(0, 1fr);
+  align-items:center;
+  gap:12px;
+}
+.name-input-row label{
+  font-size:0.78rem;
+  color:var(--fg-muted);
+}
+.setup-rules{
+  margin:12px 0 0 18px;
+  color:var(--fg-muted);
+  font-size:0.9rem;
+  line-height:1.75;
+}
+.setup-rules li+li{margin-top:6px;}
+.start-btn,
+.btn-reveal,
+#fj-btn{
+  background:var(--accent);
+  color:#fff;
+  border-color:rgba(94,106,210,0.22);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.15), 0 10px 28px rgba(94,106,210,0.26);
+}
+.start-btn{
+  width:100%;
+  margin-top:14px;
+  padding:15px 16px;
+  font-size:0.9rem;
+  font-weight:700;
+}
+.start-btn:hover,
+.btn-reveal:hover,
+#fj-btn:hover{
+  background:#6b78e3;
+}
+
+/* ── GAME LAYOUT ── */
+#game-area{
+  position:relative;
+  z-index:1;
+  gap:10px;
+}
+h1{
+  font-size:clamp(1.3rem, 3vw, 2rem);
+  font-weight:700;
+  color:var(--fg-main);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  text-align:center;
+  margin:0;
+}
+.subtitle{
+  font-size:0.74rem;
+  color:var(--fg-muted);
+  margin-bottom:6px;
+}
+#scoreboard{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(168px, 1fr));
+  gap:12px;
+  margin-bottom:12px;
+}
+.team-card{
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius:18px;
+  padding:14px 16px;
+  text-align:left;
+  backdrop-filter:blur(20px);
+  transition:transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
+}
+.team-card:not(.is-empty){
+  box-shadow:var(--shadow-elevated), 0 0 24px rgba(94,106,210,0.08);
+}
+.team-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(255,255,255,0.12);
+  background:var(--surface-hover);
+}
+.team-card.is-empty{
+  background:rgba(125,46,46,0.14);
+  border-color:rgba(255,122,122,0.18);
+}
+.team-name-lbl{
+  font-size:0.7rem;
+  color:var(--fg-muted);
+  cursor:pointer;
+  transition:color var(--transition-fast);
+}
+.team-name-lbl:hover{color:var(--fg-main);}
+.team-score-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  margin-top:10px;
+}
+.team-score-lbl{
+  font-size:2.45rem;
+  font-weight:700;
+  color:var(--fg-main);
+  line-height:0.95;
+  letter-spacing:-0.05em;
+}
+.team-score-unit{
+  font-size:0.78rem;
+  color:var(--accent);
+  margin-bottom:5px;
+  font-weight:700;
+}
+.team-meta{
+  font-size:0.68rem;
+  color:var(--fg-muted);
+  margin-top:8px;
+  min-height:1em;
+}
+.toolbar-row{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+#reset-btn,
+#fj-btn,
+.btn{
+  padding:11px 16px;
+  min-height:44px;
+  font-size:0.78rem;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+#reset-btn:hover,
+.btn-skip:hover,
+.btn-pause:hover{
+  background:var(--surface-hover);
+  border-color:rgba(255,255,255,0.14);
+}
+.btn-correct{
+  background:rgba(46,125,83,0.22);
+  border:1px solid rgba(126,231,135,0.2);
+  color:#eefcf1;
+}
+.btn-correct:hover{
+  background:rgba(46,125,83,0.3);
+  border-color:rgba(126,231,135,0.28);
+}
+.btn-wrong{
+  background:rgba(125,46,46,0.22);
+  border:1px solid rgba(255,122,122,0.18);
+  color:#fff0f0;
+}
+.btn-wrong:hover{
+  background:rgba(125,46,46,0.3);
+  border-color:rgba(255,122,122,0.28);
+}
+
+/* ── BOARD ── */
+.board-shell{
+  width:100%;
+  overflow-x:visible;
+  padding-bottom:8px;
+}
+#board{
+  display:grid;
+  gap:14px;
+  width:100%;
+  min-width:0;
+}
+.cell{
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  color:var(--fg-main);
+  border-radius:12px;
+  font-size:clamp(1.08rem, 2vw, 1.4rem);
+  font-weight:700;
+  text-align:left;
+  padding:20px 18px;
+  cursor:pointer;
+  min-height:180px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  user-select:none;
+  backdrop-filter:blur(18px);
+  transition:transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), color var(--transition-fast);
+}
+.cell:hover:not(.used){
+  transform:scale(1.02);
+  background:var(--surface-hover);
+  border-color:rgba(255,255,255,0.14);
+  box-shadow:var(--shadow-elevated), 0 0 32px rgba(94,106,210,0.18);
+}
+.cell.used{
+  opacity:0.22;
+  cursor:default;
+  border-color:rgba(255,255,255,0.03);
+  color:var(--fg-muted);
+  box-shadow:none;
+}
+.cell-title{
+  font-size:clamp(1.15rem, 1.5vw, 1.45rem);
+  line-height:1.45;
+}
+.cell-meta{
+  font-size:0.72rem;
+  font-weight:700;
+  color:var(--fg-muted);
+  text-transform:uppercase;
+  letter-spacing:0.16em;
+}
+.cell.used .cell-title,
+.cell.used .cell-meta{
+  color:var(--fg-muted);
+}
+
+/* ── MODAL OVERLAY ── */
+#overlay{
+  display:none;
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+#overlay.active{display:flex;}
+#modal{
+  width:min(100%, 860px);
+  max-height:93vh;
+  background:linear-gradient(180deg, rgba(17,17,22,0.98), rgba(10,10,12,0.98));
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+#modal-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto auto;
+  gap:16px;
+  align-items:center;
+  padding:18px 22px 14px;
+  border-bottom:1px solid var(--border-subtle);
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), transparent);
+}
+#modal-cat{
+  font-size:0.7rem;
+  font-weight:700;
+  color:var(--fg-muted);
+}
+#modal-pts{
+  font-size:1.45rem;
+  font-weight:700;
+  color:var(--fg-main);
+  letter-spacing:0.04em;
+}
+#modal-close{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  color:var(--fg-muted);
+  border-radius:999px;
+  cursor:pointer;
+}
+#modal-close:hover{
+  background:var(--surface-hover);
+  color:var(--fg-main);
+}
+#modal-body{
+  padding:24px 24px 12px;
+  flex:1;
+  overflow-y:auto;
+}
+#modal-clue{
+  font-size:clamp(1.08rem, 2vw, 1.28rem);
+  line-height:1.85;
+  text-align:center;
+  margin-bottom:16px;
+}
+#modal-clue p+p{margin-top:0.85rem;}
+#modal-clue mjx-container{
+  font-size:140% !important;
+}
+#modal-answer mjx-container,
+#fj-answer mjx-container{
+  font-size:118% !important;
+}
+#modal-choices{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin:10px 0 0;
+}
+.choice-btn{
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  color:var(--fg-main);
+  padding:14px 16px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:0.96rem;
+  text-align:left;
+  line-height:1.6;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.choice-btn:hover:not(:disabled){
+  background:var(--surface-hover);
+  border-color:rgba(255,255,255,0.15);
+  transform:translateY(-1px);
+}
+.choice-btn.selected{
+  border-color:rgba(94,106,210,0.48);
+  background:rgba(94,106,210,0.15);
+  box-shadow:0 0 0 1px rgba(94,106,210,0.18), 0 0 26px rgba(94,106,210,0.14);
+}
+.choice-btn.correct{
+  background:rgba(46,125,83,0.24)!important;
+  border-color:rgba(126,231,135,0.34)!important;
+  color:#eefcf1;
+}
+.choice-btn.wrong{
+  background:rgba(125,46,46,0.24)!important;
+  border-color:rgba(255,122,122,0.26)!important;
+  color:#ffeded;
+  opacity:0.82;
+}
+#modal-answer,
+#fj-card .fj-answer{
+  background:#08080a;
+  border:1px solid rgba(94,106,210,0.22);
+  border-radius:14px;
+  padding:16px 18px;
+  margin-top:16px;
+  display:none;
+  text-align:left;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.answer-label{
+  font-size:0.68rem;
+  font-weight:700;
+  color:var(--accent);
+  margin-bottom:8px;
+}
+.answer-text{
+  font-size:clamp(0.95rem, 1.9vw, 1.08rem);
+  line-height:1.8;
+  color:var(--fg-main);
+}
+.answer-text small,
+#modal-answer small,
+#fj-answer small{
+  display:block;
+  margin-top:10px;
+  color:var(--fg-muted)!important;
+  line-height:1.65;
+}
+#graphCanvas{
+  display:block;
+  margin:16px auto 0;
+  max-width:100%;
+  border-radius:14px;
+  background:radial-gradient(circle at 50% 0%, rgba(94,106,210,0.1), rgba(8,8,10,0.96));
+  border:1px solid var(--border-subtle);
+}
+
+/* ── TIMER ── */
+#modal-timer-row{
+  padding:0 22px 0;
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  align-items:center;
+  gap:12px;
+  flex-shrink:0;
+}
+#timer-display{
+  font-size:1.55rem;
+  font-weight:700;
+  color:var(--fg-main);
+  min-width:60px;
+  letter-spacing:0.04em;
+}
+#timer-display.urgent{
+  color:#ff9b9b;
+  animation:blink .65s infinite;
+}
+#timer-bar-bg{
+  flex:1;
+  background:#111;
+  height:10px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.04);
+}
+#timer-bar{
+  height:100%;
+  background:var(--accent)!important;
+  transition:width .95s linear, background var(--transition-fast);
+  box-shadow:0 0 24px rgba(94,106,210,0.32);
+}
+
+/* ── CONTROLS ── */
+#modal-footer{
+  padding:18px 22px 22px;
+  border-top:1px solid var(--border-subtle);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  flex-shrink:0;
+  background:linear-gradient(180deg, transparent, rgba(255,255,255,0.02));
+}
+.team-select-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.team-select-row>span{
+  font-size:0.7rem;
+  font-weight:700;
+  color:var(--fg-muted);
+}
+#team-radio-group{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.team-radio{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+  font-size:0.9rem;
+  white-space:nowrap;
+  padding:10px 12px;
+  border-radius:999px;
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  color:var(--fg-main);
+  transition:background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.team-radio:hover{
+  background:var(--surface-hover);
+  border-color:rgba(255,255,255,0.14);
+}
+.team-radio input{accent-color:var(--accent);}
+.action-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.grudge-status,
+.grudge-panel{
+  display:none;
+  background:#08080a;
+  border:1px solid var(--border-subtle);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-top:16px;
+  text-align:left;
+  color:var(--fg-main);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.grudge-status{
+  font-size:0.9rem;
+  line-height:1.65;
+}
+.grudge-panel-title{
+  font-size:0.68rem;
+  font-weight:700;
+  color:var(--fg-muted);
+  margin-bottom:8px;
+}
+.grudge-panel-copy{
+  font-size:0.9rem;
+  color:var(--fg-muted);
+  line-height:1.7;
+  margin-bottom:12px;
+}
+.grudge-targets{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.spinner-shell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  margin:6px 0 2px;
+}
+.spinner-pointer{
+  width:0;
+  height:0;
+  border-left:16px solid transparent;
+  border-right:16px solid transparent;
+  border-top:24px solid var(--fg-main);
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,0.45));
+  margin-bottom:-12px;
+  z-index:2;
+}
+.spinner-wheel-wrap{
+  width:min(100%, 320px);
+  aspect-ratio:1;
+  padding:16px;
+  border-radius:999px;
+  background:radial-gradient(circle at 50% 35%, rgba(255,255,255,0.04), rgba(8,8,10,0.94));
+  border:1px solid var(--border-subtle);
+  box-shadow:var(--shadow-elevated);
+}
+.spinner-wheel{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.08);
+  background:
+    conic-gradient(from -120deg,
+      rgba(94,106,210,0.96) 0deg 60deg,
+      rgba(146,56,56,0.98) 60deg 120deg,
+      rgba(94,106,210,0.84) 120deg 180deg,
+      rgba(146,56,56,0.9) 180deg 240deg,
+      rgba(94,106,210,0.72) 240deg 300deg,
+      rgba(146,56,56,0.82) 300deg 360deg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), 0 18px 40px rgba(0,0,0,0.35);
+  transition:transform 3.4s cubic-bezier(.12,.84,.18,1);
+}
+.spinner-wheel::after{
+  content:"";
+  position:absolute;
+  inset:33%;
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 35%, rgba(255,255,255,0.12), rgba(12,12,15,0.98));
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.spinner-segment-label{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:98px;
+  margin-left:-49px;
+  margin-top:-15px;
+  text-align:center;
+  font-size:0.63rem;
+  font-weight:800;
+  line-height:1.35;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:#f8f9ff;
+  text-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+.seg-0{transform:translateY(-112px);}
+.seg-1{transform:rotate(60deg) translateY(-112px) rotate(-60deg);}
+.seg-2{transform:rotate(120deg) translateY(-112px) rotate(-120deg);}
+.seg-3{transform:rotate(180deg) translateY(-112px) rotate(-180deg);}
+.seg-4{transform:rotate(240deg) translateY(-112px) rotate(-240deg);}
+.seg-5{transform:rotate(300deg) translateY(-112px) rotate(-300deg);}
+#spin-result{
+  min-height:1.4em;
+  font-size:0.8rem;
+  font-weight:700;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--fg-muted);
+  text-align:center;
+}
+.target-btn{
+  background:var(--surface);
+  color:var(--fg-main);
+  border:1px solid var(--border-subtle);
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:0.78rem;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.target-btn:hover:not(:disabled){
+  background:rgba(125,46,46,0.2);
+  border-color:rgba(255,122,122,0.24);
+  box-shadow:0 0 0 1px rgba(255,122,122,0.08), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.shot-target-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:12px;
+}
+.shot-target-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:var(--fg-main);
+  font-size:0.92rem;
+  background:var(--surface);
+  border:1px solid var(--border-subtle);
+  border-radius:12px;
+  padding:12px 14px;
+}
+.shot-target-option input{accent-color:var(--accent);}
+
+/* ── STANDINGS MODAL ── */
+#fj-modal{
+  display:none;
+  z-index:400;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+#fj-modal.active{display:flex;}
+#fj-card{
+  width:min(100%, 820px);
+  background:linear-gradient(180deg, rgba(17,17,22,0.98), rgba(10,10,12,0.98));
+  border:1px solid var(--border-subtle);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  text-align:center;
+}
+#fj-card h2{
+  font-size:clamp(1.35rem, 3vw, 2rem);
+  font-weight:700;
+  color:var(--fg-main);
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  margin-bottom:14px;
+}
+#fj-subtitle{
+  font-size:0.78rem!important;
+  color:var(--fg-muted)!important;
+  margin-bottom:18px!important;
+  letter-spacing:0.18em!important;
+}
+#fj-subtitle strong{color:var(--accent)!important;}
+#fj-card .fj-clue{
+  font-size:clamp(1rem, 2vw, 1.18rem);
+  line-height:1.8;
+  margin-bottom:18px;
+}
+#fj-clue > div{
+  margin-top:16px!important;
+  text-align:left!important;
+  display:grid!important;
+  gap:10px!important;
+}
+#fj-clue > div > div{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  background:var(--surface)!important;
+  border:1px solid var(--border-subtle)!important;
+  border-radius:14px!important;
+  padding:12px 14px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+#fj-clue > div > div span:last-child{
+  font-family:'Inter','Geist Sans',system-ui,sans-serif!important;
+  color:var(--accent)!important;
+  font-size:0.9rem!important;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+.fj-wager-section{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-bottom:14px;
+}
+.fj-wager-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.fj-wager-row label{
+  color:var(--fg-muted);
+  font-size:0.78rem;
+  width:80px;
+  text-align:right;
+  text-transform:uppercase;
+  letter-spacing:0.16em;
+}
+.fj-wager-row input{width:110px;}
+.fj-btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:8px;
+}
+
+@media (max-width: 900px){
+  body{padding:18px 12px 28px;}
+  #setup-card,
+  #modal,
+  #fj-card{border-radius:14px;}
+  #board{grid-template-columns:repeat(2, minmax(0, 1fr)) !important;}
+}
+
+@media (max-width: 640px){
+  #setup-card{padding:24px 20px 22px;}
+  .count-row{grid-template-columns:repeat(3, minmax(0, 1fr));}
+  .name-input-row{grid-template-columns:1fr;gap:8px;}
+  .name-input-row label{width:auto;}
+  #scoreboard{grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));}
+  #modal-header,
+  #modal-body,
+  #modal-footer,
+  #fj-card{padding-left:18px;padding-right:18px;}
+  #modal-timer-row{padding:0 18px;grid-template-columns:1fr;gap:10px;}
+  #timer-display{text-align:center;}
+  .team-select-row,
+  .action-row,
+  .toolbar-row,
+  .fj-btn-row{justify-content:center;}
+  #board{grid-template-columns:1fr !important;gap:10px;}
+  .cell{min-height:148px;padding:18px 16px;}
+  .cell-title{font-size:1.05rem;}
+  .spinner-wheel-wrap{width:min(100%, 280px);}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════ -->
+<div id="setup-overlay">
+  <div id="setup-card">
+    <div class="setup-logo-title">Grudgeball</div>
+    <div class="setup-logo-sub">Unit 5 · Sections 5.1-5.3 · Category Spinner Mode</div>
+
+    <div class="setup-section">
+      <label>Number of Teams</label>
+      <div class="count-row" id="count-row">
+        <button class="count-btn active" onclick="setCount(2)">2</button>
+        <button class="count-btn" onclick="setCount(3)">3</button>
+        <button class="count-btn" onclick="setCount(4)">4</button>
+        <button class="count-btn" onclick="setCount(5)">5</button>
+        <button class="count-btn" onclick="setCount(6)">6</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <label>Team Names</label>
+      <div id="name-fields"></div>
+    </div>
+
+    <div class="setup-section">
+      <label>Rules</label>
+      <ul class="setup-rules">
+        <li>Each team starts with 10 points.</li>
+        <li>Choose a category tile and the game draws a random unused question from that category.</li>
+        <li>A correct answer earns one seeded spinner result worth 1-3 points.</li>
+        <li>Protect results add points to the answering team. Attack results subtract points from a selected opponent.</li>
+        <li>Wrong answers can be diverted to another team.</li>
+        <li>The team with the most points after all questions are used wins.</li>
+      </ul>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">Start Game</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     GAME AREA (hidden until setup)
+══════════════════════════════════ -->
+<div id="game-area" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:1200px;">
+  <h1>Unit 5 · Fundamental Identities and Trig Equations</h1>
+  <p class="subtitle">Grudgeball Review · Random Category Spinner Mode</p>
+  <div id="scoreboard"></div>
+  <div class="board-shell">
+    <div id="board"></div>
+  </div>
+  <div class="toolbar-row">
+    <button id="reset-btn" onclick="resetGame()">↺ Reset Board</button>
+    <button id="fj-btn" onclick="openFinalJeopardy()">🏁 Standings</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     QUESTION MODAL
+══════════════════════════════════ -->
+<div id="overlay">
+  <div id="modal">
+    <div id="modal-header">
+      <span id="modal-cat">Category</span>
+      <span id="modal-pts">Random Draw</span>
+      <button id="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body">
+      <div id="modal-clue"></div>
+      <canvas id="graphCanvas" width="520" height="270" style="display:none;"></canvas>
+      <div id="modal-choices"></div>
+      <div id="modal-answer"><div class="answer-label">Answer</div><div class="answer-text" id="answer-text"></div></div>
+      <div id="grudge-status" class="grudge-status"></div>
+      <div id="spin-panel" class="grudge-panel">
+        <div class="grudge-panel-title">Bonus Spinner</div>
+        <div class="grudge-panel-copy">Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.</div>
+        <div class="spinner-shell">
+          <div class="spinner-pointer"></div>
+          <div class="spinner-wheel-wrap">
+            <div id="spinner-wheel" class="spinner-wheel">
+              <div class="spinner-segment-label seg-0">Protect<br>+1</div>
+              <div class="spinner-segment-label seg-1">Attack<br>-1</div>
+              <div class="spinner-segment-label seg-2">Protect<br>+2</div>
+              <div class="spinner-segment-label seg-3">Attack<br>-2</div>
+              <div class="spinner-segment-label seg-4">Protect<br>+3</div>
+              <div class="spinner-segment-label seg-5">Attack<br>-3</div>
+            </div>
+          </div>
+          <div id="spin-result">Waiting for a correct answer.</div>
+        </div>
+        <div class="action-row">
+          <button class="btn btn-reveal" id="spin-btn" onclick="spinWheel()">Spin</button>
+        </div>
+      </div>
+      <div id="spin-action-panel" class="grudge-panel">
+        <div class="grudge-panel-title" id="spin-action-title">Attack Target</div>
+        <div class="grudge-panel-copy" id="spin-action-copy">Choose the team that should lose points from the spinner result.</div>
+        <div id="spin-targets" class="grudge-targets"></div>
+      </div>
+    </div>
+    <div id="modal-timer-row">
+      <div id="timer-display">0:30</div>
+      <div id="timer-bar-bg"><div id="timer-bar" style="width:100%"></div></div>
+      <button class="btn btn-pause" id="pause-btn" onclick="togglePause()">⏸</button>
+      <button class="btn btn-pause" onclick="addTime(15)" title="Add 15 seconds">+15s</button>
+    </div>
+    <div id="modal-footer">
+      <div class="team-select-row">
+        <span>Answering:</span>
+        <div id="team-radio-group"></div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-reveal" id="reveal-btn" onclick="revealAnswer()">Reveal Answer</button>
+        <button class="btn btn-correct" id="correct-btn" onclick="handleCorrect()">✓ Correct</button>
+        <button class="btn btn-wrong" id="divert-btn" onclick="divertQuestion()">↪ Divert</button>
+        <button class="btn btn-skip" id="skip-btn" onclick="skipQuestion()">Skip Question</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     FINAL JEOPARDY MODAL
+══════════════════════════════════ -->
+<div id="fj-modal">
+  <div id="fj-card">
+    <h2>🏁 Standings</h2>
+    <div id="fj-subtitle" style="font-size:.85rem;color:#aad4ff;margin-bottom:14px;letter-spacing:1px;">Mode: <strong style="color:#FFD700">Category Spinner</strong></div>
+
+    <div class="fj-wager-section" id="fj-wagers"></div>
+
+    <div class="fj-clue" id="fj-clue" style="display:none;"></div>
+    <div class="fj-answer" id="fj-answer">
+      <div class="answer-label">Answer</div>
+      <div class="answer-text" id="fj-answer-text"></div>
+    </div>
+
+    <div class="fj-btn-row">
+      <button class="btn btn-reveal" id="fj-show-clue-btn" onclick="closeFJ()">Close</button>
+      <button class="btn btn-reveal" id="fj-reveal-btn" onclick="closeFJ()" style="display:none;">Close</button>
+      <button class="btn btn-correct" id="fj-score-btn" onclick="closeFJ()" style="display:none;">Close</button>
+      <button class="btn btn-skip" onclick="closeFJ()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCRIPT
+══════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════
+//  CATEGORIES
+// ═══════════════════════════════════════════
+const CATS = [
+  "Simplifying Trig Expressions with Fundamental ID's",
+  "Verifying Trig Identities",
+  "Solving Trig Equations",
+  "Solving Trig Equations with Quadratic Forms",
+  "Solving Trig Equations with Quadratics / Square Roots / Fundamental ID's"
+];
+
+const STARTING_XS = 10;
+const TOTAL_QUESTIONS = CATS.length * 5;
+const SPIN_RESULTS = [
+  { kind:'protect', amount:1, label:'Protect +1' },
+  { kind:'attack', amount:1, label:'Attack -1' },
+  { kind:'protect', amount:2, label:'Protect +2' },
+  { kind:'attack', amount:2, label:'Attack -2' },
+  { kind:'protect', amount:3, label:'Protect +3' },
+  { kind:'attack', amount:3, label:'Attack -3' }
+];
+
+// ═══════════════════════════════════════════
+//  QUESTIONS — aligned to sections 5.1-5.3 and the quick check
+//  type: 'text' | 'mc' | 'graph'
+// ═══════════════════════════════════════════
+const QUESTIONS = [
+
+// ── CAT 0: Simplifying Trig Expressions with Fundamental ID's ────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\sin x \\cdot \\csc x\\]</p>`,
+    answer:`\\(1\\)<br><small style="color:#aad4ff">Use the reciprocal identity \\(\\csc x = \\dfrac{1}{\\sin x}\\).</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\dfrac{\\sin x \\cdot \\cos x}{\\tan x}\\]</p>`,
+    answer:`\\(\\cos^2 x\\)<br><small style="color:#aad4ff">Rewrite \\(\\tan x = \\dfrac{\\sin x}{\\cos x}\\), then cancel.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\dfrac{1}{1 + \\cot^2 x}\\]</p>`,
+    answer:`\\(\\sin^2 x\\)<br><small style="color:#aad4ff">Use \\(1 + \\cot^2 x = \\csc^2 x\\), then \\(\\dfrac{1}{\\csc^2 x} = \\sin^2 x\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\csc x - \\cos x\\cot x\\]</p>`,
+    answer:`\\(\\sin x\\)<br><small style="color:#aad4ff">Rewrite in sine and cosine: \\(\\dfrac{1}{\\sin x} - \\dfrac{\\cos^2 x}{\\sin x} = \\dfrac{1-\\cos^2 x}{\\sin x} = \\dfrac{\\sin^2 x}{\\sin x}\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Rewrite without a fraction:</p><p>\\[\\dfrac{\\sin^2 x}{1 + \\cos x}\\]</p>`,
+    answer:`\\(1 - \\cos x\\)<br><small style="color:#aad4ff">Factor \\(\\sin^2 x = 1-\\cos^2 x = (1-\\cos x)(1+\\cos x)\\), then cancel \\((1+\\cos x)\\).</small>`
+  }
+],
+
+// ── CAT 1: Verifying Trig Identities ─────────────────────────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{\\sec^2\\theta - 1}{\\sec^2\\theta} = \\sin^2\\theta\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sin^2\\theta\\)<br><small style="color:#aad4ff">Use \\(\\sec^2\\theta - 1 = \\tan^2\\theta\\), then rewrite \\(\\tan^2\\theta\\) and \\(\\sec^2\\theta\\) in sine and cosine.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\tan x + \\cot x = \\sec x\\csc x\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sec x\\csc x\\)<br><small style="color:#aad4ff">Convert to \\(\\dfrac{\\sin x}{\\cos x} + \\dfrac{\\cos x}{\\sin x}\\), combine over a common denominator, then use \\(\\sin^2 x + \\cos^2 x = 1\\).</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{1 + \\sin x}{\\cos x} = \\dfrac{\\cos x}{1 - \\sin x}\\]</p>`,
+    answer:`\\(\\checkmark\\ \\dfrac{1 + \\sin x}{\\cos x}\\)<br><small style="color:#aad4ff">Start on the right and multiply by \\(\\dfrac{1+\\sin x}{1+\\sin x}\\). The denominator becomes \\(1-\\sin^2 x = \\cos^2 x\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{\\cot^2\\theta}{1 + \\csc\\theta} = \\dfrac{1 - \\sin\\theta}{\\sin\\theta}\\]</p>`,
+    answer:`\\(\\checkmark\\ \\dfrac{1 - \\sin\\theta}{\\sin\\theta}\\)<br><small style="color:#aad4ff">Replace \\(\\cot^2\\theta\\) with \\(\\csc^2\\theta - 1\\), factor the numerator, cancel, then rewrite \\(\\csc\\theta\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\sin^3 x\\cos^4 x = (\\cos^4 x - \\cos^6 x)\\sin x\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sin^3 x\\cos^4 x\\)<br><small style="color:#aad4ff">Factor the right side as \\(\\cos^4 x(1-\\cos^2 x)\\sin x\\), then use \\(1-\\cos^2 x = \\sin^2 x\\).</small>`
+  }
+],
+
+// ── CAT 2: Solving Trig Equations ────────────────────────────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\sin x = \\dfrac{1}{2}\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Sine is positive in Quadrants I and II.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\cos x = -\\dfrac{\\sqrt{2}}{2}\\]</p>`,
+    answer:`\\(x = \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4}\\)<br><small style="color:#aad4ff">Cosine is negative in Quadrants II and III.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x - 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{4},\\ \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4},\\ \\dfrac{7\\pi}{4}\\)<br><small style="color:#aad4ff">First get \\(\\cos x = \\pm \\dfrac{\\sqrt{2}}{2}\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\sec\\beta\\csc\\beta = 2\\csc\\beta\\]</p>`,
+    answer:`\\(\\beta = \\dfrac{\\pi}{3} + 2\\pi k\\) or \\(\\beta = \\dfrac{5\\pi}{3} + 2\\pi k\\), \\(k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Since \\(\\csc\\beta\\) is defined, divide by it to get \\(\\sec\\beta = 2\\), so \\(\\cos\\beta = \\dfrac{1}{2}\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\cot x\\cos^2 x = 2\\cot x\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{2} + \\pi k,\\ k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Move everything to one side and factor: \\(\\cot x(\\cos^2 x - 2)=0\\). The equation \\(\\cos^2 x = 2\\) has no solution.</small>`
+  }
+],
+
+// ── CAT 3: Solving Trig Equations with Quadratic Forms ───────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\sin^2\\theta + \\sin\\theta - 1 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6},\\ \\dfrac{3\\pi}{2}\\)<br><small style="color:#aad4ff">Factor as \\((2\\sin\\theta - 1)(\\sin\\theta + 1)=0\\).</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\sin^2 x - 5\\sin x + 2 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Factor as \\((2\\sin x - 1)(\\sin x - 2)=0\\); \\(\\sin x = 2\\) is impossible.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2\\theta - 7\\cos\\theta + 3 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{3},\\ \\dfrac{5\\pi}{3}\\)<br><small style="color:#aad4ff">Let \\(u = \\cos\\theta\\). Then \\((2u-1)(u-3)=0\\), and only \\(u = \\dfrac{1}{2}\\) works.</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x + \\cos x - 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{3},\\ \\pi,\\ \\dfrac{5\\pi}{3}\\)<br><small style="color:#aad4ff">Factor as \\((2\\cos x - 1)(\\cos x + 1)=0\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\tan^2\\theta - 1 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{4},\\ \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4},\\ \\dfrac{7\\pi}{4}\\)<br><small style="color:#aad4ff">First get \\(\\tan\\theta = \\pm 1\\).</small>`
+  }
+],
+
+// ── CAT 4: Solving Trig Equations with Quadratics / Square Roots / ID's ─
+[
+  { pts:100, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\sin^2 x + \\cos x = -1\\]</p>`,
+    answer:`\\(x = \\pi + 2\\pi k,\\ k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Replace \\(\\sin^2 x\\) with \\(1-\\cos^2 x\\), factor, and keep the only possible cosine value.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[2\\sin^2 x + 3\\cos x - 3 = 0\\]</p>`,
+    answer:`\\(x = 2\\pi k,\\ \\dfrac{\\pi}{3} + 2\\pi k,\\ \\dfrac{5\\pi}{3} + 2\\pi k\\), \\(k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Use \\(\\sin^2 x = 1-\\cos^2 x\\), then factor \\((2\\cos x - 1)(\\cos x - 1)=0\\).</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x - 5\\sin x + 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Rewrite \\(\\cos^2 x = 1-\\sin^2 x\\), then factor \\((2\\sin x - 1)(\\sin x + 3)=0\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\sqrt{1 + \\sin x} = \\cos x\\]</p>`,
+    answer:`\\(x = 0,\\ \\dfrac{3\\pi}{2}\\)<br><small style="color:#aad4ff">Square both sides, solve, then check the original equation to remove invalid candidates.</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\cos x + 1 = \\sin x\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{2},\\ \\pi\\)<br><small style="color:#aad4ff">Squaring gives three candidates, but \\(\\dfrac{3\\pi}{2}\\) is extraneous and must be rejected in the original equation.</small>`
+  }
+]
+
+]; // end QUESTIONS
+
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+let numTeams = 2;
+let teamNames = ['Team 1', 'Team 2'];
+let scores = [STARTING_XS, STARTING_XS];
+let usedCells = new Set();
+let currentCat = -1, currentQ = -1;
+let timerInterval = null, timeLeft = 30, paused = false;
+let answered = false;
+let scoringTeam = null;
+let currentSpinResult = null;
+let spinnerBusy = false;
+let spinnerRotation = 0;
+const PAGE_OPENED_AT = Date.now();
+let rngState = PAGE_OPENED_AT % 2147483647 || 1;
+
+function seededRandom() {
+  rngState = (rngState * 48271) % 2147483647;
+  return (rngState - 1) / 2147483646;
+}
+
+// ═══════════════════════════════════════════
+//  SETUP SCREEN
+// ═══════════════════════════════════════════
+let selectedCount = 2;
+const DEFAULTS = ['Team 1','Team 2','Team 3','Team 4','Team 5','Team 6'];
+
+setCount(2); // initialise fields on load
+
+function setCount(n) {
+  selectedCount = n;
+  document.querySelectorAll('.count-btn').forEach((b,i) => b.classList.toggle('active', i+2===n));
+  const fields = document.getElementById('name-fields');
+  fields.innerHTML = Array.from({length:n},(_,i)=>
+    `<div class="name-input-row">
+      <label>Team ${i+1}</label>
+      <input type="text" id="tname-${i}" value="${DEFAULTS[i]}" placeholder="Team ${i+1} name" maxlength="20">
+    </div>`
+  ).join('');
+}
+
+function startGame() {
+  numTeams = selectedCount;
+  teamNames = Array.from({length:numTeams},(_,i)=>{
+    const v = document.getElementById(`tname-${i}`).value.trim();
+    return v || `Team ${i+1}`;
+  });
+  scores = new Array(numTeams).fill(STARTING_XS);
+  document.getElementById('setup-overlay').style.display = 'none';
+  const ga = document.getElementById('game-area');
+  ga.style.display = 'flex';
+  buildTeamRadios(false, 0);
+  init();
+}
+
+// ═══════════════════════════════════════════
+//  INIT GAME
+// ═══════════════════════════════════════════
+function init() {
+  buildScoreboard();
+  buildBoard();
+}
+
+function buildScoreboard() {
+  document.getElementById('scoreboard').innerHTML = teamNames.map((name,i)=>`
+    <div class="team-card ${scores[i]===0?'is-empty':''}">
+      <div class="team-name-lbl" onclick="renameTeam(${i})" title="Click to rename">${name}</div>
+      <div class="team-score-row">
+        <div class="team-score-lbl" id="score-${i}">${scores[i].toLocaleString()}</div>
+        <div class="team-score-unit">PTS</div>
+      </div>
+      <div class="team-meta" id="status-${i}">${describeTeamState(scores[i])}</div>
+    </div>`).join('');
+}
+
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.style.gridTemplateColumns = `repeat(${CATS.length}, minmax(0, 1fr))`;
+  board.innerHTML = CATS.map((cat, ci) => {
+    const remaining = getRemainingQuestionIndices(ci).length;
+    return `
+      <button class="${remaining===0 ? 'cell used' : 'cell'}" id="cell-${ci}" onclick="handleCellClick(${ci})" ${remaining===0 ? 'disabled' : ''}>
+        <span class="cell-title">${cat}</span>
+        <span class="cell-meta">${remaining===0 ? 'Category Complete' : `${remaining} Question${remaining===1?'':'s'} Left`}</span>
+      </button>`;
+  }).join('');
+}
+
+function getRemainingQuestionIndices(ci) {
+  return QUESTIONS[ci]
+    .map((_, ri) => ri)
+    .filter(ri => !usedCells.has(`${ci}-${ri}`));
+}
+
+function buildTeamRadios(disabled = false, selected = 0) {
+  const grp = document.getElementById('team-radio-group');
+  const fallback = document.querySelector('input[name="ateam"]:checked');
+  const active = Number.isInteger(selected) ? selected : fallback ? parseInt(fallback.value, 10) : 0;
+  grp.innerHTML = teamNames.map((name,i)=>
+    `<label class="team-radio">
+      <input type="radio" name="ateam" value="${i}" ${i===active?'checked':''} ${disabled?'disabled':''}>
+      <span>${name}</span>
+    </label>`
+  ).join('');
+}
+
+function renameTeam(i) {
+  const name = prompt(`Enter name for this team:`, teamNames[i]);
+  if (name && name.trim()) {
+    const locked = !!document.querySelector('input[name="ateam"][disabled]');
+    const active = getActiveTeam();
+    teamNames[i] = name.trim();
+    buildScoreboard();
+    buildTeamRadios(locked, active);
+  }
+}
+
+function resetGame() {
+  if (!confirm('Reset the scores and the board? Team names are kept.')) return;
+  scores = new Array(numTeams).fill(STARTING_XS);
+  usedCells.clear();
+  stopTimer();
+  closeModal();
+  closeFJ();
+  buildScoreboard();
+  buildBoard();
+}
+
+// ═══════════════════════════════════════════
+//  CELL CLICK
+// ═══════════════════════════════════════════
+function handleCellClick(ci) {
+  const remaining = getRemainingQuestionIndices(ci);
+  if (!remaining.length) return;
+  const ri = remaining[Math.floor(seededRandom() * remaining.length)];
+  currentCat = ci;
+  currentQ = ri;
+  openQuestion(ci, ri);
+}
+
+// ═══════════════════════════════════════════
+//  QUESTION MODAL
+// ═══════════════════════════════════════════
+function openQuestion(ci, ri) {
+  const q = QUESTIONS[ci][ri];
+  resetQuestionState();
+
+  document.getElementById('modal-cat').textContent = CATS[ci];
+  document.getElementById('modal-pts').textContent = `Random Draw · ${getRemainingQuestionIndices(ci).length} Left`;
+  document.getElementById('modal-clue').innerHTML = q.clue;
+
+  // Choices
+  const choicesDiv = document.getElementById('modal-choices');
+  choicesDiv.innerHTML = (q.type==='mc'||q.type==='graph')
+    ? q.choices.map((c,i)=>`<button class="choice-btn" id="choice-${i}" onclick="selectChoice(${i},${q.correct})">${c}</button>`).join('')
+    : '';
+
+  // Canvas
+  const canvas = document.getElementById('graphCanvas');
+  canvas.style.display = q.drawFn ? 'block' : 'none';
+
+  // Answer
+  document.getElementById('modal-answer').style.display = 'none';
+  document.getElementById('answer-text').innerHTML = q.answer;
+
+  document.getElementById('reveal-btn').disabled = false;
+  document.getElementById('correct-btn').disabled = false;
+  document.getElementById('divert-btn').disabled = false;
+  document.getElementById('skip-btn').disabled = false;
+  document.getElementById('overlay').classList.add('active');
+  setStatus('Select the answering team. Wrong answers can be diverted before you reveal the solution. Correct answers earn one seeded spinner bonus.');
+
+  // Render math then draw graph
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('modal')]).then(()=>{
+      if (q.drawFn) setTimeout(()=>window[q.drawFn](), 60);
+    });
+  } else {
+    if (q.drawFn) setTimeout(()=>window[q.drawFn](), 500);
+  }
+  startTimer();
+}
+
+function selectChoice(i, correct) {
+  if (scoringTeam !== null) return;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById(`choice-${i}`).classList.add('selected');
+}
+
+function revealAnswer() {
+  if (document.getElementById('modal-answer').style.display === 'block') return;
+  answered = true;
+  stopTimer();
+  const q = QUESTIONS[currentCat][currentQ];
+  if (q.type==='mc'||q.type==='graph') {
+    document.querySelectorAll('.choice-btn').forEach((btn,i)=>{
+      btn.disabled = true;
+      if (i===q.correct) btn.classList.add('correct');
+      else if (btn.classList.contains('selected')) btn.classList.add('wrong');
+    });
+  }
+  document.getElementById('modal-answer').style.display = 'block';
+  document.getElementById('reveal-btn').disabled = true;
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('modal-answer')]);
+}
+
+function getActiveTeam() {
+  for (const r of document.querySelectorAll('input[name="ateam"]'))
+    if (r.checked) return parseInt(r.value);
+  return 0;
+}
+
+function clearChoiceSelection() {
+  document.querySelectorAll('.choice-btn').forEach(btn=>{
+    btn.classList.remove('selected','wrong');
+    if (!btn.classList.contains('correct')) btn.disabled = false;
+  });
+}
+
+function handleCorrect() {
+  if (scoringTeam !== null) return;
+  scoringTeam = getActiveTeam();
+  revealAnswer();
+  buildTeamRadios(true, scoringTeam);
+  document.getElementById('correct-btn').disabled = true;
+  document.getElementById('divert-btn').disabled = true;
+  document.getElementById('skip-btn').disabled = true;
+  document.getElementById('spin-panel').style.display = 'block';
+  document.getElementById('spin-action-panel').style.display = 'none';
+  document.getElementById('spin-btn').disabled = false;
+  document.getElementById('spin-result').textContent = 'Ready to spin';
+  setStatus(`${teamNames[scoringTeam]} answered correctly. Spin to reveal a protect or attack bonus worth 1 to 3 points.`);
+}
+
+function divertQuestion() {
+  if (scoringTeam !== null) return;
+  clearChoiceSelection();
+  answered = false;
+  document.getElementById('modal-answer').style.display = 'none';
+  setStatus('Question diverted. Select the next team and restart the 30-second clock.');
+  startTimer();
+}
+
+function hasAttackTargets() {
+  return teamNames.some((_,i)=>i !== scoringTeam && scores[i] > 0);
+}
+
+function spinWheel() {
+  if (scoringTeam === null || spinnerBusy) return;
+
+  const resultIndex = Math.floor(seededRandom() * SPIN_RESULTS.length);
+  const result = SPIN_RESULTS[resultIndex];
+  const segmentAngle = 360 / SPIN_RESULTS.length;
+  const normalizedTarget = (360 - (resultIndex * segmentAngle)) % 360;
+  const currentNormalized = ((spinnerRotation % 360) + 360) % 360;
+  const extraTurns = 6 * 360;
+  const delta = extraTurns + ((normalizedTarget - currentNormalized + 360) % 360);
+
+  currentSpinResult = result;
+  spinnerBusy = true;
+  spinnerRotation += delta;
+
+  const wheel = document.getElementById('spinner-wheel');
+  const spinBtn = document.getElementById('spin-btn');
+  spinBtn.disabled = true;
+  document.getElementById('spin-result').textContent = 'Spinning...';
+  wheel.style.transform = `rotate(${spinnerRotation}deg)`;
+
+  setTimeout(() => {
+    spinnerBusy = false;
+    resolveSpinResult(result);
+  }, 3500);
+}
+
+function resolveSpinResult(result) {
+  const resultText = `${result.kind === 'protect' ? 'Protect' : 'Attack'} ${result.amount} Point${result.amount===1?'':'s'}`;
+  document.getElementById('spin-result').textContent = resultText;
+
+  if (result.kind === 'protect') {
+    scores[scoringTeam] += result.amount;
+    updateScore();
+    setStatus(`${teamNames[scoringTeam]} spun Protect +${result.amount}. Their score increases by ${result.amount} point${result.amount===1?'':'s'}.`);
+    setTimeout(finishResolvedQuestion, 1100);
+    return;
+  }
+
+  if (!hasAttackTargets()) {
+    scores[scoringTeam] += result.amount;
+    updateScore();
+    setStatus(`No attack targets are available, so ${result.label} converts to Protect +${result.amount} for ${teamNames[scoringTeam]}.`);
+    setTimeout(finishResolvedQuestion, 1200);
+    return;
+  }
+
+  document.getElementById('spin-action-panel').style.display = 'block';
+  document.getElementById('spin-action-title').textContent = `Attack for ${result.amount} Point${result.amount===1?'':'s'}`;
+  document.getElementById('spin-action-copy').textContent = `Choose an opposing team to lose ${result.amount} point${result.amount===1?'':'s'}.`;
+  renderSpinTargets();
+  setStatus(`${teamNames[scoringTeam]} spun ${result.label}. Choose the team that should lose ${result.amount} point${result.amount===1?'':'s'}.`);
+}
+
+function renderSpinTargets() {
+  const amount = currentSpinResult?.amount ?? 0;
+  const container = document.getElementById('spin-targets');
+  container.innerHTML = teamNames.map((name, i) => {
+    if (i === scoringTeam) return '';
+    return `<button class="target-btn" onclick="applySpinAttack(${i})" ${scores[i]===0 ? 'disabled' : ''}>${name} loses ${amount} (${scores[i]} pts)</button>`;
+  }).join('');
+}
+
+function applySpinAttack(target) {
+  if (scoringTeam === null || !currentSpinResult || currentSpinResult.kind !== 'attack' || target === scoringTeam || scores[target] === 0) return;
+  const actualLoss = Math.min(currentSpinResult.amount, scores[target]);
+  scores[target] = Math.max(0, scores[target] - currentSpinResult.amount);
+  updateScore();
+  setStatus(`${teamNames[scoringTeam]} attacked ${teamNames[target]} for ${actualLoss} point${actualLoss===1?'':'s'}.`);
+  setTimeout(finishResolvedQuestion, 1000);
+}
+
+function finishResolvedQuestion() {
+  markUsed();
+  closeModal();
+  if (usedCells.size === TOTAL_QUESTIONS) setTimeout(openFinalJeopardy, 120);
+}
+
+function skipQuestion() {
+  markUsed();
+  closeModal();
+  if (usedCells.size === TOTAL_QUESTIONS) setTimeout(openFinalJeopardy, 120);
+}
+
+function describeTeamState(score) {
+  if (score === 0) return 'At zero points';
+  if (score > STARTING_XS) return `${score - STARTING_XS} above the start`;
+  if (score < STARTING_XS) return `${STARTING_XS - score} below the start`;
+  return 'At the starting score';
+}
+
+function updateScore() {
+  buildScoreboard();
+}
+
+function markUsed() {
+  const key = `${currentCat}-${currentQ}`;
+  usedCells.add(key);
+  buildBoard();
+}
+
+function closeModal() {
+  stopTimer();
+  document.getElementById('overlay').classList.remove('active');
+  currentCat=-1; currentQ=-1;
+  resetQuestionState();
+}
+
+function resetQuestionState() {
+  answered = false;
+  scoringTeam = null;
+  currentSpinResult = null;
+  spinnerBusy = false;
+  document.getElementById('spin-panel').style.display = 'none';
+  document.getElementById('spin-action-panel').style.display = 'none';
+  document.getElementById('spin-targets').innerHTML = '';
+  document.getElementById('spin-btn').disabled = false;
+  document.getElementById('spin-result').textContent = 'Waiting for a correct answer.';
+  setStatus('');
+  buildTeamRadios(false, getActiveTeam());
+}
+
+function setStatus(message) {
+  const el = document.getElementById('grudge-status');
+  if (!message) {
+    el.style.display = 'none';
+    el.textContent = '';
+    return;
+  }
+  el.textContent = message;
+  el.style.display = 'block';
+}
+
+// ═══════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════
+function startTimer() {
+  timeLeft=30; paused=false;
+  document.getElementById('pause-btn').textContent='⏸';
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if(paused) return;
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0) stopTimer();
+  },1000);
+}
+
+function stopTimer() { clearInterval(timerInterval); timerInterval=null; }
+
+function togglePause() {
+  paused=!paused;
+  document.getElementById('pause-btn').textContent = paused?'▶':'⏸';
+}
+
+function addTime(seconds) {
+  timeLeft += seconds;
+  // If the timer had already expired, restart the countdown loop
+  if (!timerInterval) {
+    timerInterval = setInterval(()=>{
+      if(paused) return;
+      timeLeft--;
+      updateTimerDisplay();
+      if(timeLeft<=0) stopTimer();
+    },1000);
+  }
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const s = Math.max(0,timeLeft);
+  const disp = document.getElementById('timer-display');
+  const bar = document.getElementById('timer-bar');
+  disp.textContent = `0:${String(s).padStart(2,'0')}`;
+  disp.classList.toggle('urgent', s<=10);
+  bar.style.width = (s/30*100)+'%';
+  bar.style.background = s>20?'#FFD700':s>10?'#ff9900':'#ff4444';
+}
+
+// ═══════════════════════════════════════════
+//  FINAL JEOPARDY
+// ═══════════════════════════════════════════
+function openFinalJeopardy() {
+  const modal = document.getElementById('fj-modal');
+  const standings = teamNames.map((name,i)=>({name, xs:scores[i]})).sort((a,b)=>b.xs-a.xs);
+  const top = standings[0]?.xs ?? 0;
+  const leaders = standings.filter(team=>team.xs===top).map(team=>team.name);
+  const heading = usedCells.size === TOTAL_QUESTIONS ? '🏁 Final Standings' : '🏁 Current Standings';
+  document.querySelector('#fj-card h2').textContent = heading;
+  document.getElementById('fj-subtitle').innerHTML = `Mode: <strong style="color:#FFD700">Category Spinner</strong> · Questions used: ${usedCells.size}/${TOTAL_QUESTIONS}`;
+  document.getElementById('fj-wagers').innerHTML = '';
+  document.getElementById('fj-clue').innerHTML = `
+    <p><strong>${leaders.length===1 ? `${leaders[0]} is in front` : `Tie game between ${leaders.join(' and ')}`}</strong> with <strong>${top} point</strong>${top===1?'':'s'}.</p>
+    <div style="margin-top:14px;text-align:left;display:grid;gap:8px;">
+      ${standings.map((team, index)=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;background:#081533;border:1px solid #2f5aa8;border-radius:8px;padding:10px 12px;">
+          <span><strong>${index+1}.</strong> ${team.name}</span>
+          <span style="font-family:Oswald,sans-serif;color:#FFD700;font-size:1.1rem;">${team.xs} pts</span>
+        </div>`).join('')}
+    </div>
+  `;
+  document.getElementById('fj-clue').style.display='block';
+  document.getElementById('fj-answer').style.display='none';
+  document.getElementById('fj-show-clue-btn').style.display='none';
+  document.getElementById('fj-reveal-btn').style.display='none';
+  document.getElementById('fj-score-btn').style.display='none';
+  modal.classList.add('active');
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('fj-card')]);
+}
+
+function closeFJ() { document.getElementById('fj-modal').classList.remove('active'); }
+
+// ═══════════════════════════════════════════
+//  GRAPH DRAWING
+// ═══════════════════════════════════════════
+function getCtx() {
+  const canvas = document.getElementById('graphCanvas');
+  return { canvas, ctx: canvas.getContext('2d'), W: canvas.width, H: canvas.height };
+}
+
+function drawAxesAndGrid(ctx, W, H, pad, xMin, xMax, yMin, yMax, xticks, yticks, xlabels) {
+  const toX = x => pad + (x-xMin)/(xMax-xMin)*(W-2*pad);
+  const toY = y => H-pad-(y-yMin)/(yMax-yMin)*(H-2*pad);
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=0.5;
+  xticks.forEach(x=>{ const cx=toX(x); ctx.beginPath(); ctx.moveTo(cx,pad); ctx.lineTo(cx,H-pad); ctx.stroke(); });
+  yticks.forEach(y=>{ const cy=toY(y); ctx.beginPath(); ctx.moveTo(pad,cy); ctx.lineTo(W-pad,cy); ctx.stroke(); });
+
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,0.65)'; ctx.lineWidth=1.5;
+  const y0=toY(0), x0=toX(0);
+  if(y0>=pad&&y0<=H-pad){ ctx.beginPath(); ctx.moveTo(pad,y0); ctx.lineTo(W-pad,y0); ctx.stroke(); }
+  if(x0>=pad&&x0<=W-pad){ ctx.beginPath(); ctx.moveTo(x0,pad); ctx.lineTo(x0,H-pad); ctx.stroke(); }
+
+  // Axis arrows
+  ctx.fillStyle='rgba(255,255,255,0.65)';
+  if(y0>=pad&&y0<=H-pad){ drawArrow(ctx,W-pad,y0,1,0); drawArrow(ctx,pad,y0,-1,0); }
+  if(x0>=pad&&x0<=W-pad){ drawArrow(ctx,x0,pad,0,-1); drawArrow(ctx,x0,H-pad,0,1); }
+
+  // Labels
+  ctx.fillStyle='rgba(200,220,255,0.8)'; ctx.font='11px Lato,sans-serif';
+  ctx.textAlign='center';
+  xticks.forEach((x,i)=>{ if(x===0)return; const lbl=xlabels?xlabels[i]:String(x); ctx.fillText(lbl,toX(x),H-pad+14); });
+  ctx.textAlign='right';
+  yticks.forEach(y=>{ if(y===0)return; ctx.fillText(y,pad-5,toY(y)+4); });
+  return {toX,toY};
+}
+
+function drawArrow(ctx,x,y,dx,dy){
+  const s=6;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-dy*s-dx*s,y+dx*s-dy*s); ctx.lineTo(x+dy*s-dx*s,y-dx*s-dy*s); ctx.fill();
+}
+
+function plotFn(ctx, fn, xMin, xMax, toX, toY, yMin, yMax) {
+  ctx.strokeStyle='#FFD700'; ctx.lineWidth=2.5;
+  ctx.beginPath(); let first=true;
+  const steps=1000, range=yMax-yMin;
+  for(let i=0;i<=steps;i++){
+    const x=xMin+(xMax-xMin)*i/steps, y=fn(x);
+    if(!isFinite(y)||isNaN(y)){ first=true; continue; }
+    if(!first){
+      const xp=xMin+(xMax-xMin)*(i-1)/steps, yp=fn(xp);
+      if(isFinite(yp)&&Math.abs(y-yp)>range*1.8){ first=true; }
+    }
+    const cx=toX(x), cy=toY(y);
+    if(first){ ctx.moveTo(cx,cy); first=false; } else ctx.lineTo(cx,cy);
+  }
+  ctx.stroke();
+}
+
+// ── Shared helper: drop-lines + dot + y-label at key points ──────────────
+// pts: array of [x, y, labelDy]  labelDy: negative = above dot, positive = below
+function plotKeyPoints(ctx, pts, toX, toY) {
+  pts.forEach(([x, y, dy]) => {
+    const cx = toX(x), cy = toY(y);
+    // Dashed drop lines to both axes
+    ctx.setLineDash([3,3]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, toY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(toX(0), cy); ctx.stroke();
+    ctx.setLineDash([]);
+    // Gold dot with dark outline
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFD700'; ctx.fill();
+    ctx.strokeStyle = '#05083a'; ctx.lineWidth = 1.8; ctx.stroke();
+    // y-value label
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px Lato,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(y), cx, cy + dy);
+  });
+}
+
+// ── y = −3 sin(2(x − π/4)) + 1  (Graphing Q400) ─────
+//   Period: x = π/4 → 5π/4   Key pts: (π/4,1) (π/2,−2) (3π/4,1) (π,4) (5π/4,1)
+function drawSinGraph() {
+  const {ctx,W,H} = getCtx();
+  const pad=50, pi=Math.PI;
+  ctx.fillStyle='#05083a'; ctx.fillRect(0,0,W,H);
+
+  const xMin = -0.25, xMax = pi*5/4 + 0.55;
+  const yMin = -3.5,  yMax = 5.5;
+  const xticks  = [0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4];
+  const xlabels = ['0','π/4','π/2','3π/4','π','5π/4'];
+  const yticks  = [-3,-2,-1,0,1,2,3,4];
+  const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,xlabels);
+
+  // Midline y = 1
+  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(100,180,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(140,200,255,0.55)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('y = 1  (midline)', pad+5, toY(1)-6);
+
+  // Shaded period region
+  ctx.fillStyle='rgba(255,215,0,0.04)';
+  ctx.fillRect(toX(pi/4), pad, toX(5*pi/4)-toX(pi/4), H-2*pad);
+
+  // Curve
+  plotFn(ctx, x => -3*Math.sin(2*(x - pi/4)) + 1, xMin, xMax, toX, toY, yMin, yMax);
+
+  // Key points: [x, y, labelDy]
+  plotKeyPoints(ctx, [
+    [pi/4,   1,  -11],   // start of period — midline, going down
+    [pi/2,  -2,   15],   // minimum
+    [3*pi/4, 1,  -11],   // midline
+    [pi,     4,  -11],   // maximum
+    [5*pi/4, 1,  -11],   // end of period — midline
+  ], toX, toY);
+
+  // Period bracket
+  ctx.strokeStyle='rgba(255,215,0,0.5)'; ctx.lineWidth=1.2;
+  const bY = H - pad + 22;
+  ctx.beginPath();
+  ctx.moveTo(toX(pi/4), bY-4); ctx.lineTo(toX(pi/4), bY);
+  ctx.lineTo(toX(5*pi/4), bY); ctx.lineTo(toX(5*pi/4), bY-4);
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,215,0,0.7)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('one period', (toX(pi/4)+toX(5*pi/4))/2, bY+11);
+}
+
+// ── y = 2 cos(π/2 · (x − 1)) + 1  (Graphing Q500) ───
+//   Period: x = 1 → 5   Key pts: (1,3) (2,1) (3,−1) (4,1) (5,3)
+function drawCosGraph() {
+  const {ctx,W,H} = getCtx();
+  const pad=50, pi=Math.PI;
+  ctx.fillStyle='#05083a'; ctx.fillRect(0,0,W,H);
+
+  const xMin = -0.3, xMax = 6.3;
+  const yMin = -2.5, yMax = 4.5;
+  const xticks  = [1, 2, 3, 4, 5];
+  const yticks  = [-2,-1,0,1,2,3];
+  const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,null);
+
+  // Midline y = 1
+  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(100,180,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(140,200,255,0.55)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('y = 1  (midline)', toX(0)+4, toY(1)-6);
+
+  // Shaded period region
+  ctx.fillStyle='rgba(255,215,0,0.04)';
+  ctx.fillRect(toX(1), pad, toX(5)-toX(1), H-2*pad);
+
+  // Curve
+  plotFn(ctx, x => 2*Math.cos(pi/2*(x-1)) + 1, xMin, xMax, toX, toY, yMin, yMax);
+
+  // Key points: [x, y, labelDy]
+  plotKeyPoints(ctx, [
+    [1,  3,  -11],   // start of period — maximum
+    [2,  1,  -11],   // midline (descending)
+    [3, -1,   15],   // minimum
+    [4,  1,  -11],   // midline (ascending)
+    [5,  3,  -11],   // end of period — maximum
+  ], toX, toY);
+
+  // Period bracket
+  ctx.strokeStyle='rgba(255,215,0,0.5)'; ctx.lineWidth=1.2;
+  const bY = H - pad + 22;
+  ctx.beginPath();
+  ctx.moveTo(toX(1), bY-4); ctx.lineTo(toX(1), bY);
+  ctx.lineTo(toX(5), bY);   ctx.lineTo(toX(5), bY-4);
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,215,0,0.7)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('one period', (toX(1)+toX(5))/2, bY+11);
+}
+
+// Close overlay by clicking outside modal
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>

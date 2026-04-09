@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 5 Trashketball — Identities and Equations</title>
+<script>
+MathJax = {
+  tex: { inlineMath: [['\\(','\\)'],['$','$']], displayMath: [['\\[','\\]']] },
+  startup: { typeset: false }
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:#060CE9;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px 6px;}
+
+/* ── SETUP OVERLAY ── */
+#setup-overlay{position:fixed;inset:0;background:linear-gradient(135deg,#020870 0%,#060CE9 50%,#020870 100%);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;}
+#setup-card{background:rgba(0,0,0,0.55);border:3px solid #FFD700;border-radius:16px;padding:36px 40px;max-width:520px;width:100%;text-align:center;box-shadow:0 0 60px rgba(255,215,0,0.25);}
+.setup-logo-title{font-family:'Oswald',sans-serif;font-size:3.2rem;color:#FFD700;letter-spacing:6px;text-transform:uppercase;text-shadow:0 0 30px rgba(255,215,0,0.6);}
+.setup-logo-sub{font-family:'Lato',sans-serif;font-size:.9rem;color:#aac8ff;letter-spacing:2px;text-transform:uppercase;margin-bottom:28px;}
+.setup-section{margin-bottom:22px;text-align:left;}
+.setup-section>label{font-family:'Oswald',sans-serif;font-size:.95rem;color:#FFD700;text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:10px;}
+.count-row{display:flex;gap:10px;}
+.count-btn{flex:1;padding:10px;background:#000b8c;border:2px solid #4466cc;color:#aad4ff;font-family:'Oswald',sans-serif;font-size:1.3rem;border-radius:6px;cursor:pointer;transition:all .15s;}
+.count-btn:hover,.count-btn.active{background:#1a40cc;border-color:#FFD700;color:#FFD700;}
+#name-fields{display:flex;flex-direction:column;gap:8px;}
+.name-input-row{display:flex;align-items:center;gap:10px;}
+.name-input-row label{font-size:.8rem;color:#aad4ff;white-space:nowrap;width:60px;text-align:right;}
+.name-input-row input{flex:1;background:#000b8c;border:2px solid #4466cc;color:#fff;padding:8px 12px;border-radius:6px;font-size:.95rem;outline:none;font-family:'Lato',sans-serif;}
+.name-input-row input:focus{border-color:#FFD700;}
+.start-btn{margin-top:10px;width:100%;padding:14px;background:#FFD700;color:#000022;font-family:'Oswald',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;text-transform:uppercase;transition:opacity .15s;}
+.start-btn:hover{opacity:.88;}
+
+/* ── SCOREBOARD ── */
+h1{font-family:'Oswald',sans-serif;font-size:clamp(1.1rem,2.5vw,1.8rem);color:#FFD700;text-transform:uppercase;letter-spacing:3px;text-align:center;text-shadow:2px 2px 6px rgba(0,0,0,.7);margin:4px 0 2px;}
+.subtitle{font-size:.75rem;color:#aac8ff;letter-spacing:2px;margin-bottom:8px;text-transform:uppercase;}
+#scoreboard{display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap;justify-content:center;}
+.team-card{background:#000b8c;border:2px solid #FFD700;border-radius:8px;padding:5px 16px;text-align:center;min-width:110px;}
+.team-name-lbl{font-size:.7rem;color:#aad4ff;text-transform:uppercase;letter-spacing:1px;cursor:pointer;}
+.team-name-lbl:hover{color:#FFD700;}
+.team-score-lbl{font-family:'Oswald',sans-serif;font-size:1.9rem;color:#FFD700;}
+#reset-btn{background:#1a1a3a;border:1px solid #555;color:#aaa;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:.78rem;}
+#reset-btn:hover{background:#333;}
+
+/* ── BOARD ── */
+#board{display:grid;gap:3px;width:100%;max-width:1200px;}
+.cat-header{background:#000b8c;border:2px solid #FFD700;color:#FFD700;font-family:'Oswald',sans-serif;font-size:clamp(.55rem,1vw,.82rem);font-weight:600;text-align:center;padding:8px 5px;min-height:68px;display:flex;align-items:center;justify-content:center;line-height:1.3;text-transform:uppercase;}
+.cell{background:#000b8c;border:2px solid #FFD700;color:#FFD700;font-family:'Oswald',sans-serif;font-size:clamp(.9rem,2.2vw,1.7rem);font-weight:700;font-style:italic;text-align:center;padding:12px 4px;cursor:pointer;transition:background .15s,transform .1s;min-height:58px;display:flex;align-items:center;justify-content:center;user-select:none;}
+.cell:hover:not(.used){background:#1a2acc;transform:scale(1.03);}
+.cell.used{background:#0d0d22;color:#1a1a3a;cursor:default;border-color:#111;}
+/* daily-double cells look identical to normal cells — surprise is hidden */
+.cell.daily-double{background:#000b8c;border-color:#FFD700;}
+
+/* ── MODAL OVERLAY ── */
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;padding:10px;}
+#overlay.active{display:flex;}
+#modal{background:#000b8c;border:3px solid #FFD700;border-radius:12px;width:100%;max-width:800px;max-height:93vh;overflow-y:auto;display:flex;flex-direction:column;}
+#modal-header{background:#000055;padding:9px 16px;display:flex;justify-content:space-between;align-items:center;border-radius:9px 9px 0 0;border-bottom:2px solid #FFD700;flex-shrink:0;}
+#modal-cat{font-family:'Oswald',sans-serif;color:#FFD700;font-size:.95rem;text-transform:uppercase;letter-spacing:1px;}
+#modal-pts{font-family:'Oswald',sans-serif;color:#FFD700;font-size:1.35rem;font-style:italic;}
+#modal-close{background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;padding:2px 6px;line-height:1;}
+#modal-close:hover{color:#fff;}
+#modal-body{padding:18px 22px;flex:1;}
+#modal-clue{font-size:clamp(.9rem,2vw,1.15rem);line-height:1.75;text-align:center;margin-bottom:12px;}
+#modal-choices{display:flex;flex-direction:column;gap:7px;margin:8px 0;}
+.choice-btn{background:#000055;border:2px solid #3355bb;color:#fff;padding:9px 14px;border-radius:6px;cursor:pointer;font-size:.97rem;text-align:left;transition:background .15s;line-height:1.5;}
+.choice-btn:hover:not(:disabled){background:#1a3aaa;}
+.choice-btn.selected{border-color:#FFD700;background:#1a3aaa;}
+.choice-btn.correct{background:#1a5c1a!important;border-color:#55dd55!important;}
+.choice-btn.wrong{background:#5c1a1a!important;border-color:#dd5555!important;opacity:.65;}
+.choice-btn:disabled{cursor:default;}
+#modal-answer{background:#001133;border:2px solid #44cc44;border-radius:8px;padding:12px 16px;margin-top:12px;display:none;}
+.answer-label{font-family:'Oswald',sans-serif;color:#44cc44;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.answer-text{font-size:clamp(.88rem,1.9vw,1.07rem);line-height:1.75;}
+#graphCanvas{display:block;margin:10px auto 0;max-width:100%;border-radius:6px;}
+
+/* ── TIMER ── */
+#modal-timer-row{padding:5px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+#timer-display{font-family:'Oswald',sans-serif;font-size:1.7rem;color:#FFD700;min-width:52px;}
+#timer-display.urgent{color:#ff4444;animation:blink .5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+#timer-bar-bg{flex:1;background:#111;height:7px;border-radius:4px;overflow:hidden;}
+#timer-bar{height:100%;background:#FFD700;transition:width .95s linear,background .3s;}
+
+/* ── CONTROLS ── */
+#modal-footer{padding:10px 16px;border-top:2px solid #0a0a33;display:flex;flex-direction:column;gap:8px;flex-shrink:0;}
+.team-select-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.team-select-row>span{font-size:.8rem;color:#aad4ff;font-family:'Oswald',sans-serif;text-transform:uppercase;}
+.team-radio{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:.88rem;white-space:nowrap;}
+.action-row{display:flex;gap:7px;flex-wrap:wrap;}
+.btn{padding:7px 14px;border-radius:6px;border:none;cursor:pointer;font-family:'Oswald',sans-serif;font-size:.9rem;font-weight:600;letter-spacing:.5px;transition:opacity .15s;}
+.btn:hover{opacity:.83;}
+.btn:disabled{opacity:.35;cursor:default;}
+.btn-reveal{background:#FFD700;color:#000;}
+.btn-correct{background:#1e7b1e;color:#fff;}
+.btn-wrong{background:#7b1e1e;color:#fff;}
+.btn-skip{background:#333;color:#bbb;}
+.btn-pause{background:#444;color:#eee;font-size:.8rem;padding:7px 10px;}
+
+/* ── DAILY DOUBLE ── */
+#dd-screen{display:none;position:fixed;inset:0;background:radial-gradient(ellipse at center,#3a0000 0%,#0a0000 100%);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:18px;}
+#dd-screen.active{display:flex;}
+#dd-screen h2{font-family:'Oswald',sans-serif;font-size:clamp(2.5rem,8vw,4.5rem);color:#FFD700;text-align:center;animation:ddglow 1s infinite alternate;}
+@keyframes ddglow{0%{text-shadow:0 0 20px #ff8888;}100%{text-shadow:0 0 60px #ff4444,0 0 100px #ff2222;}}
+#dd-screen p{color:#ffcccc;font-size:1rem;text-align:center;}
+#dd-continue{background:#FFD700;color:#000;font-family:'Oswald',sans-serif;font-size:1.2rem;font-weight:700;padding:12px 36px;border:none;border-radius:8px;cursor:pointer;letter-spacing:2px;}
+#dd-continue:hover{opacity:.85;}
+
+/* ── FINAL JEOPARDY ── */
+#fj-btn{margin-top:10px;background:#000055;border:2px solid #FFD700;color:#FFD700;padding:7px 18px;font-family:'Oswald',sans-serif;font-size:.9rem;border-radius:6px;cursor:pointer;letter-spacing:1px;}
+#fj-btn:hover{background:#1a1a88;}
+#fj-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:400;align-items:center;justify-content:center;padding:16px;}
+#fj-modal.active{display:flex;}
+#fj-card{background:#000b8c;border:3px solid #FFD700;border-radius:12px;max-width:780px;width:100%;padding:28px;text-align:center;}
+#fj-card h2{font-family:'Oswald',sans-serif;color:#FFD700;font-size:1.8rem;margin-bottom:18px;letter-spacing:3px;}
+#fj-card .fj-clue{font-size:clamp(.95rem,2vw,1.2rem);line-height:1.75;margin-bottom:18px;}
+#fj-card .fj-answer{background:#001133;border:2px solid #44cc44;border-radius:8px;padding:14px;margin:16px 0;display:none;text-align:left;}
+.fj-wager-section{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.fj-wager-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.fj-wager-row label{color:#aad4ff;font-size:.85rem;width:80px;text-align:right;}
+.fj-wager-row input{background:#000055;border:2px solid #4466cc;color:#FFD700;padding:6px 10px;border-radius:6px;font-size:1rem;width:110px;font-family:'Oswald',sans-serif;outline:none;}
+.fj-btn-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     SETUP SCREEN
+══════════════════════════════════ -->
+<div id="setup-overlay">
+  <div id="setup-card">
+    <div class="setup-logo-title">Trashketball</div>
+    <div class="setup-logo-sub">Unit 5 · Sections 5.1-5.3 · Non-Honors</div>
+
+    <div class="setup-section">
+      <label>Number of Teams</label>
+      <div class="count-row" id="count-row">
+        <button class="count-btn active" onclick="setCount(2)">2</button>
+        <button class="count-btn" onclick="setCount(3)">3</button>
+        <button class="count-btn" onclick="setCount(4)">4</button>
+        <button class="count-btn" onclick="setCount(5)">5</button>
+        <button class="count-btn" onclick="setCount(6)">6</button>
+      </div>
+    </div>
+
+    <div class="setup-section">
+      <label>Team Names</label>
+      <div id="name-fields"></div>
+    </div>
+
+    <button class="start-btn" onclick="startGame()">Let's Play!</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     GAME AREA (hidden until setup)
+══════════════════════════════════ -->
+<div id="game-area" style="display:none;flex-direction:column;align-items:center;width:100%;max-width:1200px;">
+  <h1>Unit 5 · Fundamental Identities and Trig Equations</h1>
+  <p class="subtitle">Trashketball Review · Non-Honors</p>
+  <div id="scoreboard"></div>
+  <div id="board"></div>
+  <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;">
+    <button id="reset-btn" onclick="resetGame()">↺ Reset Board</button>
+    <button id="fj-btn" onclick="openFinalJeopardy()">⭐ Final Shot</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     QUESTION MODAL
+══════════════════════════════════ -->
+<div id="overlay">
+  <div id="modal">
+    <div id="modal-header">
+      <span id="modal-cat">Category</span>
+      <span id="modal-pts">$100</span>
+      <button id="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body">
+      <div id="modal-clue"></div>
+      <canvas id="graphCanvas" width="520" height="270" style="display:none;"></canvas>
+      <div id="modal-choices"></div>
+      <div id="modal-answer"><div class="answer-label">Answer</div><div class="answer-text" id="answer-text"></div></div>
+    </div>
+    <div id="modal-timer-row">
+      <div id="timer-display">0:30</div>
+      <div id="timer-bar-bg"><div id="timer-bar" style="width:100%"></div></div>
+      <button class="btn btn-pause" id="pause-btn" onclick="togglePause()">⏸</button>
+      <button class="btn btn-pause" onclick="addTime(15)" title="Add 15 seconds">+15s</button>
+    </div>
+    <div id="modal-footer">
+      <div class="team-select-row">
+        <span>Answering:</span>
+        <div id="team-radio-group"></div>
+      </div>
+      <div class="action-row">
+        <button class="btn btn-reveal" id="reveal-btn" onclick="revealAnswer()">Reveal Answer</button>
+        <button class="btn btn-correct" onclick="awardPoints(true)">✓ Correct</button>
+        <button class="btn btn-wrong" onclick="awardPoints(false)">✗ Incorrect</button>
+        <button class="btn btn-skip" onclick="skipQuestion()">Skip / No Points</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     DAILY DOUBLE SCREEN
+══════════════════════════════════ -->
+<div id="dd-screen">
+  <h2>⭐ BONUS SHOT! ⭐</h2>
+  <p>Place your wager — then reveal the clue.</p>
+  <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin:10px 0;">
+    <label for="dd-wager" style="color:#FFD700;font-family:'Oswald',sans-serif;font-size:1.1rem;">Wager: $</label>
+    <input type="number" id="dd-wager" value="0" min="0" style="background:#000b8c;border:2px solid #FFD700;color:#FFD700;padding:8px 12px;border-radius:6px;font-size:1.2rem;width:120px;font-family:'Oswald',sans-serif;text-align:center;outline:none;">
+  </div>
+  <button id="dd-continue" onclick="showDDQuestion()">Show Clue</button>
+</div>
+
+<!-- ══════════════════════════════════
+     FINAL JEOPARDY MODAL
+══════════════════════════════════ -->
+<div id="fj-modal">
+  <div id="fj-card">
+    <h2>⭐ Final Shot ⭐</h2>
+    <div style="font-size:.85rem;color:#aad4ff;margin-bottom:14px;letter-spacing:1px;">Category: <strong style="color:#FFD700">Mixed Review</strong></div>
+
+    <div class="fj-wager-section" id="fj-wagers"></div>
+
+    <div class="fj-clue" id="fj-clue" style="display:none;"></div>
+    <div class="fj-answer" id="fj-answer">
+      <div class="answer-label">Answer</div>
+      <div class="answer-text" id="fj-answer-text"></div>
+    </div>
+
+    <div class="fj-btn-row">
+      <button class="btn btn-reveal" id="fj-show-clue-btn" onclick="showFJClue()">Show Clue</button>
+      <button class="btn btn-reveal" id="fj-reveal-btn" onclick="revealFJAnswer()" style="display:none;">Reveal Answer</button>
+      <button class="btn btn-correct" id="fj-score-btn" onclick="applyFJWagers()" style="display:none;">Apply Wagers</button>
+      <button class="btn btn-skip" onclick="closeFJ()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     SCRIPT
+══════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════
+//  CATEGORIES
+// ═══════════════════════════════════════════
+const CATS = [
+  "Simplifying Trig Expressions with Fundamental ID's",
+  "Verifying Trig Identities",
+  "Solving Trig Equations",
+  "Solving Trig Equations with Quadratic Forms",
+  "Solving Trig Equations with Quadratics / Square Roots / Fundamental ID's"
+];
+
+// Bonus shots [catIdx]-[rowIdx] (0-based rows = 100,200,300,400,500)
+const DAILY_DOUBLES = new Set(['1-3','4-2']);
+
+// ═══════════════════════════════════════════
+//  QUESTIONS — aligned to sections 5.1-5.3 and the quick check
+//  type: 'text' | 'mc' | 'graph'
+// ═══════════════════════════════════════════
+const QUESTIONS = [
+
+// ── CAT 0: Simplifying Trig Expressions with Fundamental ID's ────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\sin x \\cdot \\csc x\\]</p>`,
+    answer:`\\(1\\)<br><small style="color:#aad4ff">Use the reciprocal identity \\(\\csc x = \\dfrac{1}{\\sin x}\\).</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\dfrac{\\sin x \\cdot \\cos x}{\\tan x}\\]</p>`,
+    answer:`\\(\\cos^2 x\\)<br><small style="color:#aad4ff">Rewrite \\(\\tan x = \\dfrac{\\sin x}{\\cos x}\\), then cancel.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\dfrac{1}{1 + \\cot^2 x}\\]</p>`,
+    answer:`\\(\\sin^2 x\\)<br><small style="color:#aad4ff">Use \\(1 + \\cot^2 x = \\csc^2 x\\), then \\(\\dfrac{1}{\\csc^2 x} = \\sin^2 x\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Simplify:</p><p>\\[\\csc x - \\cos x\\cot x\\]</p>`,
+    answer:`\\(\\sin x\\)<br><small style="color:#aad4ff">Rewrite in sine and cosine: \\(\\dfrac{1}{\\sin x} - \\dfrac{\\cos^2 x}{\\sin x} = \\dfrac{1-\\cos^2 x}{\\sin x} = \\dfrac{\\sin^2 x}{\\sin x}\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Rewrite without a fraction:</p><p>\\[\\dfrac{\\sin^2 x}{1 + \\cos x}\\]</p>`,
+    answer:`\\(1 - \\cos x\\)<br><small style="color:#aad4ff">Factor \\(\\sin^2 x = 1-\\cos^2 x = (1-\\cos x)(1+\\cos x)\\), then cancel \\((1+\\cos x)\\).</small>`
+  }
+],
+
+// ── CAT 1: Verifying Trig Identities ─────────────────────────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{\\sec^2\\theta - 1}{\\sec^2\\theta} = \\sin^2\\theta\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sin^2\\theta\\)<br><small style="color:#aad4ff">Use \\(\\sec^2\\theta - 1 = \\tan^2\\theta\\), then rewrite \\(\\tan^2\\theta\\) and \\(\\sec^2\\theta\\) in sine and cosine.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\tan x + \\cot x = \\sec x\\csc x\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sec x\\csc x\\)<br><small style="color:#aad4ff">Convert to \\(\\dfrac{\\sin x}{\\cos x} + \\dfrac{\\cos x}{\\sin x}\\), combine over a common denominator, then use \\(\\sin^2 x + \\cos^2 x = 1\\).</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{1 + \\sin x}{\\cos x} = \\dfrac{\\cos x}{1 - \\sin x}\\]</p>`,
+    answer:`\\(\\checkmark\\ \\dfrac{1 + \\sin x}{\\cos x}\\)<br><small style="color:#aad4ff">Start on the right and multiply by \\(\\dfrac{1+\\sin x}{1+\\sin x}\\). The denominator becomes \\(1-\\sin^2 x = \\cos^2 x\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\dfrac{\\cot^2\\theta}{1 + \\csc\\theta} = \\dfrac{1 - \\sin\\theta}{\\sin\\theta}\\]</p>`,
+    answer:`\\(\\checkmark\\ \\dfrac{1 - \\sin\\theta}{\\sin\\theta}\\)<br><small style="color:#aad4ff">Replace \\(\\cot^2\\theta\\) with \\(\\csc^2\\theta - 1\\), factor the numerator, cancel, then rewrite \\(\\csc\\theta\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Verify the identity:</p><p>\\[\\sin^3 x\\cos^4 x = (\\cos^4 x - \\cos^6 x)\\sin x\\]</p>`,
+    answer:`\\(\\checkmark\\ \\sin^3 x\\cos^4 x\\)<br><small style="color:#aad4ff">Factor the right side as \\(\\cos^4 x(1-\\cos^2 x)\\sin x\\), then use \\(1-\\cos^2 x = \\sin^2 x\\).</small>`
+  }
+],
+
+// ── CAT 2: Solving Trig Equations ────────────────────────────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\sin x = \\dfrac{1}{2}\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Sine is positive in Quadrants I and II.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\cos x = -\\dfrac{\\sqrt{2}}{2}\\]</p>`,
+    answer:`\\(x = \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4}\\)<br><small style="color:#aad4ff">Cosine is negative in Quadrants II and III.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x - 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{4},\\ \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4},\\ \\dfrac{7\\pi}{4}\\)<br><small style="color:#aad4ff">First get \\(\\cos x = \\pm \\dfrac{\\sqrt{2}}{2}\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\sec\\beta\\csc\\beta = 2\\csc\\beta\\]</p>`,
+    answer:`\\(\\beta = \\dfrac{\\pi}{3} + 2\\pi k\\) or \\(\\beta = \\dfrac{5\\pi}{3} + 2\\pi k\\), \\(k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Since \\(\\csc\\beta\\) is defined, divide by it to get \\(\\sec\\beta = 2\\), so \\(\\cos\\beta = \\dfrac{1}{2}\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\cot x\\cos^2 x = 2\\cot x\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{2} + \\pi k,\\ k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Move everything to one side and factor: \\(\\cot x(\\cos^2 x - 2)=0\\). The equation \\(\\cos^2 x = 2\\) has no solution.</small>`
+  }
+],
+
+// ── CAT 3: Solving Trig Equations with Quadratic Forms ───────────────────
+[
+  { pts:100, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\sin^2\\theta + \\sin\\theta - 1 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6},\\ \\dfrac{3\\pi}{2}\\)<br><small style="color:#aad4ff">Factor as \\((2\\sin\\theta - 1)(\\sin\\theta + 1)=0\\).</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\sin^2 x - 5\\sin x + 2 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Factor as \\((2\\sin x - 1)(\\sin x - 2)=0\\); \\(\\sin x = 2\\) is impossible.</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2\\theta - 7\\cos\\theta + 3 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{3},\\ \\dfrac{5\\pi}{3}\\)<br><small style="color:#aad4ff">Let \\(u = \\cos\\theta\\). Then \\((2u-1)(u-3)=0\\), and only \\(u = \\dfrac{1}{2}\\) works.</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x + \\cos x - 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{3},\\ \\pi,\\ \\dfrac{5\\pi}{3}\\)<br><small style="color:#aad4ff">Factor as \\((2\\cos x - 1)(\\cos x + 1)=0\\).</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\tan^2\\theta - 1 = 0\\]</p>`,
+    answer:`\\(\\theta = \\dfrac{\\pi}{4},\\ \\dfrac{3\\pi}{4},\\ \\dfrac{5\\pi}{4},\\ \\dfrac{7\\pi}{4}\\)<br><small style="color:#aad4ff">First get \\(\\tan\\theta = \\pm 1\\).</small>`
+  }
+],
+
+// ── CAT 4: Solving Trig Equations with Quadratics / Square Roots / ID's ─
+[
+  { pts:100, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[\\sin^2 x + \\cos x = -1\\]</p>`,
+    answer:`\\(x = \\pi + 2\\pi k,\\ k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Replace \\(\\sin^2 x\\) with \\(1-\\cos^2 x\\), factor, and keep the only possible cosine value.</small>`
+  },
+  { pts:200, type:'text',
+    clue:`<p>Find all solutions:</p><p>\\[2\\sin^2 x + 3\\cos x - 3 = 0\\]</p>`,
+    answer:`\\(x = 2\\pi k,\\ \\dfrac{\\pi}{3} + 2\\pi k,\\ \\dfrac{5\\pi}{3} + 2\\pi k\\), \\(k \\in \\mathbb{Z}\\)<br><small style="color:#aad4ff">Use \\(\\sin^2 x = 1-\\cos^2 x\\), then factor \\((2\\cos x - 1)(\\cos x - 1)=0\\).</small>`
+  },
+  { pts:300, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[2\\cos^2 x - 5\\sin x + 1 = 0\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{6},\\ \\dfrac{5\\pi}{6}\\)<br><small style="color:#aad4ff">Rewrite \\(\\cos^2 x = 1-\\sin^2 x\\), then factor \\((2\\sin x - 1)(\\sin x + 3)=0\\).</small>`
+  },
+  { pts:400, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\sqrt{1 + \\sin x} = \\cos x\\]</p>`,
+    answer:`\\(x = 0,\\ \\dfrac{3\\pi}{2}\\)<br><small style="color:#aad4ff">Square both sides, solve, then check the original equation to remove invalid candidates.</small>`
+  },
+  { pts:500, type:'text',
+    clue:`<p>Solve on \\([0, 2\\pi)\\):</p><p>\\[\\cos x + 1 = \\sin x\\]</p>`,
+    answer:`\\(x = \\dfrac{\\pi}{2},\\ \\pi\\)<br><small style="color:#aad4ff">Squaring gives three candidates, but \\(\\dfrac{3\\pi}{2}\\) is extraneous and must be rejected in the original equation.</small>`
+  }
+]
+
+]; // end QUESTIONS
+
+// Final Shot question
+const FINAL_JEOPARDY = {
+  clue:`<p>A student solves \\(\\cos x + 1 = \\sin x\\) by squaring both sides and gets the candidates</p>
+  <p style="margin-top:10px">\\[x = \\dfrac{\\pi}{2},\\ \\pi,\\ \\dfrac{3\\pi}{2}\\]</p>
+  <p style="margin-top:10px">Which values actually satisfy the <strong>original</strong> equation on \\([0,2\\pi)\\), and which value is extraneous?</p>`,
+  answer:`Valid solutions: \\(x = \\dfrac{\\pi}{2}\\) and \\(x = \\pi\\).<br>
+  Extraneous solution: \\(x = \\dfrac{3\\pi}{2}\\).<br>
+  <small style="color:#aad4ff">
+  Check the original equation:<br>
+  \\(x = \\dfrac{\\pi}{2}:\\ 0 + 1 = 1\\) ✓<br>
+  \\(x = \\pi:\\ -1 + 1 = 0\\) ✓<br>
+  \\(x = \\dfrac{3\\pi}{2}:\\ 0 + 1 \\ne -1\\) ✗
+  </small>`
+};
+
+// ═══════════════════════════════════════════
+//  GAME STATE
+// ═══════════════════════════════════════════
+let numTeams = 2;
+let teamNames = ['Team 1', 'Team 2'];
+let scores = [0, 0];
+let usedCells = new Set();
+let currentCat = -1, currentQ = -1;
+let timerInterval = null, timeLeft = 30, paused = false;
+let answered = false;
+let pendingDD = null;
+let ddWager = 0;
+
+// ═══════════════════════════════════════════
+//  SETUP SCREEN
+// ═══════════════════════════════════════════
+let selectedCount = 2;
+const DEFAULTS = ['Team 1','Team 2','Team 3','Team 4','Team 5','Team 6'];
+
+setCount(2); // initialise fields on load
+
+function setCount(n) {
+  selectedCount = n;
+  document.querySelectorAll('.count-btn').forEach((b,i) => b.classList.toggle('active', i+2===n));
+  const fields = document.getElementById('name-fields');
+  fields.innerHTML = Array.from({length:n},(_,i)=>
+    `<div class="name-input-row">
+      <label>Team ${i+1}</label>
+      <input type="text" id="tname-${i}" value="${DEFAULTS[i]}" placeholder="Team ${i+1} name" maxlength="20">
+    </div>`
+  ).join('');
+}
+
+function startGame() {
+  numTeams = selectedCount;
+  teamNames = Array.from({length:numTeams},(_,i)=>{
+    const v = document.getElementById(`tname-${i}`).value.trim();
+    return v || `Team ${i+1}`;
+  });
+  scores = new Array(numTeams).fill(0);
+  document.getElementById('setup-overlay').style.display = 'none';
+  const ga = document.getElementById('game-area');
+  ga.style.display = 'flex';
+  buildTeamRadios();
+  init();
+}
+
+// ═══════════════════════════════════════════
+//  INIT GAME
+// ═══════════════════════════════════════════
+function init() {
+  buildScoreboard();
+  buildBoard();
+}
+
+function buildScoreboard() {
+  document.getElementById('scoreboard').innerHTML = teamNames.map((name,i)=>`
+    <div class="team-card">
+      <div class="team-name-lbl" onclick="renameTeam(${i})" title="Click to rename">${name}</div>
+      <div class="team-score-lbl" id="score-${i}">$${scores[i].toLocaleString()}</div>
+    </div>`).join('');
+}
+
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.style.gridTemplateColumns = `repeat(${CATS.length},1fr)`;
+  let html = CATS.map(c=>`<div class="cat-header">${c}</div>`).join('');
+  [100,200,300,400,500].forEach((p,ri)=>{
+    CATS.forEach((_,ci)=>{
+      const key=`${ci}-${ri}`;
+      const used=usedCells.has(key), dd=DAILY_DOUBLES.has(key);
+      const cls=used?'cell used':dd?'cell daily-double':'cell';
+      html+=`<div class="${cls}" id="cell-${key}" onclick="handleCellClick(${ci},${ri})">${used?'':('$'+p)}</div>`;
+    });
+  });
+  board.innerHTML = html;
+}
+
+function buildTeamRadios() {
+  const grp = document.getElementById('team-radio-group');
+  grp.innerHTML = teamNames.map((name,i)=>
+    `<label class="team-radio">
+      <input type="radio" name="ateam" value="${i}" ${i===0?'checked':''}>
+      <span>${name}</span>
+    </label>`
+  ).join('');
+}
+
+function renameTeam(i) {
+  const name = prompt(`Enter name for this team:`, teamNames[i]);
+  if (name && name.trim()) {
+    teamNames[i] = name.trim();
+    buildScoreboard();
+    buildTeamRadios();
+  }
+}
+
+function resetGame() {
+  if (!confirm('Reset scores and board? Team names are kept.')) return;
+  scores = new Array(numTeams).fill(0);
+  usedCells.clear();
+  buildScoreboard();
+  buildBoard();
+}
+
+// ═══════════════════════════════════════════
+//  CELL CLICK
+// ═══════════════════════════════════════════
+function handleCellClick(ci, ri) {
+  const key = `${ci}-${ri}`;
+  if (usedCells.has(key)) return;
+  currentCat = ci; currentQ = ri;
+  if (DAILY_DOUBLES.has(key)) {
+    pendingDD = {ci,ri};
+    document.getElementById('dd-screen').classList.add('active');
+  } else {
+    openQuestion(ci, ri);
+  }
+}
+
+function showDDQuestion() {
+  ddWager = Math.max(0, parseInt(document.getElementById('dd-wager').value) || 0);
+  document.getElementById('dd-screen').classList.remove('active');
+  if (pendingDD) openQuestion(pendingDD.ci, pendingDD.ri);
+}
+
+// ═══════════════════════════════════════════
+//  QUESTION MODAL
+// ═══════════════════════════════════════════
+function openQuestion(ci, ri) {
+  const q = QUESTIONS[ci][ri];
+  answered = false;
+
+  document.getElementById('modal-cat').textContent = CATS[ci];
+  document.getElementById('modal-pts').textContent = `$${q.pts}`;
+  document.getElementById('modal-clue').innerHTML = q.clue;
+
+  // Choices
+  const choicesDiv = document.getElementById('modal-choices');
+  choicesDiv.innerHTML = (q.type==='mc'||q.type==='graph')
+    ? q.choices.map((c,i)=>`<button class="choice-btn" id="choice-${i}" onclick="selectChoice(${i},${q.correct})">${c}</button>`).join('')
+    : '';
+
+  // Canvas
+  const canvas = document.getElementById('graphCanvas');
+  canvas.style.display = q.drawFn ? 'block' : 'none';
+
+  // Answer
+  document.getElementById('modal-answer').style.display = 'none';
+  document.getElementById('answer-text').innerHTML = q.answer;
+
+  document.getElementById('reveal-btn').disabled = false;
+  document.getElementById('overlay').classList.add('active');
+
+  // Render math then draw graph
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('modal')]).then(()=>{
+      if (q.drawFn) setTimeout(()=>window[q.drawFn](), 60);
+    });
+  } else {
+    if (q.drawFn) setTimeout(()=>window[q.drawFn](), 500);
+  }
+  startTimer();
+}
+
+function selectChoice(i, correct) {
+  if (answered) return;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById(`choice-${i}`).classList.add('selected');
+}
+
+function revealAnswer() {
+  answered = true;
+  stopTimer();
+  const q = QUESTIONS[currentCat][currentQ];
+  if (q.type==='mc'||q.type==='graph') {
+    document.querySelectorAll('.choice-btn').forEach((btn,i)=>{
+      btn.disabled = true;
+      if (i===q.correct) btn.classList.add('correct');
+      else if (btn.classList.contains('selected')) btn.classList.add('wrong');
+    });
+  }
+  document.getElementById('modal-answer').style.display = 'block';
+  document.getElementById('reveal-btn').disabled = true;
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('modal-answer')]);
+}
+
+function getActiveTeam() {
+  for (const r of document.querySelectorAll('input[name="ateam"]'))
+    if (r.checked) return parseInt(r.value);
+  return 0;
+}
+
+function awardPoints(correct) {
+  const q = QUESTIONS[currentCat][currentQ];
+  const key = `${currentCat}-${currentQ}`;
+  const pts = (pendingDD && DAILY_DOUBLES.has(key)) ? ddWager : q.pts;
+  const team = getActiveTeam();
+  scores[team] += correct ? pts : -pts;
+  updateScore(team);
+  pendingDD = null;
+  ddWager = 0;
+  markUsed();
+  closeModal();
+}
+
+function skipQuestion() {
+  markUsed();
+  closeModal();
+}
+
+function updateScore(i) {
+  const el = document.getElementById(`score-${i}`);
+  if (el) el.textContent = `$${scores[i].toLocaleString()}`;
+}
+
+function markUsed() {
+  const key = `${currentCat}-${currentQ}`;
+  usedCells.add(key);
+  const cell = document.getElementById(`cell-${key}`);
+  if (cell) { cell.className='cell used'; cell.textContent=''; }
+}
+
+function closeModal() {
+  stopTimer();
+  if (answered) markUsed();
+  document.getElementById('overlay').classList.remove('active');
+  currentCat=-1; currentQ=-1; answered=false;
+}
+
+// ═══════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════
+function startTimer() {
+  timeLeft=30; paused=false;
+  document.getElementById('pause-btn').textContent='⏸';
+  updateTimerDisplay();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if(paused) return;
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0) stopTimer();
+  },1000);
+}
+
+function stopTimer() { clearInterval(timerInterval); timerInterval=null; }
+
+function togglePause() {
+  paused=!paused;
+  document.getElementById('pause-btn').textContent = paused?'▶':'⏸';
+}
+
+function addTime(seconds) {
+  timeLeft += seconds;
+  // If the timer had already expired, restart the countdown loop
+  if (!timerInterval) {
+    timerInterval = setInterval(()=>{
+      if(paused) return;
+      timeLeft--;
+      updateTimerDisplay();
+      if(timeLeft<=0) stopTimer();
+    },1000);
+  }
+  updateTimerDisplay();
+}
+
+function updateTimerDisplay() {
+  const s = Math.max(0,timeLeft);
+  const disp = document.getElementById('timer-display');
+  const bar = document.getElementById('timer-bar');
+  disp.textContent = `0:${String(s).padStart(2,'0')}`;
+  disp.classList.toggle('urgent', s<=10);
+  bar.style.width = (s/30*100)+'%';
+  bar.style.background = s>20?'#FFD700':s>10?'#ff9900':'#ff4444';
+}
+
+// ═══════════════════════════════════════════
+//  FINAL JEOPARDY
+// ═══════════════════════════════════════════
+function openFinalJeopardy() {
+  const modal = document.getElementById('fj-modal');
+  document.getElementById('fj-clue').innerHTML = FINAL_JEOPARDY.clue;
+  document.getElementById('fj-answer-text').innerHTML = FINAL_JEOPARDY.answer;
+  document.getElementById('fj-clue').style.display='none';
+  document.getElementById('fj-answer').style.display='none';
+  document.getElementById('fj-show-clue-btn').style.display='inline-block';
+  document.getElementById('fj-reveal-btn').style.display='none';
+  document.getElementById('fj-score-btn').style.display='none';
+
+  // Wager inputs
+  document.getElementById('fj-wagers').innerHTML =
+    `<div style="font-size:.85rem;color:#FFD700;font-family:Oswald,sans-serif;text-align:left;margin-bottom:4px;">Team Wagers</div>` +
+    teamNames.map((name,i)=>
+      `<div class="fj-wager-row">
+        <label>${name}</label>
+        <input type="number" id="fj-wager-${i}" value="0" min="0">
+        <label style="width:auto;margin-left:6px;font-size:.75rem;color:#888">(current: $${scores[i].toLocaleString()})</label>
+      </div>`
+    ).join('');
+
+  modal.classList.add('active');
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('fj-card')]);
+}
+
+function showFJClue() {
+  document.getElementById('fj-clue').style.display='block';
+  document.getElementById('fj-show-clue-btn').style.display='none';
+  document.getElementById('fj-reveal-btn').style.display='inline-block';
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('fj-clue')]);
+}
+
+function revealFJAnswer() {
+  document.getElementById('fj-answer').style.display='block';
+  document.getElementById('fj-reveal-btn').style.display='none';
+  document.getElementById('fj-score-btn').style.display='inline-block';
+  if (window.MathJax && MathJax.typesetPromise)
+    MathJax.typesetPromise([document.getElementById('fj-answer')]);
+}
+
+function applyFJWagers() {
+  const corrects = teamNames.map((_,i)=>confirm(`Did ${teamNames[i]} answer correctly?`));
+  corrects.forEach((correct,i)=>{
+    const wager = parseInt(document.getElementById(`fj-wager-${i}`).value)||0;
+    scores[i] += correct ? wager : -wager;
+    updateScore(i);
+  });
+  closeFJ();
+}
+
+function closeFJ() { document.getElementById('fj-modal').classList.remove('active'); }
+
+// ═══════════════════════════════════════════
+//  GRAPH DRAWING
+// ═══════════════════════════════════════════
+function getCtx() {
+  const canvas = document.getElementById('graphCanvas');
+  return { canvas, ctx: canvas.getContext('2d'), W: canvas.width, H: canvas.height };
+}
+
+function drawAxesAndGrid(ctx, W, H, pad, xMin, xMax, yMin, yMax, xticks, yticks, xlabels) {
+  const toX = x => pad + (x-xMin)/(xMax-xMin)*(W-2*pad);
+  const toY = y => H-pad-(y-yMin)/(yMax-yMin)*(H-2*pad);
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=0.5;
+  xticks.forEach(x=>{ const cx=toX(x); ctx.beginPath(); ctx.moveTo(cx,pad); ctx.lineTo(cx,H-pad); ctx.stroke(); });
+  yticks.forEach(y=>{ const cy=toY(y); ctx.beginPath(); ctx.moveTo(pad,cy); ctx.lineTo(W-pad,cy); ctx.stroke(); });
+
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,0.65)'; ctx.lineWidth=1.5;
+  const y0=toY(0), x0=toX(0);
+  if(y0>=pad&&y0<=H-pad){ ctx.beginPath(); ctx.moveTo(pad,y0); ctx.lineTo(W-pad,y0); ctx.stroke(); }
+  if(x0>=pad&&x0<=W-pad){ ctx.beginPath(); ctx.moveTo(x0,pad); ctx.lineTo(x0,H-pad); ctx.stroke(); }
+
+  // Axis arrows
+  ctx.fillStyle='rgba(255,255,255,0.65)';
+  if(y0>=pad&&y0<=H-pad){ drawArrow(ctx,W-pad,y0,1,0); drawArrow(ctx,pad,y0,-1,0); }
+  if(x0>=pad&&x0<=W-pad){ drawArrow(ctx,x0,pad,0,-1); drawArrow(ctx,x0,H-pad,0,1); }
+
+  // Labels
+  ctx.fillStyle='rgba(200,220,255,0.8)'; ctx.font='11px Lato,sans-serif';
+  ctx.textAlign='center';
+  xticks.forEach((x,i)=>{ if(x===0)return; const lbl=xlabels?xlabels[i]:String(x); ctx.fillText(lbl,toX(x),H-pad+14); });
+  ctx.textAlign='right';
+  yticks.forEach(y=>{ if(y===0)return; ctx.fillText(y,pad-5,toY(y)+4); });
+  return {toX,toY};
+}
+
+function drawArrow(ctx,x,y,dx,dy){
+  const s=6;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-dy*s-dx*s,y+dx*s-dy*s); ctx.lineTo(x+dy*s-dx*s,y-dx*s-dy*s); ctx.fill();
+}
+
+function plotFn(ctx, fn, xMin, xMax, toX, toY, yMin, yMax) {
+  ctx.strokeStyle='#FFD700'; ctx.lineWidth=2.5;
+  ctx.beginPath(); let first=true;
+  const steps=1000, range=yMax-yMin;
+  for(let i=0;i<=steps;i++){
+    const x=xMin+(xMax-xMin)*i/steps, y=fn(x);
+    if(!isFinite(y)||isNaN(y)){ first=true; continue; }
+    if(!first){
+      const xp=xMin+(xMax-xMin)*(i-1)/steps, yp=fn(xp);
+      if(isFinite(yp)&&Math.abs(y-yp)>range*1.8){ first=true; }
+    }
+    const cx=toX(x), cy=toY(y);
+    if(first){ ctx.moveTo(cx,cy); first=false; } else ctx.lineTo(cx,cy);
+  }
+  ctx.stroke();
+}
+
+// ── Shared helper: drop-lines + dot + y-label at key points ──────────────
+// pts: array of [x, y, labelDy]  labelDy: negative = above dot, positive = below
+function plotKeyPoints(ctx, pts, toX, toY) {
+  pts.forEach(([x, y, dy]) => {
+    const cx = toX(x), cy = toY(y);
+    // Dashed drop lines to both axes
+    ctx.setLineDash([3,3]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+    ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, toY(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(toX(0), cy); ctx.stroke();
+    ctx.setLineDash([]);
+    // Gold dot with dark outline
+    ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFD700'; ctx.fill();
+    ctx.strokeStyle = '#05083a'; ctx.lineWidth = 1.8; ctx.stroke();
+    // y-value label
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px Lato,sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(String(y), cx, cy + dy);
+  });
+}
+
+// ── y = −3 sin(2(x − π/4)) + 1  (Graphing Q400) ─────
+//   Period: x = π/4 → 5π/4   Key pts: (π/4,1) (π/2,−2) (3π/4,1) (π,4) (5π/4,1)
+function drawSinGraph() {
+  const {ctx,W,H} = getCtx();
+  const pad=50, pi=Math.PI;
+  ctx.fillStyle='#05083a'; ctx.fillRect(0,0,W,H);
+
+  const xMin = -0.25, xMax = pi*5/4 + 0.55;
+  const yMin = -3.5,  yMax = 5.5;
+  const xticks  = [0, pi/4, pi/2, 3*pi/4, pi, 5*pi/4];
+  const xlabels = ['0','π/4','π/2','3π/4','π','5π/4'];
+  const yticks  = [-3,-2,-1,0,1,2,3,4];
+  const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,xlabels);
+
+  // Midline y = 1
+  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(100,180,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(140,200,255,0.55)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('y = 1  (midline)', pad+5, toY(1)-6);
+
+  // Shaded period region
+  ctx.fillStyle='rgba(255,215,0,0.04)';
+  ctx.fillRect(toX(pi/4), pad, toX(5*pi/4)-toX(pi/4), H-2*pad);
+
+  // Curve
+  plotFn(ctx, x => -3*Math.sin(2*(x - pi/4)) + 1, xMin, xMax, toX, toY, yMin, yMax);
+
+  // Key points: [x, y, labelDy]
+  plotKeyPoints(ctx, [
+    [pi/4,   1,  -11],   // start of period — midline, going down
+    [pi/2,  -2,   15],   // minimum
+    [3*pi/4, 1,  -11],   // midline
+    [pi,     4,  -11],   // maximum
+    [5*pi/4, 1,  -11],   // end of period — midline
+  ], toX, toY);
+
+  // Period bracket
+  ctx.strokeStyle='rgba(255,215,0,0.5)'; ctx.lineWidth=1.2;
+  const bY = H - pad + 22;
+  ctx.beginPath();
+  ctx.moveTo(toX(pi/4), bY-4); ctx.lineTo(toX(pi/4), bY);
+  ctx.lineTo(toX(5*pi/4), bY); ctx.lineTo(toX(5*pi/4), bY-4);
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,215,0,0.7)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('one period', (toX(pi/4)+toX(5*pi/4))/2, bY+11);
+}
+
+// ── y = 2 cos(π/2 · (x − 1)) + 1  (Graphing Q500) ───
+//   Period: x = 1 → 5   Key pts: (1,3) (2,1) (3,−1) (4,1) (5,3)
+function drawCosGraph() {
+  const {ctx,W,H} = getCtx();
+  const pad=50, pi=Math.PI;
+  ctx.fillStyle='#05083a'; ctx.fillRect(0,0,W,H);
+
+  const xMin = -0.3, xMax = 6.3;
+  const yMin = -2.5, yMax = 4.5;
+  const xticks  = [1, 2, 3, 4, 5];
+  const yticks  = [-2,-1,0,1,2,3];
+  const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,null);
+
+  // Midline y = 1
+  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(100,180,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(140,200,255,0.55)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='left';
+  ctx.fillText('y = 1  (midline)', toX(0)+4, toY(1)-6);
+
+  // Shaded period region
+  ctx.fillStyle='rgba(255,215,0,0.04)';
+  ctx.fillRect(toX(1), pad, toX(5)-toX(1), H-2*pad);
+
+  // Curve
+  plotFn(ctx, x => 2*Math.cos(pi/2*(x-1)) + 1, xMin, xMax, toX, toY, yMin, yMax);
+
+  // Key points: [x, y, labelDy]
+  plotKeyPoints(ctx, [
+    [1,  3,  -11],   // start of period — maximum
+    [2,  1,  -11],   // midline (descending)
+    [3, -1,   15],   // minimum
+    [4,  1,  -11],   // midline (ascending)
+    [5,  3,  -11],   // end of period — maximum
+  ], toX, toY);
+
+  // Period bracket
+  ctx.strokeStyle='rgba(255,215,0,0.5)'; ctx.lineWidth=1.2;
+  const bY = H - pad + 22;
+  ctx.beginPath();
+  ctx.moveTo(toX(1), bY-4); ctx.lineTo(toX(1), bY);
+  ctx.lineTo(toX(5), bY);   ctx.lineTo(toX(5), bY-4);
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,215,0,0.7)'; ctx.font='10px Lato,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('one period', (toX(1)+toX(5))/2, bY+11);
+}
+
+// Close overlay by clicking outside modal
+document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
