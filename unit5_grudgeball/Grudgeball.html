@@ -11,7 +11,7 @@ MathJax = {
 };
 </script>
 <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&family=Orbitron:wght@400;500;700;900&family=Patrick+Hand&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg-void:#090014;
@@ -40,6 +40,10 @@ MathJax = {
   --window-grad:linear-gradient(180deg, rgba(0,255,255,0.12), rgba(255,0,255,0.08));
   --transition-fast:200ms linear;
   --page-width:1240px;
+  --wobbly-xl:255px 15px 225px 15px / 15px 225px 15px 255px;
+  --wobbly-lg:24px 18px 26px 16px / 18px 28px 16px 26px;
+  --wobbly-md:18px 24px 16px 26px / 24px 18px 26px 16px;
+  --wobbly-sm:16px 20px 14px 22px / 20px 16px 22px 14px;
 }
 
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -260,6 +264,34 @@ mjx-container{color:var(--fg-main);}
   font-size:0.72rem;
   margin-bottom:10px;
 }
+.theme-toggle{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.theme-switch-btn{
+  min-height:44px;
+  padding:10px 16px;
+  appearance:none;
+  border:2px solid var(--border-default);
+  background:rgba(26,16,60,0.82);
+  color:var(--fg-soft);
+  cursor:pointer;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  transition:
+    transform var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+.theme-switch-btn:hover{
+  transform:translateY(-2px);
+}
+.theme-switch-btn.is-active{
+  cursor:default;
+}
 .count-row{
   display:grid;
   grid-template-columns:repeat(5, minmax(0, 1fr));
@@ -424,12 +456,27 @@ mjx-container{color:var(--fg-main);}
   padding:10px 0 6px;
   text-align:center;
 }
+.hero-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
 .hero-kicker{
   color:var(--cyan);
   font-size:0.76rem;
   letter-spacing:0.22em;
   text-transform:uppercase;
-  margin-bottom:12px;
+}
+.theme-toggle-compact{
+  justify-content:flex-end;
+}
+.theme-toggle-compact .theme-switch-btn{
+  min-height:40px;
+  padding:8px 14px;
+  font-size:0.72rem;
 }
 h1{
   font-family:"Orbitron",sans-serif;
@@ -522,13 +569,12 @@ h1{
 .board-shell{
   width:100%;
   position:relative;
-  padding:18px;
+  padding:24px 18px 18px;
   border:2px solid rgba(0,255,255,0.18);
   background:rgba(7,0,15,0.62);
   box-shadow:0 0 36px rgba(0,255,255,0.08);
 }
-.board-shell::before{
-  content:"> CATEGORY_SELECT";
+.board-tag{
   position:absolute;
   top:-12px;
   left:18px;
@@ -537,6 +583,7 @@ h1{
   font-size:0.7rem;
   letter-spacing:0.2em;
   background:var(--bg-void);
+  text-transform:uppercase;
 }
 #board{
   display:grid;
@@ -1019,11 +1066,515 @@ h1{
   margin-top:8px;
 }
 
+/* ── THEME STATES ── */
+body[data-theme="vaporwave"] .theme-switch-btn{
+  clip-path:polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+}
+body[data-theme="vaporwave"] .theme-switch-btn:hover{
+  border-color:var(--cyan);
+  color:#05000c;
+  background:linear-gradient(90deg, rgba(0,255,255,0.96), rgba(255,0,255,0.9));
+  box-shadow:var(--shadow-cyan);
+}
+body[data-theme="vaporwave"] .theme-switch-btn.is-active{
+  border-color:var(--magenta);
+  color:#05000c;
+  background:linear-gradient(90deg, var(--orange), var(--magenta), var(--cyan));
+  box-shadow:var(--shadow-magenta), var(--shadow-cyan);
+}
+
+/* ── SKETCH THEME ── */
+body[data-theme="sketch"]{
+  font-family:"Patrick Hand",cursive;
+  color:#2d2d2d;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.85), rgba(253,251,247,0.95)),
+    #fdfbf7;
+}
+body[data-theme="sketch"]::before{
+  right:auto;
+  left:7%;
+  top:64px;
+  width:300px;
+  height:220px;
+  border-radius:var(--wobbly-lg);
+  background:#fff9c4;
+  filter:none;
+  opacity:0.85;
+  box-shadow:8px 8px 0 0 rgba(45,45,45,0.1);
+  transform:rotate(-4deg);
+}
+body[data-theme="sketch"]::after{
+  inset:0;
+  background-image:
+    radial-gradient(#e5e0d8 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255,77,77,0.04), transparent 32%);
+  background-size:24px 24px, 100% 100%;
+  opacity:1;
+}
+body[data-theme="sketch"] button:focus-visible,
+body[data-theme="sketch"] input:focus-visible{
+  outline-color:#2d5da1;
+}
+body[data-theme="sketch"] input{
+  font-family:"Patrick Hand",cursive;
+  background:#ffffff;
+  color:#2d2d2d;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  letter-spacing:0.02em;
+}
+body[data-theme="sketch"] input::placeholder{
+  color:rgba(45,45,45,0.42);
+}
+body[data-theme="sketch"] input:focus{
+  border-color:#2d5da1;
+  box-shadow:4px 4px 0 0 #2d5da1;
+}
+body[data-theme="sketch"] mjx-container{
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] .window-shell{
+  background:#ffffff;
+  border:3px solid #2d2d2d;
+  border-top-color:#2d2d2d;
+  border-right-color:#2d2d2d;
+  border-radius:var(--wobbly-lg);
+  box-shadow:6px 6px 0 0 #2d2d2d;
+  backdrop-filter:none;
+}
+body[data-theme="sketch"] .window-chrome{
+  background:transparent;
+  border-bottom:2px dashed #2d2d2d;
+}
+body[data-theme="sketch"] .window-label,
+body[data-theme="sketch"] .subtitle,
+body[data-theme="sketch"] .team-score-unit,
+body[data-theme="sketch"] .team-meta,
+body[data-theme="sketch"] .cell-meta,
+body[data-theme="sketch"] #fj-subtitle,
+body[data-theme="sketch"] .setup-section > label{
+  letter-spacing:0.08em;
+}
+body[data-theme="sketch"] .window-label,
+body[data-theme="sketch"] .subtitle,
+body[data-theme="sketch"] .team-score-unit,
+body[data-theme="sketch"] .team-meta,
+body[data-theme="sketch"] .cell-meta,
+body[data-theme="sketch"] #fj-subtitle,
+body[data-theme="sketch"] .hero-kicker,
+body[data-theme="sketch"] .board-tag,
+body[data-theme="sketch"] .setup-section > label{
+  text-transform:none;
+}
+body[data-theme="sketch"] .window-dot.magenta{background:#ff4d4d;color:#ff4d4d;box-shadow:none;}
+body[data-theme="sketch"] .window-dot.cyan{background:#2d5da1;color:#2d5da1;box-shadow:none;}
+body[data-theme="sketch"] .window-dot.orange{background:#fff9c4;color:#fff9c4;box-shadow:none;border:2px solid #2d2d2d;}
+body[data-theme="sketch"] #setup-overlay,
+body[data-theme="sketch"] #overlay,
+body[data-theme="sketch"] #fj-modal{
+  background:rgba(253,251,247,0.82);
+  backdrop-filter:none;
+}
+body[data-theme="sketch"] #setup-overlay::before,
+body[data-theme="sketch"] #overlay::before,
+body[data-theme="sketch"] #fj-modal::before{
+  inset:24px;
+  height:auto;
+  background:none;
+  border:2px dashed rgba(45,45,45,0.18);
+  transform:none;
+  mask-image:none;
+  opacity:1;
+}
+body[data-theme="sketch"] .setup-logo-title,
+body[data-theme="sketch"] h1,
+body[data-theme="sketch"] #fj-card h2{
+  font-family:"Kalam",cursive;
+  color:#2d2d2d;
+  background:none;
+  -webkit-background-clip:border-box;
+  background-clip:border-box;
+  text-shadow:none;
+}
+body[data-theme="sketch"] .setup-logo-title{
+  font-size:clamp(2.7rem, 7vw, 4.4rem);
+  letter-spacing:0.04em;
+  transform:rotate(-2deg);
+}
+body[data-theme="sketch"] .setup-logo-sub{
+  display:inline-block;
+  margin:0.4rem 0 1.6rem;
+  padding:8px 14px;
+  background:#fff9c4;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-md);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  color:#2d2d2d;
+  letter-spacing:0.06em;
+  text-transform:none;
+  transform:rotate(1deg);
+}
+body[data-theme="sketch"] .theme-switch-btn,
+body[data-theme="sketch"] .count-btn,
+body[data-theme="sketch"] .btn,
+body[data-theme="sketch"] #reset-btn,
+body[data-theme="sketch"] #fj-btn,
+body[data-theme="sketch"] .start-btn,
+body[data-theme="sketch"] .target-btn,
+body[data-theme="sketch"] .choice-btn{
+  font-family:"Patrick Hand",cursive;
+  clip-path:none;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  background:#ffffff;
+  color:#2d2d2d;
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  letter-spacing:0.04em;
+  text-transform:none;
+}
+body[data-theme="sketch"] .theme-switch-btn:hover,
+body[data-theme="sketch"] .count-btn:hover,
+body[data-theme="sketch"] .btn:hover,
+body[data-theme="sketch"] #reset-btn:hover,
+body[data-theme="sketch"] #fj-btn:hover,
+body[data-theme="sketch"] .target-btn:hover:not(:disabled),
+body[data-theme="sketch"] .choice-btn:hover:not(:disabled){
+  background:#ff4d4d;
+  color:#ffffff;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+  transform:translate(2px,2px) rotate(1deg);
+}
+body[data-theme="sketch"] .theme-switch-btn.is-active{
+  background:#2d5da1;
+  color:#ffffff;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .count-btn.active{
+  background:#2d5da1;
+  color:#ffffff;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .start-btn,
+body[data-theme="sketch"] .btn-reveal{
+  background:#fff9c4;
+}
+body[data-theme="sketch"] .start-btn:hover,
+body[data-theme="sketch"] .btn-reveal:hover{
+  background:#2d5da1;
+  color:#ffffff;
+}
+body[data-theme="sketch"] .btn-correct{
+  background:#e8f0ff;
+  color:#2d5da1;
+}
+body[data-theme="sketch"] .btn-correct:hover{
+  background:#2d5da1;
+  color:#ffffff;
+}
+body[data-theme="sketch"] .btn-wrong{
+  background:#fff0f0;
+  color:#ff4d4d;
+}
+body[data-theme="sketch"] .btn-wrong:hover{
+  background:#ff4d4d;
+  color:#ffffff;
+}
+body[data-theme="sketch"] .btn:active,
+body[data-theme="sketch"] .count-btn:active,
+body[data-theme="sketch"] .theme-switch-btn:active,
+body[data-theme="sketch"] #reset-btn:active,
+body[data-theme="sketch"] #fj-btn:active,
+body[data-theme="sketch"] .start-btn:active,
+body[data-theme="sketch"] .target-btn:active,
+body[data-theme="sketch"] .choice-btn:active{
+  box-shadow:none;
+  transform:translate(4px,4px);
+}
+body[data-theme="sketch"] .hero-shell{
+  text-align:left;
+}
+body[data-theme="sketch"] .hero-topbar{
+  align-items:flex-start;
+}
+body[data-theme="sketch"] .hero-kicker{
+  display:inline-block;
+  padding:8px 12px;
+  background:#fff9c4;
+  color:#2d2d2d;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  letter-spacing:0.04em;
+  text-transform:none;
+  transform:rotate(-2deg);
+}
+body[data-theme="sketch"] h1{
+  font-size:clamp(2.3rem, 5vw, 4.6rem);
+  letter-spacing:0.02em;
+  line-height:1.08;
+  transform:rotate(-1deg);
+}
+body[data-theme="sketch"] .subtitle{
+  font-size:1.15rem;
+  color:#2d2d2d;
+  text-transform:none;
+}
+body[data-theme="sketch"] .team-card{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-md);
+  background:#ffffff;
+  box-shadow:4px 4px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .team-card:nth-child(odd){transform:rotate(-1deg);}
+body[data-theme="sketch"] .team-card:nth-child(even){transform:rotate(1deg);}
+body[data-theme="sketch"] .team-card:hover{
+  transform:translate(2px,2px) rotate(1deg);
+  box-shadow:2px 2px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .team-card.is-empty{
+  background:#fff3f0;
+  border-color:#ff4d4d;
+}
+body[data-theme="sketch"] .team-name-lbl,
+body[data-theme="sketch"] .team-score-unit{
+  color:#2d5da1;
+}
+body[data-theme="sketch"] .team-score-lbl{
+  font-family:"Kalam",cursive;
+  color:#2d2d2d;
+  text-shadow:none;
+}
+body[data-theme="sketch"] .team-meta{
+  color:rgba(45,45,45,0.72);
+}
+body[data-theme="sketch"] .board-shell{
+  padding-top:34px;
+  border:3px dashed #2d2d2d;
+  border-radius:var(--wobbly-lg);
+  background:rgba(255,255,255,0.64);
+  box-shadow:4px 4px 0 0 rgba(45,45,45,0.14);
+}
+body[data-theme="sketch"] .board-tag{
+  top:-18px;
+  background:#fff9c4;
+  color:#2d2d2d;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  letter-spacing:0.05em;
+  transform:rotate(-2deg);
+}
+body[data-theme="sketch"] #board{
+  gap:18px;
+}
+body[data-theme="sketch"] .cell{
+  min-height:184px;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-md);
+  background:#ffffff;
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] .cell:nth-child(odd){transform:rotate(-1deg);}
+body[data-theme="sketch"] .cell:nth-child(even){transform:rotate(1deg);}
+body[data-theme="sketch"] .cell::before{
+  background:
+    linear-gradient(180deg, rgba(255,249,196,0.72), rgba(255,255,255,0.1) 38%),
+    radial-gradient(rgba(229,224,216,0.75) 1px, transparent 1px);
+  background-size:100% 100%, 20px 20px;
+}
+body[data-theme="sketch"] .cell:hover:not(.used){
+  border-color:#ff4d4d;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+  transform:translate(2px,2px) rotate(-1deg);
+}
+body[data-theme="sketch"] .cell.used{
+  opacity:0.7;
+  background:#f5efe5;
+}
+body[data-theme="sketch"] .cell-title{
+  font-family:"Kalam",cursive;
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] .cell-meta{
+  color:#2d5da1;
+}
+body[data-theme="sketch"] #modal-header{
+  border-bottom:2px dashed #2d2d2d;
+  background:transparent;
+}
+body[data-theme="sketch"] #modal-cat{
+  color:#2d5da1;
+}
+body[data-theme="sketch"] #modal-pts{
+  font-family:"Kalam",cursive;
+  color:#ff4d4d;
+}
+body[data-theme="sketch"] #modal-close{
+  border-radius:999px;
+  border-width:3px;
+  background:#fff9c4;
+  color:#2d2d2d;
+  box-shadow:3px 3px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] #modal-close:hover{
+  background:#ff4d4d;
+  color:#ffffff;
+  box-shadow:1px 1px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] #modal-clue{
+  color:#2d2d2d;
+  font-size:clamp(1.12rem, 2vw, 1.34rem);
+}
+body[data-theme="sketch"] #modal-clue mjx-container{font-size:152% !important;}
+body[data-theme="sketch"] #modal-answer,
+body[data-theme="sketch"] #fj-card .fj-answer{
+  background:#fff9c4;
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-md);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .answer-label{
+  color:#ff4d4d;
+}
+body[data-theme="sketch"] .choice-btn.selected{
+  background:#dfe8f8;
+  color:#2d2d2d;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .choice-btn.correct{
+  background:#2d5da1 !important;
+  color:#ffffff !important;
+  border-color:#2d2d2d !important;
+  box-shadow:2px 2px 0 0 #2d2d2d !important;
+}
+body[data-theme="sketch"] .choice-btn.wrong{
+  background:#ff4d4d !important;
+  color:#ffffff !important;
+  border-color:#2d2d2d !important;
+  box-shadow:2px 2px 0 0 #2d2d2d !important;
+}
+body[data-theme="sketch"] .answer-text,
+body[data-theme="sketch"] .answer-text small,
+body[data-theme="sketch"] #modal-answer small,
+body[data-theme="sketch"] #fj-answer small{
+  color:#2d2d2d !important;
+}
+body[data-theme="sketch"] #graphCanvas{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  box-shadow:4px 4px 0 0 #2d2d2d;
+  background:#ffffff;
+}
+body[data-theme="sketch"] #timer-display{
+  font-family:"Kalam",cursive;
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] #timer-display.urgent{
+  color:#ff4d4d;
+  text-shadow:none;
+}
+body[data-theme="sketch"] #timer-bar-bg{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  background:#ffffff;
+}
+body[data-theme="sketch"] #modal-footer{
+  border-top:2px dashed #2d2d2d;
+}
+body[data-theme="sketch"] .team-select-row > span,
+body[data-theme="sketch"] .grudge-panel-title{
+  color:#2d5da1;
+}
+body[data-theme="sketch"] .team-radio{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-sm);
+  background:#ffffff;
+  box-shadow:3px 3px 0 0 #2d2d2d;
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] .team-radio:hover{
+  border-color:#2d5da1;
+  box-shadow:3px 3px 0 0 #2d5da1;
+}
+body[data-theme="sketch"] .grudge-status,
+body[data-theme="sketch"] .grudge-panel{
+  background:#ffffff;
+  border:3px dashed #2d2d2d;
+  border-radius:var(--wobbly-md);
+  box-shadow:4px 4px 0 0 rgba(45,45,45,0.14);
+}
+body[data-theme="sketch"] .grudge-panel-copy,
+body[data-theme="sketch"] .grudge-status{
+  color:#2d2d2d;
+}
+body[data-theme="sketch"] .spinner-pointer{
+  border-top-color:#2d2d2d;
+  filter:none;
+}
+body[data-theme="sketch"] .spinner-wheel-wrap{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-xl);
+  background:#ffffff;
+  box-shadow:6px 6px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .spinner-wheel{
+  border:3px solid #2d2d2d;
+  background:
+    conic-gradient(from -120deg,
+      #fff9c4 0deg 60deg,
+      #ff4d4d 60deg 120deg,
+      #dfe8f8 120deg 180deg,
+      #fff9c4 180deg 240deg,
+      #ff4d4d 240deg 300deg,
+      #dfe8f8 300deg 360deg);
+  box-shadow:none;
+}
+body[data-theme="sketch"] .spinner-wheel::after{
+  border:3px solid #2d2d2d;
+  background:#ffffff;
+  box-shadow:2px 2px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .spinner-segment-label{
+  font-family:"Patrick Hand",cursive;
+  color:#2d2d2d;
+  text-shadow:none;
+  font-size:0.78rem;
+  letter-spacing:0.04em;
+  text-transform:none;
+}
+body[data-theme="sketch"] #spin-result{
+  color:#2d5da1;
+  letter-spacing:0.05em;
+  text-transform:none;
+}
+body[data-theme="sketch"] #fj-card h2{
+  transform:rotate(-1deg);
+}
+body[data-theme="sketch"] #fj-subtitle strong{
+  color:#ff4d4d;
+}
+body[data-theme="sketch"] .standings-row{
+  border:3px solid #2d2d2d;
+  border-radius:var(--wobbly-md);
+  background:#ffffff;
+  box-shadow:4px 4px 0 0 #2d2d2d;
+}
+body[data-theme="sketch"] .standings-row:nth-child(odd){transform:rotate(-1deg);}
+body[data-theme="sketch"] .standings-row:nth-child(even){transform:rotate(1deg);}
+body[data-theme="sketch"] .standings-score{
+  font-family:"Kalam",cursive;
+  color:#2d5da1;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 980px){
   body{padding:20px 12px 40px;}
   #board{grid-template-columns:repeat(2, minmax(0, 1fr));}
   .hero-shell{padding-top:0;}
+  .hero-topbar{justify-content:center;}
 }
 
 @media (max-width: 640px){
@@ -1049,7 +1600,7 @@ h1{
 }
 </style>
 </head>
-<body>
+<body data-theme="vaporwave">
 
 <!-- ══════════════════════════════════
      SETUP SCREEN
@@ -1062,11 +1613,19 @@ h1{
         <span class="window-dot cyan"></span>
         <span class="window-dot orange"></span>
       </div>
-      <div class="window-label">grudgeball_boot_sequence.exe</div>
+      <div class="window-label" id="setup-window-label">grudgeball_boot_sequence.exe</div>
     </div>
     <div class="setup-content">
       <div class="setup-logo-title">Grudgeball</div>
-      <div class="setup-logo-sub">Unit 5 · Sections 5.1-5.3 · Category Spinner Mode</div>
+      <div class="setup-logo-sub" id="setup-logo-sub">Unit 5 · Sections 5.1-5.3 · Category Spinner Mode</div>
+
+      <div class="setup-section">
+        <label id="theme-section-label">Visual Theme</label>
+        <div class="theme-toggle" role="group" aria-label="Theme picker">
+          <button type="button" class="theme-switch-btn" data-theme-value="vaporwave" onclick="setTheme('vaporwave')">Vaporwave</button>
+          <button type="button" class="theme-switch-btn" data-theme-value="sketch" onclick="setTheme('sketch')">Sketch</button>
+        </div>
+      </div>
 
       <div class="setup-section">
         <label>Number of Teams</label>
@@ -1096,7 +1655,7 @@ h1{
         </ul>
       </div>
 
-      <button class="start-btn" onclick="startGame()">Start Game</button>
+      <button class="start-btn" id="start-btn" onclick="startGame()">Start Game</button>
     </div>
   </div>
 </div>
@@ -1106,12 +1665,19 @@ h1{
 ══════════════════════════════════ -->
 <div id="game-area" style="display:none;">
   <header class="hero-shell">
-    <div class="hero-kicker">&gt; unit_5 / trig_equations / random_spinner_mode</div>
+    <div class="hero-topbar">
+      <div class="hero-kicker" id="hero-kicker">&gt; unit_5 / trig_equations / random_spinner_mode</div>
+      <div class="theme-toggle theme-toggle-compact" role="group" aria-label="Theme picker">
+        <button type="button" class="theme-switch-btn" data-theme-value="vaporwave" onclick="setTheme('vaporwave')">Vaporwave</button>
+        <button type="button" class="theme-switch-btn" data-theme-value="sketch" onclick="setTheme('sketch')">Sketch</button>
+      </div>
+    </div>
     <h1>Unit 5 · Fundamental Identities and Trig Equations</h1>
-    <p class="subtitle">Grudgeball Review · Random Category Spinner Mode</p>
+    <p class="subtitle" id="hero-subtitle">Grudgeball Review · Random Category Spinner Mode</p>
   </header>
   <div id="scoreboard"></div>
   <div class="board-shell">
+    <div class="board-tag" id="board-tag">&gt; CATEGORY_SELECT</div>
     <div id="board"></div>
   </div>
   <div class="toolbar-row">
@@ -1131,7 +1697,7 @@ h1{
         <span class="window-dot cyan"></span>
         <span class="window-dot orange"></span>
       </div>
-      <div class="window-label">question_prompt.sys</div>
+      <div class="window-label" id="modal-window-label">question_prompt.sys</div>
     </div>
     <div id="modal-header">
       <span id="modal-cat">Category</span>
@@ -1145,8 +1711,8 @@ h1{
       <div id="modal-answer"><div class="answer-label">Answer</div><div class="answer-text" id="answer-text"></div></div>
       <div id="grudge-status" class="grudge-status"></div>
       <div id="spin-panel" class="grudge-panel">
-        <div class="grudge-panel-title">Bonus Spinner</div>
-        <div class="grudge-panel-copy">Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.</div>
+        <div class="grudge-panel-title" id="spin-panel-title">Bonus Spinner</div>
+        <div class="grudge-panel-copy" id="spin-panel-copy">Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.</div>
         <div class="spinner-shell">
           <div class="spinner-pointer"></div>
           <div class="spinner-wheel-wrap">
@@ -1203,7 +1769,7 @@ h1{
         <span class="window-dot cyan"></span>
         <span class="window-dot orange"></span>
       </div>
-      <div class="window-label">standings_overview.log</div>
+      <div class="window-label" id="standings-window-label">standings_overview.log</div>
     </div>
     <div class="fj-content">
       <h2>🏁 Standings</h2>
@@ -1397,10 +1963,180 @@ let spinnerBusy = false;
 let spinnerRotation = 0;
 const PAGE_OPENED_AT = Date.now();
 let rngState = PAGE_OPENED_AT % 2147483647 || 1;
+const THEME_STORAGE_KEY = 'grudgeball-theme';
+let currentTheme = 'vaporwave';
 
 function seededRandom() {
   rngState = (rngState * 48271) % 2147483647;
   return (rngState - 1) / 2147483646;
+}
+
+const THEME_COPY = {
+  vaporwave: {
+    setupWindowLabel: 'grudgeball_boot_sequence.exe',
+    setupLogoSub: 'Unit 5 · Sections 5.1-5.3 · Category Spinner Mode',
+    themeSectionLabel: 'Visual Theme',
+    startLabel: 'Start Game',
+    heroKicker: '> unit_5 / trig_equations / random_spinner_mode',
+    heroSubtitle: 'Grudgeball Review · Random Category Spinner Mode',
+    boardTag: '> CATEGORY_SELECT',
+    resetLabel: '↺ Reset Board',
+    standingsLabel: '🏁 Standings',
+    modalWindowLabel: 'question_prompt.sys',
+    modalDrawLabel: remaining => `Random Draw · ${remaining} Left`,
+    boardMeta: remaining => remaining===0 ? 'Category Complete' : `${remaining} Question${remaining===1?'':'s'} Left`,
+    spinTitle: 'Bonus Spinner',
+    spinCopy: 'Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.',
+    spinWaiting: 'Waiting for a correct answer.',
+    spinReady: 'Ready to spin',
+    spinBusy: 'Spinning...',
+    spinButtonLabel: 'Spin',
+    spinActionDefaultTitle: 'Attack Target',
+    spinActionDefaultCopy: 'Choose the team that should lose points from the spinner result.',
+    attackTitle: amount => `Attack for ${amount} Point${amount===1?'':'s'}`,
+    attackCopy: amount => `Choose an opposing team to lose ${amount} point${amount===1?'':'s'}.`,
+    standingsWindowLabel: 'standings_overview.log',
+    modeName: 'Category Spinner',
+    resetConfirm: 'Reset the scores and the board? Team names are kept.',
+    scoreUnit: 'PTS'
+  },
+  sketch: {
+    setupWindowLabel: 'grudgeball sketchbook',
+    setupLogoSub: 'Unit 5 · Sections 5.1-5.3 · hand-drawn spinner notebook',
+    themeSectionLabel: 'Visual Theme',
+    startLabel: 'Open Notebook',
+    heroKicker: 'Unit 5 sketchboard · trig identities and equations',
+    heroSubtitle: 'Hand-drawn review board · random notebook prompt mode',
+    boardTag: 'Pick a category card',
+    resetLabel: '↺ Fresh Sheet',
+    standingsLabel: '📌 Scoreboard',
+    modalWindowLabel: 'question card',
+    modalDrawLabel: remaining => `Notebook draw · ${remaining} left`,
+    boardMeta: remaining => remaining===0 ? 'All cards used' : `${remaining} card${remaining===1?'':'s'} left`,
+    spinTitle: 'Doodle Spinner',
+    spinCopy: 'Checked answers earn one doodle spin. It may protect your team notes or scratch points off another team for 1-3 points.',
+    spinWaiting: 'Waiting for the next checked answer.',
+    spinReady: 'Ready to doodle spin',
+    spinBusy: 'Sketching the spin...',
+    spinButtonLabel: 'Spin the Pencil',
+    spinActionDefaultTitle: 'Scratch Target',
+    spinActionDefaultCopy: 'Choose the team that should lose points from the spinner note.',
+    attackTitle: amount => `Scratch Off ${amount} Point${amount===1?'':'s'}`,
+    attackCopy: amount => `Choose the team that should lose ${amount} point${amount===1?'':'s'}.`,
+    standingsWindowLabel: 'scoreboard page',
+    modeName: 'Sketch Spinner',
+    resetConfirm: 'Start over with a fresh sheet? Team names stay in place.',
+    scoreUnit: 'PTS'
+  }
+};
+
+function getThemeCopy() {
+  return THEME_COPY[currentTheme] || THEME_COPY.vaporwave;
+}
+
+function applyTheme(theme, persist = false) {
+  currentTheme = theme === 'sketch' ? 'sketch' : 'vaporwave';
+  document.body.dataset.theme = currentTheme;
+  if (persist) localStorage.setItem(THEME_STORAGE_KEY, currentTheme);
+
+  const copy = getThemeCopy();
+  document.getElementById('setup-window-label').textContent = copy.setupWindowLabel;
+  document.getElementById('setup-logo-sub').textContent = copy.setupLogoSub;
+  document.getElementById('theme-section-label').textContent = copy.themeSectionLabel;
+  document.getElementById('start-btn').textContent = copy.startLabel;
+  document.getElementById('hero-kicker').textContent = copy.heroKicker;
+  document.getElementById('hero-subtitle').textContent = copy.heroSubtitle;
+  document.getElementById('board-tag').textContent = copy.boardTag;
+  document.getElementById('reset-btn').textContent = copy.resetLabel;
+  document.getElementById('fj-btn').textContent = copy.standingsLabel;
+  document.getElementById('modal-window-label').textContent = copy.modalWindowLabel;
+  document.getElementById('spin-panel-title').textContent = copy.spinTitle;
+  document.getElementById('spin-panel-copy').textContent = copy.spinCopy;
+  document.getElementById('spin-btn').textContent = copy.spinButtonLabel;
+  document.getElementById('standings-window-label').textContent = copy.standingsWindowLabel;
+  document.getElementById('fj-subtitle').innerHTML = `Mode: <strong>${copy.modeName}</strong>`;
+
+  document.querySelectorAll('.theme-switch-btn').forEach(btn => {
+    const active = btn.dataset.themeValue === currentTheme;
+    btn.classList.toggle('is-active', active);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
+
+  if (!spinnerBusy && !currentSpinResult) {
+    document.getElementById('spin-result').textContent = scoringTeam !== null ? copy.spinReady : copy.spinWaiting;
+  } else if (spinnerBusy) {
+    document.getElementById('spin-result').textContent = copy.spinBusy;
+  }
+
+  if (currentSpinResult?.kind === 'attack' && document.getElementById('spin-action-panel').style.display === 'block') {
+    document.getElementById('spin-action-title').textContent = copy.attackTitle(currentSpinResult.amount);
+    document.getElementById('spin-action-copy').textContent = copy.attackCopy(currentSpinResult.amount);
+  }
+
+  if (document.getElementById('game-area').style.display === 'flex') {
+    buildScoreboard();
+    buildBoard();
+  }
+
+  if (document.getElementById('fj-modal').classList.contains('active')) {
+    openFinalJeopardy();
+  }
+
+  if (currentCat >= 0 && currentQ >= 0 && QUESTIONS[currentCat][currentQ]?.drawFn) {
+    setTimeout(() => window[QUESTIONS[currentCat][currentQ].drawFn](), 40);
+  }
+}
+
+function setTheme(theme) {
+  applyTheme(theme, true);
+}
+
+function getGraphTheme() {
+  if (currentTheme === 'sketch') {
+    return {
+      grid: 'rgba(45,45,45,0.18)',
+      axes: '#2d2d2d',
+      axisFill: '#2d2d2d',
+      labelFill: '#2d2d2d',
+      labelFont: '11px "Patrick Hand", cursive',
+      curve: '#ff4d4d',
+      dropLine: 'rgba(45,93,161,0.32)',
+      pointFill: '#fff9c4',
+      pointStroke: '#2d2d2d',
+      pointLabel: '#2d2d2d',
+      pointFont: 'bold 12px "Patrick Hand", cursive',
+      canvasBg: '#ffffff',
+      midline: 'rgba(45,93,161,0.45)',
+      midlineLabel: '#2d5da1',
+      midlineFont: '11px "Patrick Hand", cursive',
+      periodShade: 'rgba(255,249,196,0.6)',
+      bracket: '#2d2d2d',
+      bracketLabel: '#2d2d2d',
+      bracketFont: '11px "Patrick Hand", cursive'
+    };
+  }
+
+  return {
+    grid: 'rgba(255,0,255,0.22)',
+    axes: 'rgba(0,255,255,0.72)',
+    axisFill: 'rgba(0,255,255,0.72)',
+    labelFill: 'rgba(224,224,224,0.9)',
+    labelFont: '11px "Share Tech Mono", monospace',
+    curve: '#FF9900',
+    dropLine: 'rgba(0,255,255,0.32)',
+    pointFill: '#FF9900',
+    pointStroke: '#FF00FF',
+    pointLabel: '#ffffff',
+    pointFont: 'bold 11px "Share Tech Mono", monospace',
+    canvasBg: '#090014',
+    midline: 'rgba(0,255,255,0.34)',
+    midlineLabel: 'rgba(0,255,255,0.72)',
+    midlineFont: '10px "Share Tech Mono", monospace',
+    periodShade: 'rgba(255,0,255,0.08)',
+    bracket: 'rgba(255,153,0,0.76)',
+    bracketLabel: 'rgba(255,153,0,0.88)',
+    bracketFont: '10px "Share Tech Mono", monospace'
+  };
 }
 
 // ═══════════════════════════════════════════
@@ -1410,6 +2146,7 @@ let selectedCount = 2;
 const DEFAULTS = ['Team 1','Team 2','Team 3','Team 4','Team 5','Team 6'];
 
 setCount(2); // initialise fields on load
+applyTheme(localStorage.getItem(THEME_STORAGE_KEY) || 'vaporwave');
 
 function setCount(n) {
   selectedCount = n;
@@ -1446,26 +2183,26 @@ function init() {
 }
 
 function buildScoreboard() {
+  const copy = getThemeCopy();
   document.getElementById('scoreboard').innerHTML = teamNames.map((name,i)=>`
     <div class="team-card ${scores[i]===0?'is-empty':''}">
       <div class="team-name-lbl" onclick="renameTeam(${i})" title="Click to rename">${name}</div>
       <div class="team-score-row">
         <div class="team-score-lbl" id="score-${i}">${scores[i].toLocaleString()}</div>
-        <div class="team-score-unit">PTS</div>
+        <div class="team-score-unit">${copy.scoreUnit}</div>
       </div>
       <div class="team-meta" id="status-${i}">${describeTeamState(scores[i])}</div>
     </div>`).join('');
 }
 
 function buildBoard() {
-  const board = document.getElementById('board');
-  board.style.gridTemplateColumns = `repeat(${CATS.length}, minmax(0, 1fr))`;
-  board.innerHTML = CATS.map((cat, ci) => {
+  const copy = getThemeCopy();
+  document.getElementById('board').innerHTML = CATS.map((cat, ci) => {
     const remaining = getRemainingQuestionIndices(ci).length;
     return `
       <button class="${remaining===0 ? 'cell used' : 'cell'}" id="cell-${ci}" onclick="handleCellClick(${ci})" ${remaining===0 ? 'disabled' : ''}>
         <span class="cell-title">${cat}</span>
-        <span class="cell-meta">${remaining===0 ? 'Category Complete' : `${remaining} Question${remaining===1?'':'s'} Left`}</span>
+        <span class="cell-meta">${copy.boardMeta(remaining)}</span>
       </button>`;
   }).join('');
 }
@@ -1500,7 +2237,7 @@ function renameTeam(i) {
 }
 
 function resetGame() {
-  if (!confirm('Reset the scores and the board? Team names are kept.')) return;
+  if (!confirm(getThemeCopy().resetConfirm)) return;
   scores = new Array(numTeams).fill(STARTING_XS);
   usedCells.clear();
   stopTimer();
@@ -1527,10 +2264,11 @@ function handleCellClick(ci) {
 // ═══════════════════════════════════════════
 function openQuestion(ci, ri) {
   const q = QUESTIONS[ci][ri];
+  const copy = getThemeCopy();
   resetQuestionState();
 
   document.getElementById('modal-cat').textContent = CATS[ci];
-  document.getElementById('modal-pts').textContent = `Random Draw · ${getRemainingQuestionIndices(ci).length} Left`;
+  document.getElementById('modal-pts').textContent = copy.modalDrawLabel(getRemainingQuestionIndices(ci).length);
   document.getElementById('modal-clue').innerHTML = q.clue;
 
   // Choices
@@ -1604,6 +2342,7 @@ function clearChoiceSelection() {
 
 function handleCorrect() {
   if (scoringTeam !== null) return;
+  const copy = getThemeCopy();
   scoringTeam = getActiveTeam();
   revealAnswer();
   buildTeamRadios(true, scoringTeam);
@@ -1613,7 +2352,7 @@ function handleCorrect() {
   document.getElementById('spin-panel').style.display = 'block';
   document.getElementById('spin-action-panel').style.display = 'none';
   document.getElementById('spin-btn').disabled = false;
-  document.getElementById('spin-result').textContent = 'Ready to spin';
+  document.getElementById('spin-result').textContent = copy.spinReady;
   setStatus(`${teamNames[scoringTeam]} answered correctly. Spin to reveal a protect or attack bonus worth 1 to 3 points.`);
 }
 
@@ -1632,6 +2371,7 @@ function hasAttackTargets() {
 
 function spinWheel() {
   if (scoringTeam === null || spinnerBusy) return;
+  const copy = getThemeCopy();
 
   const resultIndex = Math.floor(seededRandom() * SPIN_RESULTS.length);
   const result = SPIN_RESULTS[resultIndex];
@@ -1648,7 +2388,7 @@ function spinWheel() {
   const wheel = document.getElementById('spinner-wheel');
   const spinBtn = document.getElementById('spin-btn');
   spinBtn.disabled = true;
-  document.getElementById('spin-result').textContent = 'Spinning...';
+  document.getElementById('spin-result').textContent = copy.spinBusy;
   wheel.style.transform = `rotate(${spinnerRotation}deg)`;
 
   setTimeout(() => {
@@ -1658,6 +2398,7 @@ function spinWheel() {
 }
 
 function resolveSpinResult(result) {
+  const copy = getThemeCopy();
   const resultText = `${result.kind === 'protect' ? 'Protect' : 'Attack'} ${result.amount} Point${result.amount===1?'':'s'}`;
   document.getElementById('spin-result').textContent = resultText;
 
@@ -1678,8 +2419,8 @@ function resolveSpinResult(result) {
   }
 
   document.getElementById('spin-action-panel').style.display = 'block';
-  document.getElementById('spin-action-title').textContent = `Attack for ${result.amount} Point${result.amount===1?'':'s'}`;
-  document.getElementById('spin-action-copy').textContent = `Choose an opposing team to lose ${result.amount} point${result.amount===1?'':'s'}.`;
+  document.getElementById('spin-action-title').textContent = copy.attackTitle(result.amount);
+  document.getElementById('spin-action-copy').textContent = copy.attackCopy(result.amount);
   renderSpinTargets();
   setStatus(`${teamNames[scoringTeam]} spun ${result.label}. Choose the team that should lose ${result.amount} point${result.amount===1?'':'s'}.`);
 }
@@ -1739,6 +2480,7 @@ function closeModal() {
 }
 
 function resetQuestionState() {
+  const copy = getThemeCopy();
   answered = false;
   scoringTeam = null;
   currentSpinResult = null;
@@ -1747,7 +2489,12 @@ function resetQuestionState() {
   document.getElementById('spin-action-panel').style.display = 'none';
   document.getElementById('spin-targets').innerHTML = '';
   document.getElementById('spin-btn').disabled = false;
-  document.getElementById('spin-result').textContent = 'Waiting for a correct answer.';
+  document.getElementById('spin-panel-title').textContent = copy.spinTitle;
+  document.getElementById('spin-panel-copy').textContent = copy.spinCopy;
+  document.getElementById('spin-btn').textContent = copy.spinButtonLabel;
+  document.getElementById('spin-action-title').textContent = copy.spinActionDefaultTitle;
+  document.getElementById('spin-action-copy').textContent = copy.spinActionDefaultCopy;
+  document.getElementById('spin-result').textContent = copy.spinWaiting;
   setStatus('');
   buildTeamRadios(false, getActiveTeam());
 }
@@ -1807,6 +2554,14 @@ function updateTimerDisplay() {
   disp.textContent = `0:${String(s).padStart(2,'0')}`;
   disp.classList.toggle('urgent', s<=10);
   bar.style.width = (s/30*100)+'%';
+  if (currentTheme === 'sketch') {
+    bar.style.background = s>20
+      ? '#2d5da1'
+      : s>10
+        ? '#fff9c4'
+        : '#ff4d4d';
+    return;
+  }
   bar.style.background = s>20
     ? 'linear-gradient(90deg, #00FFFF, #FF00FF)'
     : s>10
@@ -1818,13 +2573,14 @@ function updateTimerDisplay() {
 //  FINAL JEOPARDY
 // ═══════════════════════════════════════════
 function openFinalJeopardy() {
+  const copy = getThemeCopy();
   const modal = document.getElementById('fj-modal');
   const standings = teamNames.map((name,i)=>({name, xs:scores[i]})).sort((a,b)=>b.xs-a.xs);
   const top = standings[0]?.xs ?? 0;
   const leaders = standings.filter(team=>team.xs===top).map(team=>team.name);
   const heading = usedCells.size === TOTAL_QUESTIONS ? '🏁 Final Standings' : '🏁 Current Standings';
   document.querySelector('#fj-card h2').textContent = heading;
-  document.getElementById('fj-subtitle').innerHTML = `Mode: <strong>Category Spinner</strong> · Questions used: ${usedCells.size}/${TOTAL_QUESTIONS}`;
+  document.getElementById('fj-subtitle').innerHTML = `Mode: <strong>${copy.modeName}</strong> · Questions used: ${usedCells.size}/${TOTAL_QUESTIONS}`;
   document.getElementById('fj-wagers').innerHTML = '';
   document.getElementById('fj-clue').innerHTML = `
     <p><strong>${leaders.length===1 ? `${leaders[0]} is in front` : `Tie game between ${leaders.join(' and ')}`}</strong> with <strong>${top} point</strong>${top===1?'':'s'}.</p>
@@ -1857,27 +2613,28 @@ function getCtx() {
 }
 
 function drawAxesAndGrid(ctx, W, H, pad, xMin, xMax, yMin, yMax, xticks, yticks, xlabels) {
+  const graph = getGraphTheme();
   const toX = x => pad + (x-xMin)/(xMax-xMin)*(W-2*pad);
   const toY = y => H-pad-(y-yMin)/(yMax-yMin)*(H-2*pad);
 
   // Grid
-  ctx.strokeStyle='rgba(255,0,255,0.22)'; ctx.lineWidth=0.65;
+  ctx.strokeStyle = graph.grid; ctx.lineWidth=0.65;
   xticks.forEach(x=>{ const cx=toX(x); ctx.beginPath(); ctx.moveTo(cx,pad); ctx.lineTo(cx,H-pad); ctx.stroke(); });
   yticks.forEach(y=>{ const cy=toY(y); ctx.beginPath(); ctx.moveTo(pad,cy); ctx.lineTo(W-pad,cy); ctx.stroke(); });
 
   // Axes
-  ctx.strokeStyle='rgba(0,255,255,0.72)'; ctx.lineWidth=1.5;
+  ctx.strokeStyle = graph.axes; ctx.lineWidth=1.5;
   const y0=toY(0), x0=toX(0);
   if(y0>=pad&&y0<=H-pad){ ctx.beginPath(); ctx.moveTo(pad,y0); ctx.lineTo(W-pad,y0); ctx.stroke(); }
   if(x0>=pad&&x0<=W-pad){ ctx.beginPath(); ctx.moveTo(x0,pad); ctx.lineTo(x0,H-pad); ctx.stroke(); }
 
   // Axis arrows
-  ctx.fillStyle='rgba(0,255,255,0.72)';
+  ctx.fillStyle = graph.axisFill;
   if(y0>=pad&&y0<=H-pad){ drawArrow(ctx,W-pad,y0,1,0); drawArrow(ctx,pad,y0,-1,0); }
   if(x0>=pad&&x0<=W-pad){ drawArrow(ctx,x0,pad,0,-1); drawArrow(ctx,x0,H-pad,0,1); }
 
   // Labels
-  ctx.fillStyle='rgba(224,224,224,0.9)'; ctx.font='11px "Share Tech Mono", monospace';
+  ctx.fillStyle = graph.labelFill; ctx.font = graph.labelFont;
   ctx.textAlign='center';
   xticks.forEach((x,i)=>{ if(x===0)return; const lbl=xlabels?xlabels[i]:String(x); ctx.fillText(lbl,toX(x),H-pad+14); });
   ctx.textAlign='right';
@@ -1891,7 +2648,7 @@ function drawArrow(ctx,x,y,dx,dy){
 }
 
 function plotFn(ctx, fn, xMin, xMax, toX, toY, yMin, yMax) {
-  ctx.strokeStyle='#FF9900'; ctx.lineWidth=2.5;
+  ctx.strokeStyle = getGraphTheme().curve; ctx.lineWidth=2.5;
   ctx.beginPath(); let first=true;
   const steps=1000, range=yMax-yMin;
   for(let i=0;i<=steps;i++){
@@ -1910,22 +2667,23 @@ function plotFn(ctx, fn, xMin, xMax, toX, toY, yMin, yMax) {
 // ── Shared helper: drop-lines + dot + y-label at key points ──────────────
 // pts: array of [x, y, labelDy]  labelDy: negative = above dot, positive = below
 function plotKeyPoints(ctx, pts, toX, toY) {
+  const graph = getGraphTheme();
   pts.forEach(([x, y, dy]) => {
     const cx = toX(x), cy = toY(y);
     // Dashed drop lines to both axes
     ctx.setLineDash([3,3]);
-    ctx.strokeStyle = 'rgba(0,255,255,0.32)';
+    ctx.strokeStyle = graph.dropLine;
     ctx.lineWidth = 0.9;
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx, toY(0)); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(toX(0), cy); ctx.stroke();
     ctx.setLineDash([]);
     // Neon dot with dark outline
     ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-    ctx.fillStyle = '#FF9900'; ctx.fill();
-    ctx.strokeStyle = '#FF00FF'; ctx.lineWidth = 1.8; ctx.stroke();
+    ctx.fillStyle = graph.pointFill; ctx.fill();
+    ctx.strokeStyle = graph.pointStroke; ctx.lineWidth = 1.8; ctx.stroke();
     // y-value label
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px "Share Tech Mono", monospace';
+    ctx.fillStyle = graph.pointLabel;
+    ctx.font = graph.pointFont;
     ctx.textAlign = 'center';
     ctx.fillText(String(y), cx, cy + dy);
   });
@@ -1935,8 +2693,9 @@ function plotKeyPoints(ctx, pts, toX, toY) {
 //   Period: x = π/4 → 5π/4   Key pts: (π/4,1) (π/2,−2) (3π/4,1) (π,4) (5π/4,1)
 function drawSinGraph() {
   const {ctx,W,H} = getCtx();
+  const graph = getGraphTheme();
   const pad=50, pi=Math.PI;
-  ctx.fillStyle='#090014'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = graph.canvasBg; ctx.fillRect(0,0,W,H);
 
   const xMin = -0.25, xMax = pi*5/4 + 0.55;
   const yMin = -3.5,  yMax = 5.5;
@@ -1946,14 +2705,14 @@ function drawSinGraph() {
   const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,xlabels);
 
   // Midline y = 1
-  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(0,255,255,0.34)'; ctx.lineWidth=1;
+  ctx.setLineDash([6,4]); ctx.strokeStyle = graph.midline; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='rgba(0,255,255,0.72)'; ctx.font='10px "Share Tech Mono", monospace'; ctx.textAlign='left';
+  ctx.fillStyle = graph.midlineLabel; ctx.font = graph.midlineFont; ctx.textAlign='left';
   ctx.fillText('y = 1  (midline)', pad+5, toY(1)-6);
 
   // Shaded period region
-  ctx.fillStyle='rgba(255,0,255,0.08)';
+  ctx.fillStyle = graph.periodShade;
   ctx.fillRect(toX(pi/4), pad, toX(5*pi/4)-toX(pi/4), H-2*pad);
 
   // Curve
@@ -1969,13 +2728,13 @@ function drawSinGraph() {
   ], toX, toY);
 
   // Period bracket
-  ctx.strokeStyle='rgba(255,153,0,0.76)'; ctx.lineWidth=1.2;
+  ctx.strokeStyle = graph.bracket; ctx.lineWidth=1.2;
   const bY = H - pad + 22;
   ctx.beginPath();
   ctx.moveTo(toX(pi/4), bY-4); ctx.lineTo(toX(pi/4), bY);
   ctx.lineTo(toX(5*pi/4), bY); ctx.lineTo(toX(5*pi/4), bY-4);
   ctx.stroke();
-  ctx.fillStyle='rgba(255,153,0,0.88)'; ctx.font='10px "Share Tech Mono", monospace'; ctx.textAlign='center';
+  ctx.fillStyle = graph.bracketLabel; ctx.font = graph.bracketFont; ctx.textAlign='center';
   ctx.fillText('one period', (toX(pi/4)+toX(5*pi/4))/2, bY+11);
 }
 
@@ -1983,8 +2742,9 @@ function drawSinGraph() {
 //   Period: x = 1 → 5   Key pts: (1,3) (2,1) (3,−1) (4,1) (5,3)
 function drawCosGraph() {
   const {ctx,W,H} = getCtx();
+  const graph = getGraphTheme();
   const pad=50, pi=Math.PI;
-  ctx.fillStyle='#090014'; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle = graph.canvasBg; ctx.fillRect(0,0,W,H);
 
   const xMin = -0.3, xMax = 6.3;
   const yMin = -2.5, yMax = 4.5;
@@ -1993,14 +2753,14 @@ function drawCosGraph() {
   const {toX,toY} = drawAxesAndGrid(ctx,W,H,pad,xMin,xMax,yMin,yMax,xticks,yticks,null);
 
   // Midline y = 1
-  ctx.setLineDash([6,4]); ctx.strokeStyle='rgba(0,255,255,0.34)'; ctx.lineWidth=1;
+  ctx.setLineDash([6,4]); ctx.strokeStyle = graph.midline; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(pad, toY(1)); ctx.lineTo(W-pad, toY(1)); ctx.stroke();
   ctx.setLineDash([]);
-  ctx.fillStyle='rgba(0,255,255,0.72)'; ctx.font='10px "Share Tech Mono", monospace'; ctx.textAlign='left';
+  ctx.fillStyle = graph.midlineLabel; ctx.font = graph.midlineFont; ctx.textAlign='left';
   ctx.fillText('y = 1  (midline)', toX(0)+4, toY(1)-6);
 
   // Shaded period region
-  ctx.fillStyle='rgba(255,0,255,0.08)';
+  ctx.fillStyle = graph.periodShade;
   ctx.fillRect(toX(1), pad, toX(5)-toX(1), H-2*pad);
 
   // Curve
@@ -2016,13 +2776,13 @@ function drawCosGraph() {
   ], toX, toY);
 
   // Period bracket
-  ctx.strokeStyle='rgba(255,153,0,0.76)'; ctx.lineWidth=1.2;
+  ctx.strokeStyle = graph.bracket; ctx.lineWidth=1.2;
   const bY = H - pad + 22;
   ctx.beginPath();
   ctx.moveTo(toX(1), bY-4); ctx.lineTo(toX(1), bY);
   ctx.lineTo(toX(5), bY);   ctx.lineTo(toX(5), bY-4);
   ctx.stroke();
-  ctx.fillStyle='rgba(255,153,0,0.88)'; ctx.font='10px "Share Tech Mono", monospace'; ctx.textAlign='center';
+  ctx.fillStyle = graph.bracketLabel; ctx.font = graph.bracketFont; ctx.textAlign='center';
   ctx.fillText('one period', (toX(1)+toX(5))/2, bY+11);
 }
 
