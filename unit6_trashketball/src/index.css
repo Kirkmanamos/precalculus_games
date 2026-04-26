@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-canvas text-ink font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  /* Hard-shadow recipe matches the design system's "no-blur" rule. */
+  .stroke-ink-2 {
+    -webkit-text-stroke: 2px #1E293B;
+  }
+}
+
+/* KaTeX inherits the parent's font-size; this prevents the engine's
+   default 1.21em scaling from making display math feel too tall in cards. */
+.katex-display {
+  margin: 0.5em 0;
+}
+.katex-display > .katex {
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

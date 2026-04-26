@@ -1,0 +1,10 @@
+node_modules
+.DS_Store
+*.log
+.vite
+.env*
+# dist/ is committed so GitHub Pages can serve it without a build step
+vite.config.js
+vite.config.d.ts
+tsconfig.tsbuildinfo
+tsconfig.node.tsbuildinfo

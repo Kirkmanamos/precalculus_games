@@ -12,13 +12,13 @@ An internet connection is needed on first load for MathJax and fonts.
 
 ## Standard Variation
 
-This version follows the standard Grudgeball flow:
+This version now uses a whole-class response flow:
 
-- each team starts with 10 Xs
-- a correct answer removes 2 Xs from opponents
-- a made bonus shot steals 1 more X and adds it to the shooting team
-- wrong answers can be diverted to another team
-- the team with the most Xs after the board is exhausted wins
+- each team starts with 10 points
+- every team answers every question at the same time
+- after the reveal, each correct team gets its own attack-or-protect choice
+- each correct team spins for 1-3 points and applies that result before the next correct team takes its turn
+- the team with the most points after the board is exhausted wins
 
 The question set stays aligned to the same non-honors Unit 5 quick check targets as Trashketball, using exact unit-circle values.
 

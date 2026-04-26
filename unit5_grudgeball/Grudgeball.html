@@ -896,6 +896,12 @@ h1{
   box-shadow:var(--shadow-orange);
   transform:translateY(-2px);
 }
+.mode-btn.is-active{
+  color:#13000b;
+  background:rgba(0,255,255,0.95);
+  border-color:var(--cyan);
+  box-shadow:var(--shadow-cyan);
+}
 
 /* ── SPINNER ── */
 .spinner-shell{
@@ -933,13 +939,10 @@ h1{
   border-radius:50%;
   border:2px solid rgba(255,255,255,0.08);
   background:
-    conic-gradient(from -120deg,
-      #FF00FF 0deg 60deg,
-      #FF9900 60deg 120deg,
-      #00FFFF 120deg 180deg,
-      #FF00FF 180deg 240deg,
-      #FF9900 240deg 300deg,
-      #00FFFF 300deg 360deg);
+    conic-gradient(from -90deg,
+      #FF00FF 0deg 120deg,
+      #FF9900 120deg 240deg,
+      #00FFFF 240deg 360deg);
   box-shadow:0 0 22px rgba(255,0,255,0.2), inset 0 0 20px rgba(255,255,255,0.08);
   transition:transform 3.4s cubic-bezier(.12,.84,.18,1);
 }
@@ -957,12 +960,12 @@ h1{
   position:absolute;
   left:50%;
   top:50%;
-  width:98px;
-  margin-left:-49px;
+  width:68px;
+  margin-left:-34px;
   margin-top:-14px;
   text-align:center;
   font-family:"Orbitron",sans-serif;
-  font-size:0.62rem;
+  font-size:1rem;
   font-weight:700;
   line-height:1.4;
   letter-spacing:0.12em;
@@ -971,11 +974,8 @@ h1{
   text-shadow:0 0 10px rgba(0,0,0,0.5);
 }
 .seg-0{transform:translateY(-112px);}
-.seg-1{transform:rotate(60deg) translateY(-112px) rotate(-60deg);}
-.seg-2{transform:rotate(120deg) translateY(-112px) rotate(-120deg);}
-.seg-3{transform:rotate(180deg) translateY(-112px) rotate(-180deg);}
-.seg-4{transform:rotate(240deg) translateY(-112px) rotate(-240deg);}
-.seg-5{transform:rotate(300deg) translateY(-112px) rotate(-300deg);}
+.seg-1{transform:rotate(120deg) translateY(-112px) rotate(-120deg);}
+.seg-2{transform:rotate(240deg) translateY(-112px) rotate(-240deg);}
 #spin-result{
   min-height:1.5em;
   color:var(--cyan);
@@ -1648,9 +1648,9 @@ body[data-theme="sketch"] .standings-score{
         <ul class="setup-rules">
           <li>Each team starts with 10 points.</li>
           <li>Choose a category tile and the game draws a random unused question from that category.</li>
-          <li>A correct answer earns one seeded spinner result worth 1-3 points.</li>
-          <li>Protect results add points to the answering team. Attack results subtract points from a selected opponent.</li>
-          <li>Wrong answers can be diverted to another team.</li>
+          <li>Every team answers every question at the same time.</li>
+          <li>After the reveal, mark each team that got it correct and award each of them an attack or protect spin for 1-3 points.</li>
+          <li>Protect adds points to the current team. Attack subtracts points from a selected opponent.</li>
           <li>The team with the most points after all questions are used wins.</li>
         </ul>
       </div>
@@ -1712,17 +1712,18 @@ body[data-theme="sketch"] .standings-score{
       <div id="grudge-status" class="grudge-status"></div>
       <div id="spin-panel" class="grudge-panel">
         <div class="grudge-panel-title" id="spin-panel-title">Bonus Spinner</div>
-        <div class="grudge-panel-copy" id="spin-panel-copy">Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.</div>
+        <div class="grudge-panel-copy" id="spin-panel-copy">Correct answers let the team choose attack or protect, then spin for 1-3 points.</div>
+        <div class="grudge-targets" id="spin-mode-buttons">
+          <button class="target-btn mode-btn" id="mode-protect-btn" onclick="chooseSpinMode('protect')">Protect</button>
+          <button class="target-btn mode-btn" id="mode-attack-btn" onclick="chooseSpinMode('attack')">Attack</button>
+        </div>
         <div class="spinner-shell">
           <div class="spinner-pointer"></div>
           <div class="spinner-wheel-wrap">
             <div id="spinner-wheel" class="spinner-wheel">
-              <div class="spinner-segment-label seg-0">Protect<br>+1</div>
-              <div class="spinner-segment-label seg-1">Attack<br>-1</div>
-              <div class="spinner-segment-label seg-2">Protect<br>+2</div>
-              <div class="spinner-segment-label seg-3">Attack<br>-2</div>
-              <div class="spinner-segment-label seg-4">Protect<br>+3</div>
-              <div class="spinner-segment-label seg-5">Attack<br>-3</div>
+              <div class="spinner-segment-label seg-0">1</div>
+              <div class="spinner-segment-label seg-1">2</div>
+              <div class="spinner-segment-label seg-2">3</div>
             </div>
           </div>
           <div id="spin-result">Waiting for a correct answer.</div>
@@ -1745,13 +1746,13 @@ body[data-theme="sketch"] .standings-score{
     </div>
     <div id="modal-footer">
       <div class="team-select-row">
-        <span>Answering:</span>
+        <span>Correct Teams:</span>
         <div id="team-radio-group"></div>
       </div>
       <div class="action-row">
         <button class="btn btn-reveal" id="reveal-btn" onclick="revealAnswer()">Reveal Answer</button>
-        <button class="btn btn-correct" id="correct-btn" onclick="handleCorrect()">✓ Correct</button>
-        <button class="btn btn-wrong" id="divert-btn" onclick="divertQuestion()">↪ Divert</button>
+        <button class="btn btn-correct" id="correct-btn" onclick="handleCorrect()">Award Spins</button>
+        <button class="btn btn-wrong" id="clear-btn" onclick="clearCorrectSelections()">Clear Checks</button>
         <button class="btn btn-skip" id="skip-btn" onclick="skipQuestion()">Skip Question</button>
       </div>
     </div>
@@ -1810,14 +1811,7 @@ const CATS = [
 
 const STARTING_XS = 10;
 const TOTAL_QUESTIONS = CATS.length * 5;
-const SPIN_RESULTS = [
-  { kind:'protect', amount:1, label:'Protect +1' },
-  { kind:'attack', amount:1, label:'Attack -1' },
-  { kind:'protect', amount:2, label:'Protect +2' },
-  { kind:'attack', amount:2, label:'Attack -2' },
-  { kind:'protect', amount:3, label:'Protect +3' },
-  { kind:'attack', amount:3, label:'Attack -3' }
-];
+const SPIN_AMOUNTS = [1, 2, 3];
 
 // ═══════════════════════════════════════════
 //  QUESTIONS — aligned to sections 5.1-5.3 and the quick check
@@ -1959,6 +1953,9 @@ let timerInterval = null, timeLeft = 30, paused = false;
 let answered = false;
 let scoringTeam = null;
 let currentSpinResult = null;
+let selectedSpinMode = null;
+let correctTeamsQueue = [];
+let currentBonusIndex = -1;
 let spinnerBusy = false;
 let spinnerRotation = 0;
 const PAGE_OPENED_AT = Date.now();
@@ -1986,9 +1983,9 @@ const THEME_COPY = {
     modalDrawLabel: remaining => `Random Draw · ${remaining} Left`,
     boardMeta: remaining => remaining===0 ? 'Category Complete' : `${remaining} Question${remaining===1?'':'s'} Left`,
     spinTitle: 'Bonus Spinner',
-    spinCopy: 'Correct answers unlock one seeded spin. The wheel decides whether the team protects its own score or attacks another team for 1-3 points.',
+    spinCopy: 'Correct answers let the team choose attack or protect, then spin for 1-3 points.',
     spinWaiting: 'Waiting for a correct answer.',
-    spinReady: 'Ready to spin',
+    spinReady: 'Choose attack or protect.',
     spinBusy: 'Spinning...',
     spinButtonLabel: 'Spin',
     spinActionDefaultTitle: 'Attack Target',
@@ -2014,9 +2011,9 @@ const THEME_COPY = {
     modalDrawLabel: remaining => `Notebook draw · ${remaining} left`,
     boardMeta: remaining => remaining===0 ? 'All cards used' : `${remaining} card${remaining===1?'':'s'} left`,
     spinTitle: 'Doodle Spinner',
-    spinCopy: 'Checked answers earn one doodle spin. It may protect your team notes or scratch points off another team for 1-3 points.',
+    spinCopy: 'Checked answers let the team choose attack or protect, then spin for 1-3 points.',
     spinWaiting: 'Waiting for the next checked answer.',
-    spinReady: 'Ready to doodle spin',
+    spinReady: 'Choose attack or protect.',
     spinBusy: 'Sketching the spin...',
     spinButtonLabel: 'Spin the Pencil',
     spinActionDefaultTitle: 'Scratch Target',
@@ -2050,11 +2047,11 @@ function applyTheme(theme, persist = false) {
   document.getElementById('reset-btn').textContent = copy.resetLabel;
   document.getElementById('fj-btn').textContent = copy.standingsLabel;
   document.getElementById('modal-window-label').textContent = copy.modalWindowLabel;
-  document.getElementById('spin-panel-title').textContent = copy.spinTitle;
-  document.getElementById('spin-panel-copy').textContent = copy.spinCopy;
+  updateSpinPanelCopy();
   document.getElementById('spin-btn').textContent = copy.spinButtonLabel;
   document.getElementById('standings-window-label').textContent = copy.standingsWindowLabel;
   document.getElementById('fj-subtitle').innerHTML = `Mode: <strong>${copy.modeName}</strong>`;
+  updateSpinModeButtons();
 
   document.querySelectorAll('.theme-switch-btn').forEach(btn => {
     const active = btn.dataset.themeValue === currentTheme;
@@ -2063,7 +2060,9 @@ function applyTheme(theme, persist = false) {
   });
 
   if (!spinnerBusy && !currentSpinResult) {
-    document.getElementById('spin-result').textContent = scoringTeam !== null ? copy.spinReady : copy.spinWaiting;
+    document.getElementById('spin-result').textContent = scoringTeam !== null
+      ? (selectedSpinMode ? `${getSpinModeLabel(selectedSpinMode)} selected` : copy.spinReady)
+      : copy.spinWaiting;
   } else if (spinnerBusy) {
     document.getElementById('spin-result').textContent = copy.spinBusy;
   }
@@ -2170,7 +2169,7 @@ function startGame() {
   document.getElementById('setup-overlay').style.display = 'none';
   const ga = document.getElementById('game-area');
   ga.style.display = 'flex';
-  buildTeamRadios(false, 0);
+  buildTeamSelectors(false, []);
   init();
 }
 
@@ -2213,13 +2212,12 @@ function getRemainingQuestionIndices(ci) {
     .filter(ri => !usedCells.has(`${ci}-${ri}`));
 }
 
-function buildTeamRadios(disabled = false, selected = 0) {
+function buildTeamSelectors(disabled = false, selectedTeams = []) {
   const grp = document.getElementById('team-radio-group');
-  const fallback = document.querySelector('input[name="ateam"]:checked');
-  const active = Number.isInteger(selected) ? selected : fallback ? parseInt(fallback.value, 10) : 0;
+  const selected = new Set(selectedTeams);
   grp.innerHTML = teamNames.map((name,i)=>
     `<label class="team-radio">
-      <input type="radio" name="ateam" value="${i}" ${i===active?'checked':''} ${disabled?'disabled':''}>
+      <input type="checkbox" name="correct-team" value="${i}" ${selected.has(i)?'checked':''} ${disabled?'disabled':''}>
       <span>${name}</span>
     </label>`
   ).join('');
@@ -2228,11 +2226,11 @@ function buildTeamRadios(disabled = false, selected = 0) {
 function renameTeam(i) {
   const name = prompt(`Enter name for this team:`, teamNames[i]);
   if (name && name.trim()) {
-    const locked = !!document.querySelector('input[name="ateam"][disabled]');
-    const active = getActiveTeam();
+    const locked = !!document.querySelector('input[name="correct-team"][disabled]');
+    const selectedTeams = getSelectedCorrectTeams();
     teamNames[i] = name.trim();
     buildScoreboard();
-    buildTeamRadios(locked, active);
+    buildTeamSelectors(locked, selectedTeams);
   }
 }
 
@@ -2264,8 +2262,8 @@ function handleCellClick(ci) {
 // ═══════════════════════════════════════════
 function openQuestion(ci, ri) {
   const q = QUESTIONS[ci][ri];
-  const copy = getThemeCopy();
   resetQuestionState();
+  const copy = getThemeCopy();
 
   document.getElementById('modal-cat').textContent = CATS[ci];
   document.getElementById('modal-pts').textContent = copy.modalDrawLabel(getRemainingQuestionIndices(ci).length);
@@ -2287,10 +2285,10 @@ function openQuestion(ci, ri) {
 
   document.getElementById('reveal-btn').disabled = false;
   document.getElementById('correct-btn').disabled = false;
-  document.getElementById('divert-btn').disabled = false;
+  document.getElementById('clear-btn').disabled = false;
   document.getElementById('skip-btn').disabled = false;
   document.getElementById('overlay').classList.add('active');
-  setStatus('Select the answering team. Wrong answers can be diverted before you reveal the solution. Correct answers earn one seeded spinner bonus.');
+  setStatus('All teams answer this question. Reveal the solution, mark each correct team, then award their attack or protect spins.');
 
   // Render math then draw graph
   if (window.MathJax && MathJax.typesetPromise) {
@@ -2323,59 +2321,129 @@ function revealAnswer() {
   }
   document.getElementById('modal-answer').style.display = 'block';
   document.getElementById('reveal-btn').disabled = true;
+  if (!correctTeamsQueue.length) {
+    setStatus('Mark each team that got it correct, then click Award Spins. If nobody solved it, skip the question.');
+  }
   if (window.MathJax && MathJax.typesetPromise)
     MathJax.typesetPromise([document.getElementById('modal-answer')]);
 }
 
-function getActiveTeam() {
-  for (const r of document.querySelectorAll('input[name="ateam"]'))
-    if (r.checked) return parseInt(r.value);
-  return 0;
+function getSelectedCorrectTeams() {
+  return Array.from(document.querySelectorAll('input[name="correct-team"]:checked'))
+    .map(input => parseInt(input.value, 10));
 }
 
-function clearChoiceSelection() {
-  document.querySelectorAll('.choice-btn').forEach(btn=>{
-    btn.classList.remove('selected','wrong');
-    if (!btn.classList.contains('correct')) btn.disabled = false;
-  });
+function clearCorrectSelections() {
+  if (correctTeamsQueue.length) return;
+  document.querySelectorAll('input[name="correct-team"]').forEach(input => { input.checked = false; });
+  setStatus(answered
+    ? 'Selections cleared. Mark each correct team, then click Award Spins.'
+    : 'Selections cleared. Reveal the answer, then mark each correct team.');
+}
+
+function updateSpinPanelCopy() {
+  const copy = getThemeCopy();
+  document.getElementById('spin-panel-title').textContent = scoringTeam === null
+    ? copy.spinTitle
+    : `${copy.spinTitle} · ${teamNames[scoringTeam]}`;
+  document.getElementById('spin-panel-copy').textContent = copy.spinCopy;
+}
+
+function startNextBonusTurn() {
+  const copy = getThemeCopy();
+  if (currentBonusIndex < 0 || currentBonusIndex >= correctTeamsQueue.length) {
+    finishResolvedQuestion();
+    return;
+  }
+
+  scoringTeam = correctTeamsQueue[currentBonusIndex];
+  currentSpinResult = null;
+  selectedSpinMode = null;
+  spinnerBusy = false;
+  document.getElementById('spin-panel').style.display = 'block';
+  document.getElementById('spin-action-panel').style.display = 'none';
+  document.getElementById('spin-targets').innerHTML = '';
+  updateSpinPanelCopy();
+  updateSpinModeButtons();
+  document.getElementById('spin-btn').disabled = true;
+  document.getElementById('spin-result').textContent = copy.spinReady;
+  setStatus(`${teamNames[scoringTeam]} is bonus ${currentBonusIndex + 1} of ${correctTeamsQueue.length}. Choose attack or protect, then spin for 1 to 3 points.`);
+}
+
+function advanceBonusQueue() {
+  currentBonusIndex += 1;
+  if (currentBonusIndex >= correctTeamsQueue.length) {
+    finishResolvedQuestion();
+    return;
+  }
+  startNextBonusTurn();
 }
 
 function handleCorrect() {
-  if (scoringTeam !== null) return;
-  const copy = getThemeCopy();
-  scoringTeam = getActiveTeam();
+  if (correctTeamsQueue.length) return;
   revealAnswer();
-  buildTeamRadios(true, scoringTeam);
-  document.getElementById('correct-btn').disabled = true;
-  document.getElementById('divert-btn').disabled = true;
-  document.getElementById('skip-btn').disabled = true;
-  document.getElementById('spin-panel').style.display = 'block';
-  document.getElementById('spin-action-panel').style.display = 'none';
-  document.getElementById('spin-btn').disabled = false;
-  document.getElementById('spin-result').textContent = copy.spinReady;
-  setStatus(`${teamNames[scoringTeam]} answered correctly. Spin to reveal a protect or attack bonus worth 1 to 3 points.`);
-}
+  const selectedTeams = getSelectedCorrectTeams();
+  if (!selectedTeams.length) {
+    setStatus('Mark at least one correct team before awarding spins, or skip the question if nobody solved it.');
+    return;
+  }
 
-function divertQuestion() {
-  if (scoringTeam !== null) return;
-  clearChoiceSelection();
-  answered = false;
-  document.getElementById('modal-answer').style.display = 'none';
-  setStatus('Question diverted. Select the next team and restart the 30-second clock.');
-  startTimer();
+  correctTeamsQueue = selectedTeams;
+  currentBonusIndex = 0;
+  buildTeamSelectors(true, selectedTeams);
+  document.getElementById('correct-btn').disabled = true;
+  document.getElementById('clear-btn').disabled = true;
+  document.getElementById('skip-btn').disabled = true;
+  startNextBonusTurn();
 }
 
 function hasAttackTargets() {
   return teamNames.some((_,i)=>i !== scoringTeam && scores[i] > 0);
 }
 
-function spinWheel() {
+function getSpinModeLabel(mode) {
+  return mode === 'attack' ? 'Attack' : 'Protect';
+}
+
+function updateSpinModeButtons() {
+  const protectBtn = document.getElementById('mode-protect-btn');
+  const attackBtn = document.getElementById('mode-attack-btn');
+  const ready = scoringTeam !== null;
+  const attackAvailable = ready && hasAttackTargets();
+
+  protectBtn.disabled = !ready;
+  attackBtn.disabled = !attackAvailable;
+  attackBtn.textContent = attackAvailable ? 'Attack' : 'Attack (Locked)';
+  protectBtn.classList.toggle('is-active', selectedSpinMode === 'protect');
+  attackBtn.classList.toggle('is-active', selectedSpinMode === 'attack');
+}
+
+function chooseSpinMode(mode) {
   if (scoringTeam === null || spinnerBusy) return;
+  if (mode === 'attack' && !hasAttackTargets()) return;
+
+  selectedSpinMode = mode;
+  currentSpinResult = null;
+  updateSpinModeButtons();
+  document.getElementById('spin-btn').disabled = false;
+  document.getElementById('spin-result').textContent = `${getSpinModeLabel(mode)} selected`;
+
+  if (mode === 'protect') {
+    setStatus(`${teamNames[scoringTeam]} chose protect. Spin for 1 to 3 points to add to their score.`);
+    return;
+  }
+
+  setStatus(`${teamNames[scoringTeam]} chose attack. Spin for 1 to 3 points, then choose an opposing team to lose them.`);
+}
+
+function spinWheel() {
+  if (scoringTeam === null || spinnerBusy || !selectedSpinMode) return;
   const copy = getThemeCopy();
 
-  const resultIndex = Math.floor(seededRandom() * SPIN_RESULTS.length);
-  const result = SPIN_RESULTS[resultIndex];
-  const segmentAngle = 360 / SPIN_RESULTS.length;
+  const resultIndex = Math.floor(seededRandom() * SPIN_AMOUNTS.length);
+  const amount = SPIN_AMOUNTS[resultIndex];
+  const result = { kind:selectedSpinMode, amount };
+  const segmentAngle = 360 / SPIN_AMOUNTS.length;
   const normalizedTarget = (360 - (resultIndex * segmentAngle)) % 360;
   const currentNormalized = ((spinnerRotation % 360) + 360) % 360;
   const extraTurns = 6 * 360;
@@ -2399,22 +2467,22 @@ function spinWheel() {
 
 function resolveSpinResult(result) {
   const copy = getThemeCopy();
-  const resultText = `${result.kind === 'protect' ? 'Protect' : 'Attack'} ${result.amount} Point${result.amount===1?'':'s'}`;
+  const resultText = `${getSpinModeLabel(result.kind)} ${result.amount}`;
   document.getElementById('spin-result').textContent = resultText;
 
   if (result.kind === 'protect') {
     scores[scoringTeam] += result.amount;
     updateScore();
     setStatus(`${teamNames[scoringTeam]} spun Protect +${result.amount}. Their score increases by ${result.amount} point${result.amount===1?'':'s'}.`);
-    setTimeout(finishResolvedQuestion, 1100);
+    setTimeout(advanceBonusQueue, 1100);
     return;
   }
 
   if (!hasAttackTargets()) {
     scores[scoringTeam] += result.amount;
     updateScore();
-    setStatus(`No attack targets are available, so ${result.label} converts to Protect +${result.amount} for ${teamNames[scoringTeam]}.`);
-    setTimeout(finishResolvedQuestion, 1200);
+    setStatus(`No attack targets are available, so the ${result.amount}-point spin converts to Protect +${result.amount} for ${teamNames[scoringTeam]}.`);
+    setTimeout(advanceBonusQueue, 1200);
     return;
   }
 
@@ -2422,7 +2490,7 @@ function resolveSpinResult(result) {
   document.getElementById('spin-action-title').textContent = copy.attackTitle(result.amount);
   document.getElementById('spin-action-copy').textContent = copy.attackCopy(result.amount);
   renderSpinTargets();
-  setStatus(`${teamNames[scoringTeam]} spun ${result.label}. Choose the team that should lose ${result.amount} point${result.amount===1?'':'s'}.`);
+  setStatus(`${teamNames[scoringTeam]} spun ${result.amount}. Choose the team that should lose ${result.amount} point${result.amount===1?'':'s'}.`);
 }
 
 function renderSpinTargets() {
@@ -2440,7 +2508,7 @@ function applySpinAttack(target) {
   scores[target] = Math.max(0, scores[target] - currentSpinResult.amount);
   updateScore();
   setStatus(`${teamNames[scoringTeam]} attacked ${teamNames[target]} for ${actualLoss} point${actualLoss===1?'':'s'}.`);
-  setTimeout(finishResolvedQuestion, 1000);
+  setTimeout(advanceBonusQueue, 1000);
 }
 
 function finishResolvedQuestion() {
@@ -2484,19 +2552,22 @@ function resetQuestionState() {
   answered = false;
   scoringTeam = null;
   currentSpinResult = null;
+  selectedSpinMode = null;
+  correctTeamsQueue = [];
+  currentBonusIndex = -1;
   spinnerBusy = false;
   document.getElementById('spin-panel').style.display = 'none';
   document.getElementById('spin-action-panel').style.display = 'none';
   document.getElementById('spin-targets').innerHTML = '';
-  document.getElementById('spin-btn').disabled = false;
-  document.getElementById('spin-panel-title').textContent = copy.spinTitle;
-  document.getElementById('spin-panel-copy').textContent = copy.spinCopy;
+  document.getElementById('spin-btn').disabled = true;
+  updateSpinPanelCopy();
   document.getElementById('spin-btn').textContent = copy.spinButtonLabel;
   document.getElementById('spin-action-title').textContent = copy.spinActionDefaultTitle;
   document.getElementById('spin-action-copy').textContent = copy.spinActionDefaultCopy;
   document.getElementById('spin-result').textContent = copy.spinWaiting;
+  updateSpinModeButtons();
   setStatus('');
-  buildTeamRadios(false, getActiveTeam());
+  buildTeamSelectors(false, []);
 }
 
 function setStatus(message) {
