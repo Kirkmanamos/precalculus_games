@@ -56,7 +56,7 @@ unit6_trashketball/
 │   │   └── tokens.ts       # team palette, scoring constants
 │   ├── data/
 │   │   ├── types.ts        # Question / Difficulty
-│   │   └── questions.ts    # 25-question bank for 6.1–6.4
+│   │   └── questions.ts    # 55-question bank for 6.1–6.4 (incl. AP-Style Applications)
 │   ├── state/
 │   │   └── useGameState.ts # reducer + snapshot-stack undo
 │   ├── lib/
