@@ -1,17 +1,20 @@
 import { useEffect, useState } from 'react';
 import type { Team } from '../state/useGameState';
 import { getTeamColor } from '../state/useGameState';
+import type { Theme } from '../lib/useTheme';
 import { ordinal } from '../lib/ranking';
 
 interface Props {
   team: Team;
   rank: number;
   isLeader: boolean;
+  theme: Theme;
   onRename: (name: string) => void;
 }
 
-export function TeamCard({ team, rank, isLeader, onRename }: Props) {
+export function TeamCard({ team, rank, isLeader, theme, onRename }: Props) {
   const color = getTeamColor(team);
+  const tint = theme === 'dark' ? color.tintDark : color.tint;
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(team.name);
   const [pop, setPop] = useState(false);
@@ -56,7 +59,7 @@ export function TeamCard({ team, rank, isLeader, onRename }: Props) {
           'min-w-[220px] sm:min-w-[260px]',
           'animate-pop-in',
         ].join(' ')}
-        style={{ background: color.tint }}
+        style={{ background: tint }}
       >
         {/* color band */}
         <div
@@ -68,7 +71,7 @@ export function TeamCard({ team, rank, isLeader, onRename }: Props) {
           </span>
           <span
             className="rounded-full bg-white/95 px-2 py-0.5 font-display text-xs font-black uppercase tracking-wider"
-            style={{ color: '#1E293B' }}
+            style={{ color: theme === 'dark' ? '#FFFFFF' : '#1E293B' }}
           >
             {color.label}
           </span>

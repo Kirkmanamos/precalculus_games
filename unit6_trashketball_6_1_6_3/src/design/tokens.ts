@@ -18,17 +18,18 @@ export type TeamColor = {
   id: string;
   bg: string;
   fg: string;
-  tint: string;
+  tint: string;       // light pastel — used in sticker theme
+  tintDark: string;   // deep saturated — used in dark theme
   label: string;
 };
 
 export const TEAM_PALETTE: TeamColor[] = [
-  { id: 'violet',  label: 'Violet',  bg: '#8B5CF6', fg: '#FFFFFF', tint: '#EDE9FE' },
-  { id: 'pink',    label: 'Pink',    bg: '#F472B6', fg: '#FFFFFF', tint: '#FCE7F3' },
-  { id: 'amber',   label: 'Amber',   bg: '#FBBF24', fg: '#1E293B', tint: '#FEF3C7' },
-  { id: 'emerald', label: 'Emerald', bg: '#34D399', fg: '#1E293B', tint: '#D1FAE5' },
-  { id: 'sky',     label: 'Sky',     bg: '#38BDF8', fg: '#1E293B', tint: '#E0F2FE' },
-  { id: 'rose',    label: 'Rose',    bg: '#FB7185', fg: '#FFFFFF', tint: '#FFE4E6' },
+  { id: 'violet',  label: 'Violet',  bg: '#8B5CF6', fg: '#FFFFFF', tint: '#EDE9FE', tintDark: '#1F1640' },
+  { id: 'pink',    label: 'Pink',    bg: '#F472B6', fg: '#FFFFFF', tint: '#FCE7F3', tintDark: '#2E1421' },
+  { id: 'amber',   label: 'Amber',   bg: '#FBBF24', fg: '#1E293B', tint: '#FEF3C7', tintDark: '#2A2009' },
+  { id: 'emerald', label: 'Emerald', bg: '#34D399', fg: '#1E293B', tint: '#D1FAE5', tintDark: '#0E2922' },
+  { id: 'sky',     label: 'Sky',     bg: '#38BDF8', fg: '#1E293B', tint: '#E0F2FE', tintDark: '#0E2638' },
+  { id: 'rose',    label: 'Rose',    bg: '#FB7185', fg: '#FFFFFF', tint: '#FFE4E6', tintDark: '#2D1015' },
 ];
 
 export const SCORING = {

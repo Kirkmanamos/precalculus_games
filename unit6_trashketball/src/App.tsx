@@ -66,7 +66,7 @@ export default function App() {
 
         {/* scoreboard — always the focal point */}
         <section aria-label="Scoreboard" className="flex justify-center pt-6">
-          <Scoreboard teams={state.teams} onRename={game.renameTeam} />
+          <Scoreboard teams={state.teams} theme={theme} onRename={game.renameTeam} />
         </section>
 
         {/* secondary visualization */}

@@ -1,13 +1,15 @@
 import type { Team } from '../state/useGameState';
+import type { Theme } from '../lib/useTheme';
 import { rankTeams } from '../lib/ranking';
 import { TeamCard } from './TeamCard';
 
 interface Props {
   teams: Team[];
+  theme: Theme;
   onRename: (id: string, name: string) => void;
 }
 
-export function Scoreboard({ teams, onRename }: Props) {
+export function Scoreboard({ teams, theme, onRename }: Props) {
   const ranked = rankTeams(teams);
 
   return (
@@ -18,6 +20,7 @@ export function Scoreboard({ teams, onRename }: Props) {
           team={team}
           rank={rank}
           isLeader={isLeader}
+          theme={theme}
           onRename={(name) => onRename(team.id, name)}
         />
       ))}
