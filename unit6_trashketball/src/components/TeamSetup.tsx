@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { TEAM_PALETTE } from '../design/tokens';
 import { makeTeam, type Team } from '../state/useGameState';
+import type { Theme } from '../lib/useTheme';
 import { Button } from './ui/Button';
 import { Decorations } from './ui/Decorations';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 interface Props {
+  theme: Theme;
+  onToggleTheme: () => void;
   onStart: (teams: Team[]) => void;
 }
 
@@ -19,7 +23,7 @@ const DEFAULT_NAMES = [
   'Quadratic Crew',
 ];
 
-export function TeamSetup({ onStart }: Props) {
+export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
   const [count, setCount] = useState<number>(2);
   const [teams, setTeams] = useState<Team[]>(() =>
     Array.from({ length: 2 }, (_, i) =>
@@ -68,8 +72,11 @@ export function TeamSetup({ onStart }: Props) {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-canvas">
-      <Decorations />
+      <Decorations theme={theme} />
       <div className="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center px-6 py-10">
+        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
         <div className="mb-2 flex items-center gap-3 rounded-full border-2 border-ink bg-tertiary px-5 py-2 shadow-sticker">
           <span className="font-display text-sm font-bold tracking-widest uppercase">
             Pre-Calculus · Unit 6

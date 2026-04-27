@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────
+   THEME TOKENS
+   Default theme is "sticker" (light, paper-craft, hard shadows).
+   Vaporwave is engaged via `data-theme="vaporwave"` on <html>.
+   ───────────────────────────────────────────────────────────────────── */
+:root {
+  --c-canvas: 255 253 245;
+  --c-ink: 30 41 59;
+  --c-accent: 139 92 246;
+  --c-secondary: 244 114 182;
+  --c-tertiary: 251 191 36;
+  --c-quaternary: 52 211 153;
+  --c-sky: 56 189 248;
+  --c-rose: 251 113 133;
+
+  --shadow-card: 4px 4px 0 0 #1E293B;
+  --shadow-sm: 3px 3px 0 0 #1E293B;
+  --shadow-lg: 6px 6px 0 0 #1E293B;
+  --shadow-xl: 8px 8px 0 0 #1E293B;
+  --shadow-press: 1px 1px 0 0 #1E293B;
+
+  --font-display: 'Outfit';
+  --font-body: 'Plus Jakarta Sans';
+}
+
+[data-theme="vaporwave"] {
+  --c-canvas: 9 0 20;          /* deep purple void */
+  --c-ink: 224 224 224;        /* chrome silver — main text */
+  --c-accent: 255 0 255;       /* hot magenta */
+  --c-secondary: 0 255 255;    /* electric cyan */
+  --c-tertiary: 255 153 0;     /* sunset orange */
+  --c-quaternary: 0 255 255;   /* cyan (used for "correct" affordances) */
+  --c-sky: 0 255 255;
+  --c-rose: 255 0 255;
+
+  --shadow-card: 0 0 14px rgba(255, 0, 255, 0.55), 0 0 4px rgba(255, 0, 255, 0.85);
+  --shadow-sm: 0 0 10px rgba(0, 255, 255, 0.55);
+  --shadow-lg: 0 0 22px rgba(255, 0, 255, 0.7), 0 0 6px rgba(255, 0, 255, 0.95);
+  --shadow-xl: 0 0 36px rgba(0, 255, 255, 0.5), 0 0 10px rgba(0, 255, 255, 0.9);
+  --shadow-press: 0 0 6px rgba(255, 0, 255, 0.5);
+
+  --font-display: 'Orbitron';
+  --font-body: 'Share Tech Mono';
+}
+
 @layer base {
   html, body, #root {
     height: 100%;
@@ -15,14 +60,13 @@
 }
 
 @layer utilities {
-  /* Hard-shadow recipe matches the design system's "no-blur" rule. */
+  /* Hard-shadow recipe matches the sticker design system's "no-blur" rule. */
   .stroke-ink-2 {
     -webkit-text-stroke: 2px #1E293B;
   }
 }
 
-/* KaTeX inherits the parent's font-size; this prevents the engine's
-   default 1.21em scaling from making display math feel too tall in cards. */
+/* KaTeX math sizing — keep parity with parent type scale. */
 .katex-display {
   margin: 0.5em 0;
 }
@@ -36,4 +80,161 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   VAPORWAVE THEME OVERRIDES
+   These rules sharpen geometry, swap shadows, recolor surfaces, and
+   layer scanlines — without touching individual component files.
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Crush all rounded corners — vaporwave is aggressively geometric. */
+[data-theme="vaporwave"] .rounded-full,
+[data-theme="vaporwave"] .rounded-3xl,
+[data-theme="vaporwave"] .rounded-2xl,
+[data-theme="vaporwave"] .rounded-xl,
+[data-theme="vaporwave"] .rounded-lg,
+[data-theme="vaporwave"] .rounded-md {
+  border-radius: 0 !important;
+}
+
+/* Swap white surfaces for dark glass panels with cyan accent border. */
+[data-theme="vaporwave"] .bg-white,
+[data-theme="vaporwave"] .bg-white\/95 {
+  background-color: rgba(26, 16, 60, 0.85) !important;
+  backdrop-filter: blur(8px);
+  color: rgb(var(--c-ink));
+}
+
+/* Borders default to muted dark purple; brighten to neon on focus. */
+[data-theme="vaporwave"] .border-ink {
+  border-color: #2D1B4E !important;
+}
+[data-theme="vaporwave"] .border-ink\/20 {
+  border-color: rgba(45, 27, 78, 0.5) !important;
+}
+
+/* Cards/surfaces get a subtle cyan top accent bar. */
+[data-theme="vaporwave"] .shadow-sticker,
+[data-theme="vaporwave"] .shadow-sticker-sm,
+[data-theme="vaporwave"] .shadow-sticker-lg,
+[data-theme="vaporwave"] .shadow-sticker-xl {
+  border-top-color: #00FFFF !important;
+  border-top-width: 2px !important;
+}
+
+/* Headings glow. h1 keeps its inner accent span; h2 gets cyan. */
+[data-theme="vaporwave"] h1 {
+  text-shadow: 0 0 14px rgba(255, 0, 255, 0.55);
+  letter-spacing: 0.04em;
+}
+[data-theme="vaporwave"] h2 {
+  color: #00FFFF;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
+  letter-spacing: 0.02em;
+}
+
+/* Body text — Share Tech Mono needs a touch more letter-spacing. */
+[data-theme="vaporwave"] body {
+  letter-spacing: 0.02em;
+}
+
+/* Buttons — sharpen, neon-border, glow on hover. The base Button
+   component supplies background + base shadow tokens which auto-swap.
+   Here we add the geometric character. */
+[data-theme="vaporwave"] button {
+  letter-spacing: 0.08em;
+}
+[data-theme="vaporwave"] button:hover {
+  filter: brightness(1.15);
+}
+
+/* Inputs — terminal-style underline. */
+[data-theme="vaporwave"] input {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  color: #00FFFF !important;
+  border-color: #FF00FF !important;
+}
+[data-theme="vaporwave"] input::placeholder {
+  color: rgba(255, 0, 255, 0.5);
+}
+[data-theme="vaporwave"] input:focus {
+  box-shadow: 0 0 14px rgba(0, 255, 255, 0.7);
+  border-color: #00FFFF !important;
+}
+
+/* Soft tint backgrounds (e.g. quaternary/30 used in the answer card)
+   become darker translucent panels in vaporwave so the glow reads. */
+[data-theme="vaporwave"] [class*="bg-quaternary/"],
+[data-theme="vaporwave"] [class*="bg-accent/"],
+[data-theme="vaporwave"] [class*="bg-tertiary/"],
+[data-theme="vaporwave"] [class*="bg-secondary/"] {
+  background-color: rgba(26, 16, 60, 0.7) !important;
+}
+
+/* Modal backdrop — heavier blur + tinted void. */
+[data-theme="vaporwave"] [class*="bg-ink/"] {
+  background-color: rgba(9, 0, 20, 0.85) !important;
+  backdrop-filter: blur(6px);
+}
+
+/* Global CRT scanlines + chromatic aberration overlays. */
+[data-theme="vaporwave"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background:
+    linear-gradient(
+      rgba(18, 16, 20, 0) 50%,
+      rgba(0, 0, 0, 0.22) 50%
+    );
+  background-size: 100% 4px;
+  mix-blend-mode: multiply;
+}
+[data-theme="vaporwave"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 49;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.05),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.05)
+  );
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+
+/* Vaporwave perspective grid floor — sits behind all content. */
+.vw-grid {
+  position: absolute;
+  inset: auto -20% -10% -20%;
+  height: 65vh;
+  background-image:
+    linear-gradient(transparent 95%, #FF00FF 95%),
+    linear-gradient(90deg, transparent 95%, #FF00FF 95%);
+  background-size: 48px 48px;
+  transform: perspective(560px) rotateX(62deg);
+  transform-origin: top center;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 18%, black 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 70%, transparent);
+  opacity: 0.55;
+}
+
+/* Floating sun gradient orb. */
+.vw-sun {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  width: 620px;
+  height: 620px;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  background: linear-gradient(to bottom, #FF9900 0%, #FF00FF 70%, transparent 100%);
+  filter: blur(80px);
+  opacity: 0.35;
 }

@@ -1,8 +1,27 @@
+import type { Theme } from '../../lib/useTheme';
+
+interface Props {
+  theme: Theme;
+}
+
 /**
- * Confetti shapes scattered across the canvas. Pure decoration — pointer-events
- * disabled so they never steal clicks.
+ * Background art layer. Pointer-events disabled so decor never steals clicks.
+ * Sticker theme: blurred blobs, hard-shadow shapes, dot grid.
+ * Vaporwave theme: blurred sun gradient + receding perspective grid + scanlines (via CSS).
  */
-export function Decorations() {
+export function Decorations({ theme }: Props) {
+  if (theme === 'vaporwave') {
+    return (
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden -z-10"
+      >
+        <div className="vw-sun" />
+        <div className="vw-grid" />
+      </div>
+    );
+  }
+
   return (
     <div
       aria-hidden

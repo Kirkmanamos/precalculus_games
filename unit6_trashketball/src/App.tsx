@@ -1,6 +1,8 @@
 import { useGameState, getCurrentShotTeam } from './state/useGameState';
 import { QUESTIONS } from './data/questions';
+import { useTheme } from './lib/useTheme';
 import { Decorations } from './components/ui/Decorations';
+import { ThemeToggle } from './components/ui/ThemeToggle';
 import { Scoreboard } from './components/Scoreboard';
 import { ScoreVisualization } from './components/ScoreVisualization';
 import { TeamSetup } from './components/TeamSetup';
@@ -11,11 +13,14 @@ import { ShotControls } from './components/ShotControls';
 
 export default function App() {
   const game = useGameState();
+  const { theme, toggle } = useTheme();
   const { state } = game;
 
   if (state.phase === 'setup') {
     return (
       <TeamSetup
+        theme={theme}
+        onToggleTheme={toggle}
         onStart={(teams) => {
           game.configureTeams(teams);
           game.startGame();
@@ -36,7 +41,7 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-canvas">
-      <Decorations />
+      <Decorations theme={theme} />
 
       <main className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
         {/* header strip */}
@@ -51,9 +56,12 @@ export default function App() {
               Trashket<span className="text-accent">ball</span>
             </h1>
           </div>
-          <p className="hidden font-body text-sm font-semibold text-ink/60 sm:block">
-            Sequences · Series · Binomial Theorem
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="hidden font-body text-sm font-semibold text-ink/60 sm:block">
+              Sequences · Series · Binomial Theorem
+            </p>
+            <ThemeToggle theme={theme} onToggle={toggle} />
+          </div>
         </header>
 
         {/* scoreboard — always the focal point */}

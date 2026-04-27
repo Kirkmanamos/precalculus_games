@@ -50,9 +50,9 @@ export const QUESTIONS: Question[] = [
     category: 'Sequences & Recursion',
     difficulty: 'hard',
     question:
-      'A sequence is defined by $a_1 = 4$ and $a_{n+1} = 2 a_n + 3$. Find $a_4$.',
-    answer: '$a_4 = 53$',
-    hint: '$a_2 = 11,\\ a_3 = 25,\\ a_4 = 53$.',
+      'A sequence is defined by $a_1 = 3$ and $a_{n+1} = 2 a_n + 5$. Find $a_4$.',
+    answer: '$a_4 = 59$',
+    hint: '$a_2 = 11,\\ a_3 = 27,\\ a_4 = 59$.',
   },
 
   // ── 6.1 · Factorials & Sigma Notation ──────────────────────────────────
@@ -60,9 +60,9 @@ export const QUESTIONS: Question[] = [
     id: 6,
     category: 'Factorials & Sigma Notation',
     difficulty: 'easy',
-    question: 'Simplify $\\dfrac{9!}{7!}$.',
-    answer: '$72$',
-    hint: 'Expand only what cancels: $\\dfrac{9 \\cdot 8 \\cdot 7!}{7!} = 72$.',
+    question: 'Simplify $\\dfrac{8!}{6!}$.',
+    answer: '$56$',
+    hint: 'Expand only what cancels: $\\dfrac{8 \\cdot 7 \\cdot 6!}{6!} = 56$.',
   },
   {
     id: 7,
@@ -84,17 +84,17 @@ export const QUESTIONS: Question[] = [
     id: 9,
     category: 'Factorials & Sigma Notation',
     difficulty: 'medium',
-    question: 'Simplify $\\dfrac{(n + 2)!}{(n - 1)!}$.',
-    answer: '$n(n + 1)(n + 2)$',
-    hint: '$(n+2)! = (n+2)(n+1)(n)(n-1)!$; the $(n-1)!$ cancels.',
+    question: 'Simplify $\\dfrac{(n + 4)!}{(n + 1)!}$.',
+    answer: '$(n + 2)(n + 3)(n + 4)$',
+    hint: '$(n+4)! = (n+4)(n+3)(n+2)(n+1)!$; the $(n+1)!$ cancels.',
   },
   {
     id: 10,
     category: 'Factorials & Sigma Notation',
     difficulty: 'hard',
-    question: 'Evaluate $\\displaystyle \\sum_{n=1}^{4}\\dfrac{(n+2)!}{(n+1)!}$.',
-    answer: '$18$',
-    hint: '$\\dfrac{(n+2)!}{(n+1)!} = n + 2$, so the sum is $3 + 4 + 5 + 6 = 18$.',
+    question: 'Evaluate $\\displaystyle \\sum_{n=1}^{5}\\dfrac{(n+3)!}{(n+2)!}$.',
+    answer: '$30$',
+    hint: '$\\dfrac{(n+3)!}{(n+2)!} = n + 3$, so the sum is $4 + 5 + 6 + 7 + 8 = 30$.',
   },
 
   // ── 6.2 · Arithmetic Sequences & Series ────────────────────────────────
@@ -111,9 +111,9 @@ export const QUESTIONS: Question[] = [
     category: 'Arithmetic Sequences & Series',
     difficulty: 'easy',
     question:
-      'An arithmetic sequence has $a_1 = 18$ and $d = -4$. Find $a_7$.',
-    answer: '$a_7 = -6$',
-    hint: '$a_7 = 18 + 6(-4) = -6$.',
+      'An arithmetic sequence has $a_1 = 22$ and $d = -5$. Find $a_8$.',
+    answer: '$a_8 = -13$',
+    hint: '$a_8 = 22 + 7(-5) = -13$.',
   },
   {
     id: 13,
@@ -138,10 +138,10 @@ export const QUESTIONS: Question[] = [
     category: 'Arithmetic Sequences & Series',
     difficulty: 'hard',
     question:
-      'A theater has $18$ seats in row $1$, $22$ in row $2$, $26$ in row $3$, and so on. With $15$ rows, how many seats total?',
-    answer: '$690$ seats',
+      'A theater has $14$ seats in row $1$, $19$ in row $2$, $24$ in row $3$, and so on. With $12$ rows, how many seats total?',
+    answer: '$498$ seats',
     hint:
-      'Arithmetic: $a_1 = 18,\\ d = 4$. $a_{15} = 74$; $S_{15} = \\dfrac{15}{2}(18 + 74) = 690$.',
+      'Arithmetic: $a_1 = 14,\\ d = 5$. $a_{12} = 69$; $S_{12} = \\dfrac{12}{2}(14 + 69) = 498$.',
   },
 
   // ── 6.3 · Geometric Sequences & Series ─────────────────────────────────
@@ -158,9 +158,9 @@ export const QUESTIONS: Question[] = [
     category: 'Geometric Sequences & Series',
     difficulty: 'easy',
     question:
-      'A geometric sequence has $a_1 = 2$ and $r = 3$. Which term equals $486$?',
-    answer: 'The $6\\text{th}$ term',
-    hint: '$2 \\cdot 3^{n-1} = 486 \\Rightarrow 3^{n-1} = 243 = 3^5$, so $n = 6$.',
+      'A geometric sequence has $a_1 = 3$ and $r = 2$. Which term equals $384$?',
+    answer: 'The $8\\text{th}$ term',
+    hint: '$3 \\cdot 2^{n-1} = 384 \\Rightarrow 2^{n-1} = 128 = 2^7$, so $n = 8$.',
   },
   {
     id: 18,
@@ -229,10 +229,10 @@ export const QUESTIONS: Question[] = [
     category: 'Pascal, Combinations & Binomial Theorem',
     difficulty: 'hard',
     question:
-      'Find the coefficient of $x^7 y^{12}$ in the expansion of $(2 x - 3 y^3)^{11}$.',
-    answer: '$3{,}421{,}440$',
+      'Find the coefficient of $x^4 y^{12}$ in the expansion of $(2 x - 3 y^3)^{8}$.',
+    answer: '$90{,}720$',
     hint:
-      '$k = 4$: $\\dbinom{11}{4} = 330$, $2^7 = 128$, $(-3)^4 = 81$; product is $3{,}421{,}440$.',
+      '$k = 4$: $\\dbinom{8}{4} = 70$, $2^4 = 16$, $(-3)^4 = 81$; product is $90{,}720$.',
   },
 ];
 
