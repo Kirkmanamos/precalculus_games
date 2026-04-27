@@ -7,17 +7,31 @@ interface Props {
 /**
  * Background art layer. Pointer-events disabled so decor never steals clicks.
  * Sticker theme: blurred blobs, hard-shadow shapes, dot grid.
- * Vaporwave theme: blurred sun gradient + receding perspective grid + scanlines (via CSS).
+ * Dark theme: vignetted blockchain grid + soft Bitcoin orange/gold radial glows.
  */
 export function Decorations({ theme }: Props) {
-  if (theme === 'vaporwave') {
+  if (theme === 'dark') {
     return (
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden -z-10"
       >
-        <div className="vw-sun" />
-        <div className="vw-grid" />
+        <div className="dark-grid" />
+        {/* Bitcoin orange radial blur — top-left */}
+        <div
+          className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full blur-[120px] opacity-25"
+          style={{ background: '#F7931A' }}
+        />
+        {/* Burnt orange — mid-right */}
+        <div
+          className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full blur-[120px] opacity-20"
+          style={{ background: '#EA580C' }}
+        />
+        {/* Digital gold — bottom-left */}
+        <div
+          className="absolute -bottom-40 left-1/4 h-[440px] w-[440px] rounded-full blur-[140px] opacity-15"
+          style={{ background: '#FFD600' }}
+        />
       </div>
     );
   }

@@ -6,9 +6,9 @@ interface Props {
 }
 
 export function ThemeToggle({ theme, onToggle }: Props) {
-  const isVapor = theme === 'vaporwave';
-  const label = isVapor ? 'Sticker' : 'Vaporwave';
-  const icon = isVapor ? '☀️' : '🌃';
+  const isDark = theme === 'dark';
+  const label = isDark ? 'Sticker' : 'Dark';
+  const icon = isDark ? '☀️' : '🌙';
   return (
     <button
       type="button"

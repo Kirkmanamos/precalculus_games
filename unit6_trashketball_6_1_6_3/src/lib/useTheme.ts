@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
 
-export type Theme = 'sticker' | 'vaporwave';
+export type Theme = 'sticker' | 'dark';
 
 const STORAGE_KEY = 'unit6_trashketball_theme';
 
 function readInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'sticker';
   const saved = window.localStorage.getItem(STORAGE_KEY);
-  return saved === 'vaporwave' ? 'vaporwave' : 'sticker';
+  return saved === 'dark' ? 'dark' : 'sticker';
 }
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
-  if (theme === 'vaporwave') {
-    root.setAttribute('data-theme', 'vaporwave');
+  if (theme === 'dark') {
+    root.setAttribute('data-theme', 'dark');
   } else {
     root.removeAttribute('data-theme');
   }
@@ -31,7 +31,7 @@ export function useTheme() {
     }
   }, [theme]);
 
-  const toggle = () => setTheme((t) => (t === 'sticker' ? 'vaporwave' : 'sticker'));
+  const toggle = () => setTheme((t) => (t === 'sticker' ? 'dark' : 'sticker'));
 
   return { theme, setTheme, toggle };
 }
