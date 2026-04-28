@@ -10,11 +10,23 @@ interface Props {
   onClose: () => void;
 }
 
+const NARRATIVE_WORD_THRESHOLD = 22;
+const NARRATIVE_CHAR_THRESHOLD = 150;
+const PROSE_HEAVY_CATEGORY = 'AP-Style Applications';
+
 const DIFFICULTY_LABEL: Record<Question['difficulty'], { label: string; bg: string }> = {
   easy:   { label: 'Easy',   bg: 'bg-quaternary' },
   medium: { label: 'Medium', bg: 'bg-tertiary' },
   hard:   { label: 'Hard',   bg: 'bg-secondary' },
 };
+
+function getWordCount(text: string) {
+  return text
+    .replace(/(\$\$[\s\S]+?\$\$|\$(?:\\.|[^\\$\n])+\$)/g, ' math ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+}
 
 export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props) {
   // Esc closes; Enter reveals/closes.
@@ -31,6 +43,22 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
   }, [showAnswer, onReveal, onClose]);
 
   const dl = DIFFICULTY_LABEL[question.difficulty];
+  const questionWordCount = getWordCount(question.question);
+  const answerWordCount = getWordCount(question.answer);
+  const hintWordCount = question.hint ? getWordCount(question.hint) : 0;
+
+  const useNarrativeQuestionLayout =
+    question.category === PROSE_HEAVY_CATEGORY ||
+    questionWordCount >= NARRATIVE_WORD_THRESHOLD ||
+    question.question.length >= NARRATIVE_CHAR_THRESHOLD;
+
+  const useNarrativeAnswerLayout =
+    useNarrativeQuestionLayout ||
+    answerWordCount >= 15 ||
+    question.answer.length >= 95;
+
+  const useNarrativeHintLayout =
+    hintWordCount >= 18 || (question.hint?.length ?? 0) >= 110;
 
   return (
     <div
@@ -67,7 +95,14 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
             <div className="mt-6 font-display text-xs font-bold uppercase tracking-[0.3em] text-ink/50">
               Question
             </div>
-            <div className="mt-3 font-body text-3xl font-semibold leading-snug sm:text-5xl sm:leading-tight">
+            <div
+              className={[
+                'mt-3 font-body font-semibold text-ink',
+                useNarrativeQuestionLayout
+                  ? 'max-w-3xl text-2xl leading-relaxed'
+                  : 'text-3xl leading-snug sm:text-5xl sm:leading-tight',
+              ].join(' ')}
+            >
               <MathText>{question.question}</MathText>
             </div>
 
@@ -77,11 +112,25 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
                   Answer
                 </div>
                 <div className="mt-3 rounded-3xl border-2 border-ink bg-quaternary/30 px-6 py-6 shadow-sticker">
-                  <div className="font-body text-3xl font-bold leading-snug sm:text-5xl sm:leading-tight">
+                  <div
+                    className={[
+                      'font-body font-bold text-ink',
+                      useNarrativeAnswerLayout
+                        ? 'max-w-3xl text-2xl leading-relaxed'
+                        : 'text-3xl leading-snug sm:text-5xl sm:leading-tight',
+                    ].join(' ')}
+                  >
                     <MathText>{question.answer}</MathText>
                   </div>
                   {question.hint && (
-                    <div className="mt-4 border-t-2 border-ink/20 pt-4 text-lg leading-relaxed text-ink/75 sm:text-xl">
+                    <div
+                      className={[
+                        'mt-4 border-t-2 border-ink/20 pt-4 text-ink/75',
+                        useNarrativeHintLayout
+                          ? 'text-base leading-relaxed'
+                          : 'text-lg leading-relaxed sm:text-xl',
+                      ].join(' ')}
+                    >
                       <span className="font-display font-bold uppercase text-xs tracking-widest text-ink/50 mr-2">
                         Why:
                       </span>
