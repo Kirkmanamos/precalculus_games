@@ -65,28 +65,28 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
       role="dialog"
       aria-modal="true"
       aria-label="Question"
-      className="fixed inset-0 z-40 overflow-y-auto bg-ink/70 p-4 sm:p-8"
+      className="fixed inset-0 z-40 overflow-y-auto bg-ink/70 p-3 sm:p-8"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="flex min-h-full items-start justify-center py-2 sm:items-center sm:py-4">
-        <div className="relative w-full max-w-5xl max-h-[calc(100vh-1rem)] overflow-y-auto rounded-3xl border-2 border-ink bg-canvas shadow-sticker-xl animate-pop-in sm:max-h-[calc(100vh-2rem)]">
+        <div className="relative max-h-[calc(100vh-0.75rem)] w-full max-w-5xl overflow-y-auto rounded-3xl border-2 border-ink bg-canvas shadow-sticker-xl animate-pop-in sm:max-h-[calc(100vh-2rem)]">
           <button
             onClick={onClose}
             aria-label="Close question"
-            className="absolute right-4 top-4 h-10 w-10 rounded-full border-2 border-ink bg-white font-display text-xl font-black shadow-sticker-sm transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-sticker-lg active:translate-x-1 active:translate-y-1 active:shadow-sticker-press sm:right-6 sm:top-6"
+            className="absolute right-3 top-3 h-9 w-9 rounded-full border-2 border-ink bg-white font-display text-lg font-black shadow-sticker-sm transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-sticker-lg active:translate-x-1 active:translate-y-1 active:shadow-sticker-press sm:right-6 sm:top-6 sm:h-10 sm:w-10 sm:text-xl"
           >
             ✕
           </button>
 
-          <div className="px-6 pb-8 pt-6 sm:px-14 sm:pb-10 sm:pt-8">
-            <div className="flex flex-wrap gap-2 pr-14 sm:pr-20">
-              <span className="rounded-full border-2 border-ink bg-accent px-4 py-1 font-display text-sm font-black uppercase tracking-widest text-white shadow-sticker-sm">
+          <div className="px-4 pb-6 pt-5 sm:px-14 sm:pb-10 sm:pt-8">
+            <div className="flex flex-wrap gap-2 pr-12 sm:pr-20">
+              <span className="rounded-full border-2 border-ink bg-accent px-3 py-1 font-display text-[11px] font-black uppercase tracking-widest text-white shadow-sticker-sm sm:px-4 sm:text-sm">
                 {question.category}
               </span>
               <span
-                className={`rounded-full border-2 border-ink ${dl.bg} px-4 py-1 font-display text-sm font-black uppercase tracking-widest text-ink shadow-sticker-sm`}
+                className={`rounded-full border-2 border-ink ${dl.bg} px-3 py-1 font-display text-[11px] font-black uppercase tracking-widest text-ink shadow-sticker-sm sm:px-4 sm:text-sm`}
               >
                 {dl.label}
               </span>
@@ -99,8 +99,8 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
               className={[
                 'mt-3 font-body font-semibold text-ink',
                 useNarrativeQuestionLayout
-                  ? 'max-w-3xl text-2xl leading-relaxed'
-                  : 'text-3xl leading-snug sm:text-5xl sm:leading-tight',
+                  ? 'max-w-3xl text-xl leading-relaxed sm:text-2xl'
+                  : 'text-2xl leading-[1.15] sm:text-5xl sm:leading-tight',
               ].join(' ')}
             >
               <MathText>{question.question}</MathText>
@@ -111,13 +111,13 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
                 <div className="font-display text-xs font-bold uppercase tracking-[0.3em] text-quaternary">
                   Answer
                 </div>
-                <div className="mt-3 rounded-3xl border-2 border-ink bg-quaternary/30 px-6 py-6 shadow-sticker">
+                <div className="mt-3 rounded-3xl border-2 border-ink bg-quaternary/30 px-4 py-4 shadow-sticker sm:px-6 sm:py-6">
                   <div
                     className={[
                       'font-body font-bold text-ink',
                       useNarrativeAnswerLayout
-                        ? 'max-w-3xl text-2xl leading-relaxed'
-                        : 'text-3xl leading-snug sm:text-5xl sm:leading-tight',
+                        ? 'max-w-3xl text-xl leading-relaxed sm:text-2xl'
+                        : 'text-2xl leading-[1.15] sm:text-5xl sm:leading-tight',
                     ].join(' ')}
                   >
                     <MathText>{question.answer}</MathText>
@@ -127,8 +127,8 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
                       className={[
                         'mt-4 border-t-2 border-ink/20 pt-4 text-ink/75',
                         useNarrativeHintLayout
-                          ? 'text-base leading-relaxed'
-                          : 'text-lg leading-relaxed sm:text-xl',
+                          ? 'text-sm leading-relaxed sm:text-base'
+                          : 'text-base leading-relaxed sm:text-xl',
                       ].join(' ')}
                     >
                       <span className="font-display font-bold uppercase text-xs tracking-widest text-ink/50 mr-2">
@@ -141,16 +141,16 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
               </div>
             )}
 
-            <div className="mt-10 flex flex-wrap items-center justify-end gap-4">
-              <Button variant="ghost" size="lg" onClick={onClose}>
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:mt-10 sm:flex sm:flex-wrap sm:items-center sm:justify-end sm:gap-4">
+              <Button variant="ghost" size="lg" onClick={onClose} className="w-full sm:w-auto">
                 Close
               </Button>
               {!showAnswer ? (
-                <Button variant="primary" size="xl" onClick={onReveal}>
+                <Button variant="primary" size="xl" onClick={onReveal} className="w-full sm:w-auto">
                   Reveal Answer ✨
                 </Button>
               ) : (
-                <Button variant="quaternary" size="xl" onClick={onClose}>
+                <Button variant="quaternary" size="xl" onClick={onClose} className="w-full sm:w-auto">
                   Done — Score Round →
                 </Button>
               )}

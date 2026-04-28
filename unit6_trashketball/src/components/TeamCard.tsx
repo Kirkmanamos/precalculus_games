@@ -39,14 +39,14 @@ export function TeamCard({ team, rank, isLeader, theme, onRename }: Props) {
   return (
     <div
       className={[
-        'relative shrink-0 transition-all duration-300 ease-out',
+        'relative w-full max-w-[18rem] shrink-0 transition-all duration-300 ease-out sm:max-w-none',
         isLeader ? 'sm:scale-110' : 'sm:scale-100',
       ].join(' ')}
     >
       {isLeader && (
         <div
           aria-hidden
-          className="absolute -top-7 left-1/2 -translate-x-1/2 rotate-[-6deg] rounded-full border-2 border-ink bg-tertiary px-3 py-0.5 font-display text-xs font-black tracking-widest shadow-sticker-sm"
+          className="absolute -top-6 left-1/2 -translate-x-1/2 rotate-[-6deg] rounded-full border-2 border-ink bg-tertiary px-3 py-0.5 font-display text-[10px] font-black tracking-widest shadow-sticker-sm sm:-top-7 sm:text-xs"
         >
           👑 LEAD
         </div>
@@ -56,7 +56,7 @@ export function TeamCard({ team, rank, isLeader, theme, onRename }: Props) {
         className={[
           'rounded-3xl border-2 border-ink shadow-sticker-lg',
           'flex flex-col items-stretch overflow-hidden',
-          'min-w-[220px] sm:min-w-[260px]',
+          'w-full min-w-0 sm:min-w-[260px]',
           'animate-pop-in',
         ].join(' ')}
         style={{ background: tint }}
@@ -93,13 +93,13 @@ export function TeamCard({ team, rank, isLeader, theme, onRename }: Props) {
                 }
               }}
               maxLength={28}
-              className="w-full rounded-xl border-2 border-ink bg-white px-3 py-1.5 font-display text-2xl font-black focus:outline-none focus:ring-4 focus:ring-accent/30"
+              className="w-full rounded-xl border-2 border-ink bg-white px-3 py-1.5 font-display text-xl font-black focus:outline-none focus:ring-4 focus:ring-accent/30 sm:text-2xl"
             />
           ) : (
             <button
               onClick={() => setEditing(true)}
               title="Click to rename"
-              className="w-full text-left font-display text-2xl font-black leading-tight hover:text-accent"
+              className="w-full text-left font-display text-xl font-black leading-tight hover:text-accent sm:text-2xl"
             >
               {team.name}
             </button>
@@ -110,7 +110,7 @@ export function TeamCard({ team, rank, isLeader, theme, onRename }: Props) {
         <div className="flex items-end justify-between px-5 pb-4">
           <div
             className={[
-              'font-display text-6xl font-black leading-none tabular-nums',
+              'font-display text-5xl font-black leading-none tabular-nums sm:text-6xl',
               pop ? 'animate-score-pop' : '',
             ].join(' ')}
           >

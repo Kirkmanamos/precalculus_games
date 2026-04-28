@@ -26,35 +26,35 @@ export function ControlsPanel({
   onNewGame,
 }: Props) {
   return (
-    <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-sticker">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3">
+    <div className="rounded-3xl border-2 border-ink bg-white p-4 shadow-sticker sm:p-5">
+      <div className="flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-start">
           <span className="rounded-full border-2 border-ink bg-accent px-4 py-1 font-display text-sm font-black uppercase tracking-widest text-white shadow-sticker-sm">
             Round {round}
           </span>
-          <span className="font-display text-xs font-bold uppercase tracking-widest text-ink/50">
+          <span className="font-display text-[11px] font-bold uppercase tracking-widest text-ink/50 sm:text-xs">
             {remainingQuestions} of {totalQuestions} questions left
           </span>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
           {phase === 'idle' && (
             <>
-              <Button variant="primary" size="xl" onClick={onDraw}>
+              <Button variant="primary" size="xl" onClick={onDraw} className="col-span-2 w-full sm:col-span-1 sm:w-auto">
                 🎯 Draw Question
               </Button>
-              <Button variant="ghost" size="md" onClick={onSkip} disabled>
+              <Button variant="ghost" size="md" onClick={onSkip} disabled className="w-full sm:w-auto">
                 Skip
               </Button>
             </>
           )}
-          <Button variant="ghost" size="md" onClick={onUndo} disabled={!canUndo}>
+          <Button variant="ghost" size="md" onClick={onUndo} disabled={!canUndo} className="w-full sm:w-auto">
             ↶ Undo
           </Button>
-          <Button variant="ghost" size="md" onClick={onReset}>
+          <Button variant="ghost" size="md" onClick={onReset} className="w-full sm:w-auto">
             ↺ Reset Scores
           </Button>
-          <Button variant="ghost" size="md" onClick={onNewGame}>
+          <Button variant="ghost" size="md" onClick={onNewGame} className="w-full sm:w-auto">
             New Game
           </Button>
         </div>

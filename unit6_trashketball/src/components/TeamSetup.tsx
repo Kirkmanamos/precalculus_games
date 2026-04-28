@@ -73,31 +73,31 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-canvas">
       <Decorations theme={theme} />
-      <div className="relative mx-auto flex min-h-screen max-w-3xl flex-col items-center px-6 py-10">
-        <div className="absolute right-4 top-4 sm:right-6 sm:top-6">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-3xl flex-col items-center px-4 py-6 sm:px-6 sm:py-10">
+        <div className="absolute right-3 top-3 sm:right-6 sm:top-6">
           <ThemeToggle theme={theme} onToggle={onToggleTheme} />
         </div>
-        <div className="mb-2 flex items-center gap-3 rounded-full border-2 border-ink bg-tertiary px-5 py-2 shadow-sticker">
-          <span className="font-display text-sm font-bold tracking-widest uppercase">
+        <div className="mb-2 flex items-center gap-3 rounded-full border-2 border-ink bg-tertiary px-4 py-1.5 shadow-sticker sm:px-5 sm:py-2">
+          <span className="font-display text-xs font-bold uppercase tracking-widest sm:text-sm">
             Pre-Calculus · Unit 6
           </span>
         </div>
-        <h1 className="mt-4 text-center font-display text-6xl font-black leading-none sm:text-7xl">
+        <h1 className="mt-4 text-center font-display text-5xl font-black leading-none sm:text-7xl">
           Trashket<span className="text-accent">ball</span>
         </h1>
-        <p className="mt-3 text-center font-body text-lg text-ink/70">
+        <p className="mt-3 text-center font-body text-base text-ink/70 sm:text-lg">
           Sequences · Series · Binomial Theorem
         </p>
 
-        <section className="mt-10 w-full rounded-3xl border-2 border-ink bg-white p-8 shadow-sticker-lg">
-          <h2 className="font-display text-2xl font-bold">How many teams?</h2>
+        <section className="mt-8 w-full rounded-3xl border-2 border-ink bg-white p-5 shadow-sticker-lg sm:mt-10 sm:p-8">
+          <h2 className="font-display text-xl font-bold sm:text-2xl">How many teams?</h2>
           <div className="mt-4 flex flex-wrap gap-3">
             {TEAM_COUNT_OPTIONS.map((n) => (
               <button
                 key={n}
                 onClick={() => updateCount(n)}
                 className={[
-                  'h-14 w-14 rounded-2xl border-2 border-ink font-display text-2xl font-black shadow-sticker',
+                  'h-12 w-12 rounded-2xl border-2 border-ink font-display text-xl font-black shadow-sticker sm:h-14 sm:w-14 sm:text-2xl',
                   'transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-sticker-lg',
                   'active:translate-x-1 active:translate-y-1 active:shadow-sticker-press',
                   count === n ? 'bg-accent text-white' : 'bg-white text-ink',
@@ -108,7 +108,7 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
             ))}
           </div>
 
-          <h2 className="mt-8 font-display text-2xl font-bold">Team names &amp; colors</h2>
+          <h2 className="mt-8 font-display text-xl font-bold sm:text-2xl">Team names &amp; colors</h2>
           <p className="mt-1 text-sm text-ink/60">
             Tap the swatch to cycle colors. Names show on every card.
           </p>
@@ -118,7 +118,7 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
               return (
                 <div
                   key={team.id}
-                  className="flex items-center gap-3 rounded-2xl border-2 border-ink bg-canvas p-3 shadow-sticker-sm"
+                  className="flex items-center gap-2 rounded-2xl border-2 border-ink bg-canvas p-2.5 shadow-sticker-sm sm:gap-3 sm:p-3"
                 >
                   <button
                     onClick={() => cycleColor(team.id)}
@@ -126,14 +126,14 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
                     className="h-12 w-12 shrink-0 rounded-full border-2 border-ink shadow-sticker-sm transition-transform hover:scale-105"
                     style={{ background: color.bg }}
                   />
-                  <span className="font-display text-xl font-black text-ink/40 w-8 text-center">
+                  <span className="w-7 text-center font-display text-lg font-black text-ink/40 sm:w-8 sm:text-xl">
                     {i + 1}
                   </span>
                   <input
                     value={team.name}
                     onChange={(e) => renameTeam(team.id, e.target.value)}
                     maxLength={28}
-                    className="flex-1 rounded-xl border-2 border-ink bg-white px-4 py-2 font-body text-lg font-semibold focus:outline-none focus:ring-4 focus:ring-accent/30"
+                    className="flex-1 rounded-xl border-2 border-ink bg-white px-3 py-2 font-body text-base font-semibold focus:outline-none focus:ring-4 focus:ring-accent/30 sm:px-4 sm:text-lg"
                     placeholder={`Team ${i + 1}`}
                   />
                 </div>
@@ -141,8 +141,8 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
             })}
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <Button variant="primary" size="xl" onClick={start}>
+          <div className="mt-8 flex justify-stretch sm:justify-end">
+            <Button variant="primary" size="xl" onClick={start} className="w-full sm:w-auto">
               Start Game →
             </Button>
           </div>
