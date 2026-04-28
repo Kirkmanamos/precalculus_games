@@ -14,6 +14,7 @@ import { QuestionModal } from './components/QuestionModal';
 import { ControlsPanel } from './components/ControlsPanel';
 import { AwardPanel } from './components/AwardPanel';
 import { ShotControls } from './components/ShotControls';
+import { PracticeOverview } from './components/PracticeOverview';
 
 export default function App() {
   const game = useGameState();
@@ -25,15 +26,15 @@ export default function App() {
       <TeamSetup
         theme={theme}
         onToggleTheme={toggle}
-        onStart={(teams) => {
-          game.configureTeams(teams);
-          game.startGame();
+        onStart={({ mode, teams }) => {
+          game.startGame(mode, teams);
         }}
       />
     );
   }
 
   const remaining = QUESTIONS.length - state.usedQuestionIds.length;
+  const isPractice = state.mode === 'practice';
   const shotTeam = getCurrentShotTeam(state);
   const remainingShotTeams = getRemainingShotTeams(state);
   const shotNumber = state.teams.length - remainingShotTeams.length + 1;
@@ -70,18 +71,29 @@ export default function App() {
           </div>
         </header>
 
-        {/* scoreboard — always the focal point */}
-        <section aria-label="Scoreboard" className="flex justify-center pt-4 sm:pt-6">
-          <Scoreboard teams={state.teams} theme={theme} onRename={game.renameTeam} />
-        </section>
+        {isPractice ? (
+          <section aria-label="Practice overview" className="pt-4 sm:pt-6">
+            <PracticeOverview
+              remainingQuestions={remaining}
+              totalQuestions={QUESTIONS.length}
+            />
+          </section>
+        ) : (
+          <>
+            {/* scoreboard — always the focal point */}
+            <section aria-label="Scoreboard" className="flex justify-center pt-4 sm:pt-6">
+              <Scoreboard teams={state.teams} theme={theme} onRename={game.renameTeam} />
+            </section>
 
-        {/* secondary visualization */}
-        <section aria-label="Score map">
-          <ScoreVisualization teams={state.teams} />
-        </section>
+            {/* secondary visualization */}
+            <section aria-label="Score map">
+              <ScoreVisualization teams={state.teams} />
+            </section>
+          </>
+        )}
 
         {/* phase-specific panels */}
-        {state.phase === 'awarding' && (
+        {!isPractice && state.phase === 'awarding' && (
           <AwardPanel
             teams={state.teams}
             onApply={game.awardCorrect}
@@ -89,7 +101,7 @@ export default function App() {
           />
         )}
 
-        {state.phase === 'shooting' && (
+        {!isPractice && state.phase === 'shooting' && (
           <ShotControls
             selectedTeam={shotTeam}
             remainingTeams={remainingShotTeams}
@@ -104,6 +116,7 @@ export default function App() {
 
         {/* main controls */}
         <ControlsPanel
+          mode={state.mode}
           phase={controlsPhase}
           round={state.round}
           remainingQuestions={remaining}
@@ -119,9 +132,11 @@ export default function App() {
 
       {showModal && state.currentQuestion && (
         <QuestionModal
+          mode={state.mode}
           question={state.currentQuestion}
           showAnswer={state.phase === 'answer'}
           onReveal={game.revealAnswer}
+          onAdvancePractice={game.advancePracticeQuestion}
           onClose={game.closeQuestion}
         />
       )}
