@@ -9,7 +9,7 @@ interface Props {
   className?: string;
 }
 
-const SPLIT_RE = /(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g;
+const SPLIT_RE = /(\$\$[\s\S]+?\$\$|\$(?:\\.|[^\\$\n])+\$)/g;
 
 /**
  * Render a string mixing prose with KaTeX-formatted math segments.

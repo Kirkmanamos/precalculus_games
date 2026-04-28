@@ -13,7 +13,7 @@ export function Scoreboard({ teams, theme, onRename }: Props) {
   const ranked = rankTeams(teams);
 
   return (
-    <div className="flex flex-wrap items-end justify-center gap-6 sm:gap-8">
+    <div className="flex flex-wrap items-end justify-center gap-4 sm:gap-8">
       {ranked.map(({ team, rank, isLeader }) => (
         <TeamCard
           key={team.id}

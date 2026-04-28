@@ -17,7 +17,7 @@ export type Phase =
   | 'question'   // modal open, question shown
   | 'answer'     // modal open, answer revealed
   | 'awarding'   // marking which teams answered correctly
-  | 'shooting';  // each team takes a shot in turn
+  | 'shooting';  // teacher chooses the next team to shoot
 
 interface CoreState {
   teams: Team[];
@@ -25,8 +25,10 @@ interface CoreState {
   currentQuestion: Question | null;
   usedQuestionIds: number[];
   round: number;
-  /** Index into teams for the current shot taker. */
-  shotIndex: number;
+  /** Teams that still need to shoot this round. */
+  remainingShotTeamIds: string[];
+  /** Selected shooter for the current shot, or null until the teacher picks one. */
+  currentShotTeamId: string | null;
 }
 
 interface State extends CoreState {
@@ -42,6 +44,7 @@ type Action =
   | { type: 'CLOSE_QUESTION' }
   | { type: 'SKIP_QUESTION' }
   | { type: 'AWARD_CORRECT'; teamIds: string[] }
+  | { type: 'SELECT_SHOOTER'; teamId: string }
   | { type: 'AWARD_SHOT'; teamId: string; points: number }
   | { type: 'RENAME_TEAM'; teamId: string; name: string }
   | { type: 'SET_TEAM_COLOR'; teamId: string; colorId: TeamColor['id'] }
@@ -62,7 +65,8 @@ const initialState: State = {
   currentQuestion: null,
   usedQuestionIds: [],
   round: 1,
-  shotIndex: 0,
+  remainingShotTeamIds: [],
+  currentShotTeamId: null,
   history: [],
 };
 
@@ -73,7 +77,8 @@ function snapshot(state: State): CoreState {
     currentQuestion: state.currentQuestion,
     usedQuestionIds: [...state.usedQuestionIds],
     round: state.round,
-    shotIndex: state.shotIndex,
+    remainingShotTeamIds: [...state.remainingShotTeamIds],
+    currentShotTeamId: state.currentShotTeamId,
   };
 }
 
@@ -102,6 +107,8 @@ function reducer(state: State, action: Action): State {
         round: 1,
         usedQuestionIds: [],
         currentQuestion: null,
+        remainingShotTeamIds: [],
+        currentShotTeamId: null,
         history: [],
       };
 
@@ -143,26 +150,38 @@ function reducer(state: State, action: Action): State {
           correct.has(t.id) ? { ...t, score: t.score + 2 } : t,
         ),
         phase: 'shooting',
-        shotIndex: 0,
+        remainingShotTeamIds: state.teams.map((t) => t.id),
+        currentShotTeamId: null,
       };
       return withHistory(state, next);
     }
 
+    case 'SELECT_SHOOTER':
+      if (state.phase !== 'shooting') return state;
+      if (!state.remainingShotTeamIds.includes(action.teamId)) return state;
+      return {
+        ...state,
+        currentShotTeamId: action.teamId,
+      };
+
     case 'AWARD_SHOT': {
+      if (state.phase !== 'shooting') return state;
+      if (state.currentShotTeamId !== action.teamId) return state;
+
       const next: CoreState = {
         ...snapshot(state),
         teams: state.teams.map((t) =>
           t.id === action.teamId ? { ...t, score: t.score + action.points } : t,
         ),
+        remainingShotTeamIds: state.remainingShotTeamIds.filter(
+          (teamId) => teamId !== action.teamId,
+        ),
+        currentShotTeamId: null,
       };
-      const nextIndex = state.shotIndex + 1;
-      if (nextIndex >= state.teams.length) {
+      if (next.remainingShotTeamIds.length === 0) {
         next.phase = 'idle';
         next.round = state.round + 1;
-        next.shotIndex = 0;
         next.currentQuestion = null;
-      } else {
-        next.shotIndex = nextIndex;
       }
       return withHistory(state, next);
     }
@@ -197,7 +216,8 @@ function reducer(state: State, action: Action): State {
         currentQuestion: null,
         usedQuestionIds: [],
         round: 1,
-        shotIndex: 0,
+        remainingShotTeamIds: [],
+        currentShotTeamId: null,
         history: [],
       };
 
@@ -218,6 +238,7 @@ export interface GameApi {
   closeQuestion: () => void;
   skipQuestion: () => void;
   awardCorrect: (teamIds: string[]) => void;
+  selectShotTeam: (teamId: string) => void;
   awardShot: (teamId: string, points: number) => void;
   renameTeam: (teamId: string, name: string) => void;
   setTeamColor: (teamId: string, colorId: TeamColor['id']) => void;
@@ -239,6 +260,7 @@ export function useGameState(): GameApi {
       closeQuestion: () => dispatch({ type: 'CLOSE_QUESTION' }),
       skipQuestion: () => dispatch({ type: 'SKIP_QUESTION' }),
       awardCorrect: (teamIds) => dispatch({ type: 'AWARD_CORRECT', teamIds }),
+      selectShotTeam: (teamId) => dispatch({ type: 'SELECT_SHOOTER', teamId }),
       awardShot: (teamId, points) => dispatch({ type: 'AWARD_SHOT', teamId, points }),
       renameTeam: (teamId, name) => dispatch({ type: 'RENAME_TEAM', teamId, name }),
       setTeamColor: (teamId, colorId) =>
@@ -273,5 +295,12 @@ export function getTeamColor(team: Team): TeamColor {
 
 export function getCurrentShotTeam(state: State): Team | null {
   if (state.phase !== 'shooting') return null;
-  return state.teams[state.shotIndex] ?? null;
+  return state.teams.find((team) => team.id === state.currentShotTeamId) ?? null;
+}
+
+export function getRemainingShotTeams(state: State): Team[] {
+  if (state.phase !== 'shooting') return [];
+  return state.remainingShotTeamIds
+    .map((teamId) => state.teams.find((team) => team.id === teamId) ?? null)
+    .filter((team): team is Team => team !== null);
 }

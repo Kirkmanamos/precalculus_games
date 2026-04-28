@@ -37,8 +37,8 @@ export function ScoreVisualization({ teams }: Props) {
   const orderedTicks = [...ticks].sort((a, b) => a - b);
 
   return (
-    <div className="rounded-3xl border-2 border-ink bg-white p-5 shadow-sticker">
-      <div className="flex items-center justify-between">
+    <div className="rounded-3xl border-2 border-ink bg-white p-4 shadow-sticker sm:p-5">
+      <div className="flex items-center justify-between gap-3">
         <span className="font-display text-xs font-bold uppercase tracking-widest text-ink/60">
           Score Map
         </span>
@@ -47,58 +47,62 @@ export function ScoreVisualization({ teams }: Props) {
         </span>
       </div>
 
-      <div className="relative mt-5 h-24">
-        {/* track */}
-        <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full border-2 border-ink bg-canvas" />
-        {/* ticks */}
-        {orderedTicks.map((v) => {
-          const pct = ((v - min) / range) * 100;
-          return (
-            <div
-              key={v}
-              className="absolute top-1/2 -translate-y-1/2"
-              style={{ left: `${pct}%` }}
-            >
-              <div className="h-3 w-0.5 -translate-x-1/2 bg-ink/30" />
-              <div className="absolute top-3 -translate-x-1/2 pt-1 font-display text-[10px] font-bold tabular-nums text-ink/50">
-                {formatTick(v)}
-              </div>
-            </div>
-          );
-        })}
+      <div className="mt-5 overflow-x-auto pb-2">
+        <div className="relative h-28 min-w-[30rem] sm:h-24 sm:min-w-0">
+          <div className="absolute inset-y-0 left-6 right-6 sm:left-8 sm:right-8">
+            {/* track */}
+            <div className="absolute inset-x-0 top-1/2 h-2 -translate-y-1/2 rounded-full border-2 border-ink bg-canvas" />
+            {/* ticks */}
+            {orderedTicks.map((v) => {
+              const pct = ((v - min) / range) * 100;
+              return (
+                <div
+                  key={v}
+                  className="absolute top-1/2 -translate-y-1/2"
+                  style={{ left: `${pct}%` }}
+                >
+                  <div className="h-3 w-0.5 -translate-x-1/2 bg-ink/30" />
+                  <div className="absolute top-3 -translate-x-1/2 pt-1 font-display text-[9px] font-bold tabular-nums text-ink/50 sm:text-[10px]">
+                    {formatTick(v)}
+                  </div>
+                </div>
+              );
+            })}
 
-        {/* team chips */}
-        {positioned.map(({ team, pct, offset }) => {
-          const color = getTeamColor(team);
-          return (
-            <div
-              key={team.id}
-              className="absolute top-1/2 transition-all duration-500 ease-out"
-              style={{
-                left: `${pct}%`,
-                transform: `translate(-50%, calc(-50% - ${28 + offset * 6}px))`,
-              }}
-              title={`${team.name} · ${team.score}`}
-            >
-              <div
-                className="flex items-center gap-1.5 rounded-full border-2 border-ink px-2.5 py-1 shadow-sticker-sm"
-                style={{ background: color.bg, color: color.fg }}
-              >
-                <span className="font-display text-xs font-black truncate max-w-[8rem]">
-                  {team.name}
-                </span>
-                <span className="rounded-full bg-white/95 px-1.5 py-0.5 font-display text-[10px] font-black tabular-nums text-ink">
-                  {team.score}
-                </span>
-              </div>
-              <div
-                aria-hidden
-                className="absolute left-1/2 top-full -translate-x-1/2 h-3 w-0.5"
-                style={{ background: '#1E293B' }}
-              />
-            </div>
-          );
-        })}
+            {/* team chips */}
+            {positioned.map(({ team, pct, offset }) => {
+              const color = getTeamColor(team);
+              return (
+                <div
+                  key={team.id}
+                  className="absolute top-1/2 transition-all duration-500 ease-out"
+                  style={{
+                    left: `clamp(2.75rem, ${pct}%, calc(100% - 2.75rem))`,
+                    transform: `translate(-50%, calc(-50% - ${28 + offset * 6}px))`,
+                  }}
+                  title={`${team.name} · ${team.score}`}
+                >
+                  <div
+                    className="flex items-center gap-1.5 rounded-full border-2 border-ink px-2.5 py-1 shadow-sticker-sm"
+                    style={{ background: color.bg, color: color.fg }}
+                  >
+                    <span className="max-w-[5.5rem] truncate font-display text-xs font-black sm:max-w-[8rem]">
+                      {team.name}
+                    </span>
+                    <span className="rounded-full bg-white/95 px-1.5 py-0.5 font-display text-[10px] font-black tabular-nums text-ink">
+                      {team.score}
+                    </span>
+                  </div>
+                  <div
+                    aria-hidden
+                    className="absolute left-1/2 top-full h-3 w-0.5 -translate-x-1/2"
+                    style={{ background: '#1E293B' }}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,8 @@
-import { useGameState, getCurrentShotTeam } from './state/useGameState';
+import {
+  useGameState,
+  getCurrentShotTeam,
+  getRemainingShotTeams,
+} from './state/useGameState';
 import { QUESTIONS } from './data/questions';
 import { useTheme } from './lib/useTheme';
 import { Decorations } from './components/ui/Decorations';
@@ -31,6 +35,8 @@ export default function App() {
 
   const remaining = QUESTIONS.length - state.usedQuestionIds.length;
   const shotTeam = getCurrentShotTeam(state);
+  const remainingShotTeams = getRemainingShotTeams(state);
+  const shotNumber = state.teams.length - remainingShotTeams.length + 1;
   const showModal = state.phase === 'question' || state.phase === 'answer';
 
   // Map full phase to the subset ControlsPanel knows about.
@@ -43,20 +49,20 @@ export default function App() {
     <div className="relative min-h-screen overflow-hidden bg-canvas">
       <Decorations theme={theme} />
 
-      <main className="relative mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-8 sm:py-10">
+      <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-4 px-3 py-4 sm:gap-6 sm:px-8 sm:py-10">
         {/* header strip */}
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <header className="flex flex-wrap items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="rounded-2xl border-2 border-ink bg-tertiary px-3 py-1.5 shadow-sticker-sm">
-              <span className="font-display text-xs font-black uppercase tracking-widest">
+              <span className="font-display text-[11px] font-black uppercase tracking-widest sm:text-xs">
                 🏀 Unit 6
               </span>
             </div>
-            <h1 className="font-display text-3xl font-black leading-none sm:text-4xl">
+            <h1 className="font-display text-2xl font-black leading-none sm:text-4xl">
               Trashket<span className="text-accent">ball</span>
             </h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <p className="hidden font-body text-sm font-semibold text-ink/60 sm:block">
               Sections 6.1–6.3 · Sequences &amp; Series
             </p>
@@ -65,7 +71,7 @@ export default function App() {
         </header>
 
         {/* scoreboard — always the focal point */}
-        <section aria-label="Scoreboard" className="flex justify-center pt-6">
+        <section aria-label="Scoreboard" className="flex justify-center pt-4 sm:pt-6">
           <Scoreboard teams={state.teams} theme={theme} onRename={game.renameTeam} />
         </section>
 
@@ -83,12 +89,16 @@ export default function App() {
           />
         )}
 
-        {state.phase === 'shooting' && shotTeam && (
+        {state.phase === 'shooting' && (
           <ShotControls
-            team={shotTeam}
-            shotIndex={state.shotIndex}
+            selectedTeam={shotTeam}
+            remainingTeams={remainingShotTeams}
+            shotNumber={shotNumber}
             totalTeams={state.teams.length}
-            onAward={(points) => game.awardShot(shotTeam.id, points)}
+            onSelectTeam={game.selectShotTeam}
+            onAward={(points) => {
+              if (shotTeam) game.awardShot(shotTeam.id, points);
+            }}
           />
         )}
 

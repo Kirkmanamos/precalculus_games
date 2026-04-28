@@ -22,9 +22,9 @@ const VARIANT_CLASSES: Record<Variant, string> = {
 
 const SIZE_CLASSES: Record<Size, string> = {
   sm: 'px-4 py-2 text-sm',
-  md: 'px-6 py-3 text-base',
-  lg: 'px-8 py-4 text-lg',
-  xl: 'px-10 py-5 text-2xl',
+  md: 'px-5 py-2.5 text-sm sm:px-6 sm:py-3 sm:text-base',
+  lg: 'px-6 py-3 text-base sm:px-8 sm:py-4 sm:text-lg',
+  xl: 'px-8 py-4 text-xl sm:px-10 sm:py-5 sm:text-2xl',
 };
 
 /**
@@ -55,7 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           'active:translate-x-1 active:translate-y-1 active:shadow-sticker-press',
           'focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-accent/40',
           'disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-sticker',
-          'select-none whitespace-nowrap',
+          'max-w-full select-none text-center leading-tight',
           VARIANT_CLASSES[variant],
           SIZE_CLASSES[size],
           className,

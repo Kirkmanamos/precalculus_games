@@ -22,10 +22,10 @@ export function AwardPanel({ teams, onApply, onCancel }: Props) {
     });
 
   return (
-    <div className="rounded-3xl border-2 border-ink bg-white p-6 shadow-sticker-lg animate-pop-in">
-      <div className="flex flex-wrap items-baseline justify-between gap-3">
+    <div className="rounded-3xl border-2 border-ink bg-white p-4 shadow-sticker-lg animate-pop-in sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-baseline sm:justify-between">
         <div>
-          <h2 className="font-display text-3xl font-black">Who got it right?</h2>
+          <h2 className="font-display text-2xl font-black sm:text-3xl">Who got it right?</h2>
           <p className="text-sm text-ink/60">
             Each correct team gets <strong>+{SCORING.CORRECT_ANSWER}</strong> points. Tap any team to toggle.
           </p>
@@ -35,7 +35,7 @@ export function AwardPanel({ teams, onApply, onCancel }: Props) {
         </span>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+      <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
         {teams.map((team) => {
           const color = getTeamColor(team);
           const on = selected.has(team.id);
@@ -70,14 +70,14 @@ export function AwardPanel({ teams, onApply, onCancel }: Props) {
         })}
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-end gap-3">
-        <Button variant="ghost" size="lg" onClick={onCancel}>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+        <Button variant="ghost" size="lg" onClick={onCancel} className="w-full sm:w-auto">
           Cancel
         </Button>
-        <Button variant="ghost" size="lg" onClick={() => onApply([])}>
+        <Button variant="ghost" size="lg" onClick={() => onApply([])} className="w-full sm:w-auto">
           No One Got It
         </Button>
-        <Button variant="primary" size="lg" onClick={() => onApply([...selected])}>
+        <Button variant="primary" size="lg" onClick={() => onApply([...selected])} className="w-full sm:w-auto">
           Apply &amp; Continue → Shots
         </Button>
       </div>
