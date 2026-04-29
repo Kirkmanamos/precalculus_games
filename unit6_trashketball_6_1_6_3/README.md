@@ -25,7 +25,12 @@ npm run typecheck    # strict TypeScript pass
 
 ## Game flow
 
-Each round is three phases:
+Setup now offers two paths:
+
+1. **Trashketball** — normal team play with scores and shots.
+2. **Question Practice** — a random-question drill with no teams, scorekeeping, or shot phase.
+
+In Trashketball mode, each round is three phases:
 
 1. **Question** — teacher clicks **Draw Question**, full-screen modal opens with very large math typesetting (KaTeX).
 2. **Answer** — **Reveal Answer** flips in the solution and a one-line "why" hint.
@@ -33,9 +38,11 @@ Each round is three phases:
    - **Award Correct (+2)** — multi-select which teams answered correctly.
    - **Shot Phase** — each team shoots in turn; teacher taps **+1 / +2 / +3 / Miss**.
 
-The scoreboard is always the focal point. Cards auto-sort by score, the leader gets a crown sticker, and a number-line "Score Map" shows the gaps between teams.
+The scoreboard is always the focal point in Trashketball mode. Cards auto-sort by score, the leader gets a crown sticker, and a number-line "Score Map" shows the gaps between teams.
 
-Undo rolls back the last scoring action. Reset zeroes the scores; New Game returns to setup.
+In Practice mode, **Reveal Answer** is followed by **Next Question**, so the teacher can move through the 6.1–6.3 bank quickly.
+
+Undo rolls back the last scoring action. Reset zeroes the scores or resets the practice deck; New Game returns to setup.
 
 ---
 
@@ -70,6 +77,7 @@ unit6_trashketball_6_1_6_3/
 │       ├── Scoreboard.tsx
 │       ├── TeamCard.tsx
 │       ├── ScoreVisualization.tsx
+│       ├── PracticeOverview.tsx
 │       ├── QuestionModal.tsx
 │       ├── AwardPanel.tsx
 │       ├── ShotControls.tsx

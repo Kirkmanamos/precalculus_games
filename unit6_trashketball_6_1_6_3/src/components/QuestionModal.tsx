@@ -1,24 +1,27 @@
 import { useEffect } from 'react';
 import type { Question } from '../data/types';
+import type { GameMode } from '../state/useGameState';
 import { Button } from './ui/Button';
 import { MathText } from './ui/Math';
 
 interface Props {
+  mode: GameMode;
   question: Question;
   showAnswer: boolean;
   onReveal: () => void;
+  onAdvancePractice: () => void;
   onClose: () => void;
 }
+
+const NARRATIVE_WORD_THRESHOLD = 22;
+const NARRATIVE_CHAR_THRESHOLD = 150;
+const PROSE_HEAVY_CATEGORY = 'AP-Style Applications';
 
 const DIFFICULTY_LABEL: Record<Question['difficulty'], { label: string; bg: string }> = {
   easy:   { label: 'Easy',   bg: 'bg-quaternary' },
   medium: { label: 'Medium', bg: 'bg-tertiary' },
   hard:   { label: 'Hard',   bg: 'bg-secondary' },
 };
-
-const NARRATIVE_WORD_THRESHOLD = 22;
-const NARRATIVE_CHAR_THRESHOLD = 150;
-const PROSE_HEAVY_CATEGORY = 'AP-Style Applications';
 
 function getWordCount(text: string) {
   return text
@@ -28,19 +31,29 @@ function getWordCount(text: string) {
     .filter(Boolean).length;
 }
 
-export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props) {
+export function QuestionModal({
+  mode,
+  question,
+  showAnswer,
+  onReveal,
+  onAdvancePractice,
+  onClose,
+}: Props) {
   // Esc closes; Enter reveals/closes.
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'Enter') {
-        if (showAnswer) onClose();
+        if (showAnswer) {
+          if (mode === 'practice') onAdvancePractice();
+          else onClose();
+        }
         else onReveal();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [showAnswer, onReveal, onClose]);
+  }, [mode, showAnswer, onAdvancePractice, onReveal, onClose]);
 
   const dl = DIFFICULTY_LABEL[question.difficulty];
   const questionWordCount = getWordCount(question.question);
@@ -148,6 +161,15 @@ export function QuestionModal({ question, showAnswer, onReveal, onClose }: Props
               {!showAnswer ? (
                 <Button variant="primary" size="xl" onClick={onReveal} className="w-full sm:w-auto">
                   Reveal Answer ✨
+                </Button>
+              ) : mode === 'practice' ? (
+                <Button
+                  variant="quaternary"
+                  size="xl"
+                  onClick={onAdvancePractice}
+                  className="w-full sm:w-auto"
+                >
+                  Next Question →
                 </Button>
               ) : (
                 <Button variant="quaternary" size="xl" onClick={onClose} className="w-full sm:w-auto">

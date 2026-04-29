@@ -11,6 +11,8 @@ export interface Team {
   colorId: TeamColor['id'];
 }
 
+export type GameMode = 'trashketball' | 'practice';
+
 export type Phase =
   | 'setup'      // configuring teams, picking names/colors
   | 'idle'       // scoreboard visible, waiting on teacher to draw
@@ -20,6 +22,7 @@ export type Phase =
   | 'shooting';  // teacher chooses the next team to shoot
 
 interface CoreState {
+  mode: GameMode;
   teams: Team[];
   phase: Phase;
   currentQuestion: Question | null;
@@ -37,10 +40,10 @@ interface State extends CoreState {
 }
 
 type Action =
-  | { type: 'CONFIGURE_TEAMS'; teams: Team[] }
-  | { type: 'START_GAME' }
+  | { type: 'START_GAME'; mode: GameMode; teams: Team[] }
   | { type: 'DRAW_QUESTION' }
   | { type: 'REVEAL_ANSWER' }
+  | { type: 'ADVANCE_PRACTICE_QUESTION' }
   | { type: 'CLOSE_QUESTION' }
   | { type: 'SKIP_QUESTION' }
   | { type: 'AWARD_CORRECT'; teamIds: string[] }
@@ -60,6 +63,7 @@ const INITIAL_TEAMS: Team[] = [
 ];
 
 const initialState: State = {
+  mode: 'trashketball',
   teams: INITIAL_TEAMS,
   phase: 'setup',
   currentQuestion: null,
@@ -72,6 +76,7 @@ const initialState: State = {
 
 function snapshot(state: State): CoreState {
   return {
+    mode: state.mode,
     teams: state.teams.map((t) => ({ ...t })),
     phase: state.phase,
     currentQuestion: state.currentQuestion,
@@ -97,12 +102,26 @@ function pickRandomQuestion(usedIds: number[]): { question: Question; usedIds: n
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case 'CONFIGURE_TEAMS':
-      return { ...state, teams: action.teams };
-
-    case 'START_GAME':
+    case 'START_GAME': {
+      if (action.mode === 'practice') {
+        const { question, usedIds } = pickRandomQuestion([]);
+        return {
+          ...state,
+          mode: action.mode,
+          teams: [],
+          phase: 'question',
+          currentQuestion: question,
+          usedQuestionIds: usedIds,
+          round: 1,
+          remainingShotTeamIds: [],
+          currentShotTeamId: null,
+          history: [],
+        };
+      }
       return {
         ...state,
+        mode: action.mode,
+        teams: action.teams,
         phase: 'idle',
         round: 1,
         usedQuestionIds: [],
@@ -111,6 +130,7 @@ function reducer(state: State, action: Action): State {
         currentShotTeamId: null,
         history: [],
       };
+    }
 
     case 'DRAW_QUESTION': {
       if (state.phase !== 'idle') return state;
@@ -127,8 +147,26 @@ function reducer(state: State, action: Action): State {
       if (state.phase !== 'question') return state;
       return { ...state, phase: 'answer' };
 
+    case 'ADVANCE_PRACTICE_QUESTION': {
+      if (state.mode !== 'practice' || state.phase !== 'answer') return state;
+      const { question, usedIds } = pickRandomQuestion(state.usedQuestionIds);
+      return withHistory(state, {
+        ...snapshot(state),
+        phase: 'question',
+        currentQuestion: question,
+        usedQuestionIds: usedIds,
+      });
+    }
+
     case 'CLOSE_QUESTION':
       if (state.phase !== 'question' && state.phase !== 'answer') return state;
+      if (state.mode === 'practice') {
+        return {
+          ...state,
+          phase: 'idle',
+          currentQuestion: null,
+        };
+      }
       return { ...state, phase: 'awarding' };
 
     case 'SKIP_QUESTION':
@@ -231,10 +269,10 @@ function reducer(state: State, action: Action): State {
 
 export interface GameApi {
   state: State;
-  configureTeams: (teams: Team[]) => void;
-  startGame: () => void;
+  startGame: (mode: GameMode, teams: Team[]) => void;
   drawQuestion: () => void;
   revealAnswer: () => void;
+  advancePracticeQuestion: () => void;
   closeQuestion: () => void;
   skipQuestion: () => void;
   awardCorrect: (teamIds: string[]) => void;
@@ -253,10 +291,10 @@ export function useGameState(): GameApi {
 
   const api = useMemo<Omit<GameApi, 'state' | 'canUndo'>>(
     () => ({
-      configureTeams: (teams) => dispatch({ type: 'CONFIGURE_TEAMS', teams }),
-      startGame: () => dispatch({ type: 'START_GAME' }),
+      startGame: (mode, teams) => dispatch({ type: 'START_GAME', mode, teams }),
       drawQuestion: () => dispatch({ type: 'DRAW_QUESTION' }),
       revealAnswer: () => dispatch({ type: 'REVEAL_ANSWER' }),
+      advancePracticeQuestion: () => dispatch({ type: 'ADVANCE_PRACTICE_QUESTION' }),
       closeQuestion: () => dispatch({ type: 'CLOSE_QUESTION' }),
       skipQuestion: () => dispatch({ type: 'SKIP_QUESTION' }),
       awardCorrect: (teamIds) => dispatch({ type: 'AWARD_CORRECT', teamIds }),

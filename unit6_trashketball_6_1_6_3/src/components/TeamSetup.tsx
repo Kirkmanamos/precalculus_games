@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TEAM_PALETTE } from '../design/tokens';
-import { makeTeam, type Team } from '../state/useGameState';
+import { makeTeam, type GameMode, type Team } from '../state/useGameState';
 import type { Theme } from '../lib/useTheme';
 import { Button } from './ui/Button';
 import { Decorations } from './ui/Decorations';
@@ -9,7 +9,7 @@ import { ThemeToggle } from './ui/ThemeToggle';
 interface Props {
   theme: Theme;
   onToggleTheme: () => void;
-  onStart: (teams: Team[]) => void;
+  onStart: (config: { mode: GameMode; teams: Team[] }) => void;
 }
 
 const TEAM_COUNT_OPTIONS = [2, 3, 4, 5, 6] as const;
@@ -24,6 +24,7 @@ const DEFAULT_NAMES = [
 ];
 
 export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
+  const [mode, setMode] = useState<GameMode>('trashketball');
   const [count, setCount] = useState<number>(2);
   const [teams, setTeams] = useState<Team[]>(() =>
     Array.from({ length: 2 }, (_, i) =>
@@ -63,11 +64,16 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
     );
 
   const start = () => {
+    if (mode === 'practice') {
+      onStart({ mode, teams: [] });
+      return;
+    }
+
     const cleaned = teams.map((t, i) => ({
       ...t,
       name: t.name.trim() || `Team ${i + 1}`,
     }));
-    onStart(cleaned);
+    onStart({ mode, teams: cleaned });
   };
 
   return (
@@ -90,60 +96,104 @@ export function TeamSetup({ theme, onToggleTheme, onStart }: Props) {
         </p>
 
         <section className="mt-8 w-full rounded-3xl border-2 border-ink bg-white p-5 shadow-sticker-lg sm:mt-10 sm:p-8">
-          <h2 className="font-display text-xl font-bold sm:text-2xl">How many teams?</h2>
-          <div className="mt-4 flex flex-wrap gap-3">
-            {TEAM_COUNT_OPTIONS.map((n) => (
+          <h2 className="font-display text-xl font-bold sm:text-2xl">Choose mode</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              {
+                id: 'trashketball' as const,
+                title: 'Trashketball',
+                body: 'Teams answer, score, and take shots.',
+              },
+              {
+                id: 'practice' as const,
+                title: 'Question Practice',
+                body: 'Skip the game flow and work through random 6.1–6.3 questions only.',
+              },
+            ].map((option) => (
               <button
-                key={n}
-                onClick={() => updateCount(n)}
+                key={option.id}
+                onClick={() => setMode(option.id)}
                 className={[
-                  'h-12 w-12 rounded-2xl border-2 border-ink font-display text-xl font-black shadow-sticker sm:h-14 sm:w-14 sm:text-2xl',
+                  'rounded-2xl border-2 border-ink p-4 text-left shadow-sticker-sm',
                   'transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-sticker-lg',
                   'active:translate-x-1 active:translate-y-1 active:shadow-sticker-press',
-                  count === n ? 'bg-accent text-white' : 'bg-white text-ink',
+                  mode === option.id ? 'bg-accent text-white' : 'bg-canvas text-ink',
                 ].join(' ')}
               >
-                {n}
+                <div className="font-display text-lg font-black sm:text-xl">{option.title}</div>
+                <div className="mt-2 text-sm font-semibold leading-relaxed opacity-80">
+                  {option.body}
+                </div>
               </button>
             ))}
           </div>
 
-          <h2 className="mt-8 font-display text-xl font-bold sm:text-2xl">Team names &amp; colors</h2>
-          <p className="mt-1 text-sm text-ink/60">
-            Tap the swatch to cycle colors. Names show on every card.
-          </p>
-          <div className="mt-4 grid gap-3">
-            {teams.map((team, i) => {
-              const color = TEAM_PALETTE.find((c) => c.id === team.colorId)!;
-              return (
-                <div
-                  key={team.id}
-                  className="flex items-center gap-2 rounded-2xl border-2 border-ink bg-canvas p-2.5 shadow-sticker-sm sm:gap-3 sm:p-3"
-                >
+          {mode === 'trashketball' ? (
+            <>
+              <h2 className="mt-8 font-display text-xl font-bold sm:text-2xl">How many teams?</h2>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {TEAM_COUNT_OPTIONS.map((n) => (
                   <button
-                    onClick={() => cycleColor(team.id)}
-                    aria-label={`Change color (currently ${color.label})`}
-                    className="h-12 w-12 shrink-0 rounded-full border-2 border-ink shadow-sticker-sm transition-transform hover:scale-105"
-                    style={{ background: color.bg }}
-                  />
-                  <span className="w-7 text-center font-display text-lg font-black text-ink/40 sm:w-8 sm:text-xl">
-                    {i + 1}
-                  </span>
-                  <input
-                    value={team.name}
-                    onChange={(e) => renameTeam(team.id, e.target.value)}
-                    maxLength={28}
-                    className="flex-1 rounded-xl border-2 border-ink bg-white px-3 py-2 font-body text-base font-semibold focus:outline-none focus:ring-4 focus:ring-accent/30 sm:px-4 sm:text-lg"
-                    placeholder={`Team ${i + 1}`}
-                  />
-                </div>
-              );
-            })}
-          </div>
+                    key={n}
+                    onClick={() => updateCount(n)}
+                    className={[
+                      'h-12 w-12 rounded-2xl border-2 border-ink font-display text-xl font-black shadow-sticker sm:h-14 sm:w-14 sm:text-2xl',
+                      'transition-transform hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-sticker-lg',
+                      'active:translate-x-1 active:translate-y-1 active:shadow-sticker-press',
+                      count === n ? 'bg-accent text-white' : 'bg-white text-ink',
+                    ].join(' ')}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+
+              <h2 className="mt-8 font-display text-xl font-bold sm:text-2xl">Team names &amp; colors</h2>
+              <p className="mt-1 text-sm text-ink/60">
+                Tap the swatch to cycle colors. Names show on every card.
+              </p>
+              <div className="mt-4 grid gap-3">
+                {teams.map((team, i) => {
+                  const color = TEAM_PALETTE.find((c) => c.id === team.colorId)!;
+                  return (
+                    <div
+                      key={team.id}
+                      className="flex items-center gap-2 rounded-2xl border-2 border-ink bg-canvas p-2.5 shadow-sticker-sm sm:gap-3 sm:p-3"
+                    >
+                      <button
+                        onClick={() => cycleColor(team.id)}
+                        aria-label={`Change color (currently ${color.label})`}
+                        className="h-12 w-12 shrink-0 rounded-full border-2 border-ink shadow-sticker-sm transition-transform hover:scale-105"
+                        style={{ background: color.bg }}
+                      />
+                      <span className="w-7 text-center font-display text-lg font-black text-ink/40 sm:w-8 sm:text-xl">
+                        {i + 1}
+                      </span>
+                      <input
+                        value={team.name}
+                        onChange={(e) => renameTeam(team.id, e.target.value)}
+                        maxLength={28}
+                        className="flex-1 rounded-xl border-2 border-ink bg-white px-3 py-2 font-body text-base font-semibold focus:outline-none focus:ring-4 focus:ring-accent/30 sm:px-4 sm:text-lg"
+                        placeholder={`Team ${i + 1}`}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="mt-8 rounded-2xl border-2 border-ink bg-canvas p-4 shadow-sticker-sm">
+              <h2 className="font-display text-xl font-bold sm:text-2xl">Question-only practice</h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink/70 sm:text-base">
+                Start immediately in a random 6.1–6.3 question. Reveal the answer,
+                then keep moving through the bank without teams, scores, or shot phases.
+              </p>
+            </div>
+          )}
 
           <div className="mt-8 flex justify-stretch sm:justify-end">
             <Button variant="primary" size="xl" onClick={start} className="w-full sm:w-auto">
-              Start Game →
+              {mode === 'practice' ? 'Start Practice →' : 'Start Game →'}
             </Button>
           </div>
         </section>
